@@ -1,0 +1,6 @@
+#!/usr/bin/env ruby
+
+require 'lastversion'
+
+puts LastVersion::GitVersion.verify!
+
