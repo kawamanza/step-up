@@ -1,0 +1,3 @@
+module LastVersion
+  CONFIG = {}
+end
