@@ -19,8 +19,13 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency "rspec"
 
-  s.files              = `git ls-files`.split("\n")
-  s.test_files         = `git ls-files -- {test,spec,features}/*`.split("\n")
+  excepts = %w[
+    .gitignore
+    lastversion.gemspec
+  ]
+  tests = `git ls-files -- {test,spec,features}/*`.split("\n")
+  s.files              = `git ls-files`.split("\n") - excepts - tests
+  s.test_files         = tests
   s.executables        = %w(lastversion)
   s.default_executable = "lastversion"
   s.require_paths      = ["lib"]
