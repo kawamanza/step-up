@@ -30,7 +30,7 @@ module LastVersion
     end
 
     def sort_tags list
-      list.collect{|v| version_array v }.sort
+      list.collect{|v| version_array v }.compact.sort
     end
 
     def last_tag commit = nil
