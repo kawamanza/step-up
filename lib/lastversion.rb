@@ -5,4 +5,7 @@ module LastVersion
   module Driver
     autoload :Git, 'lastversion/driver/git.rb'
   end
+  module Parser
+    autoload :VersionMask, 'lastversion/parser/version_mask.rb'
+  end
 end
