@@ -1,4 +1,2 @@
 versioning:
-  patterns:
-    version: "v0.0.0.9.rc9"
-    note: "note-{version}-0"
+  version_mask: "v0.0.0.9.rc9"

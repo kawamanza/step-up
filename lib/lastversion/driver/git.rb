@@ -3,7 +3,7 @@ module LastVersion
     class Git
       attr_reader :mask
       def initialize
-        @mask = Parser::VersionMask.new(CONFIG["versioning"]["patterns"]["version"])
+        @mask = Parser::VersionMask.new(CONFIG["versioning"]["version_mask"])
       end
 
       def history_log commit_base, top = nil
