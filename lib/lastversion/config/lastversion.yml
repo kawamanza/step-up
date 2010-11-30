@@ -1,2 +1,8 @@
 versioning:
   version_mask: "v0.0.0.9.rc9"
+  version_parts:
+    - major
+    - minor
+    - tiny
+    - patch
+    - rc
