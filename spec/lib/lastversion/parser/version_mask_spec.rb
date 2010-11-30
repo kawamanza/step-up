@@ -13,7 +13,8 @@ describe LastVersion::Parser::VersionMask do
       @mask.parse("v0.1.4.5.rc3").should be == [0, 1, 4, 5, 0, 3]
     end
     it "should not parse" do
-      lambda { @mask.parse("v0.1.rc3") }.should raise_error ArgumentError
+      @mask.parse("v0.1.rc3").should be_nil
+      @mask.parse("note-v0.1.0-1").should be_nil
     end
     it "should format" do
       @mask.format([0, 1, 0, 0, 0, 3]).should be == "v0.1.0.rc3"

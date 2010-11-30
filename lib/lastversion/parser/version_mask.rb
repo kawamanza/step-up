@@ -12,7 +12,7 @@ module LastVersion
       end
 
       def parse version
-        raise ArgumentError unless version.is_a?(String)
+        return unless version.is_a?(String)
         i = 0
         v = []
         iterator.each_with_index do |pattern, index|
@@ -21,7 +21,7 @@ module LastVersion
             if mask[index] =~ /9$/
               v << 0
             else
-              raise ArgumentError, "invalid format"
+              return
             end
           else
             if pos == i
@@ -31,7 +31,7 @@ module LastVersion
             elsif mask[index] =~ /9$/
               v << 0
             else
-              raise ArgumentError, "invalid format"
+              return
             end
           end
         end
