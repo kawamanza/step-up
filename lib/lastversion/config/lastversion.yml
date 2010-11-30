@@ -1,4 +1,4 @@
 versioning:
   patterns:
-    version: "v0.0.0.9rc9"
+    version: "v0.0.0.9.rc9"
     note: "note-{version}-0"
