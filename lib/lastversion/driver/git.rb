@@ -25,6 +25,7 @@ module LastVersion
           index = objects.index(history_log(tag, 1).first)
           return "#{ tag }#{ '+' unless index.zero? }" unless index.nil?
         end
+        nil
       end
     end
   end
