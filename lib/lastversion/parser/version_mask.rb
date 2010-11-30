@@ -49,6 +49,10 @@ module LastVersion
         end
         v.join
       end
+
+      def blank
+        format mask.size.times.map{ 0 }
+      end
     end
   end
 end

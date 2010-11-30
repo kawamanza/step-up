@@ -6,6 +6,11 @@ module LastVersion
         @mask = Parser::VersionMask.new(CONFIG["versioning"]["version_mask"])
       end
 
+      def self.last_version_tag commit_base = nil
+        driver = new
+        driver.last_tag(commit_base) || "%s%s" % [driver.mask.blank, '+']
+      end
+
       def history_log commit_base, top = nil
         top = "-n#{ top }" unless top.nil?
         `git log --pretty=oneline --no-color --no-notes #{ top } #{ commit_base }`.gsub(/^(\w+)\s.*$/, '\1').split("\n")
