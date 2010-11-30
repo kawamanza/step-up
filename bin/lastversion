@@ -2,5 +2,5 @@
 
 require 'lastversion'
 
-puts LastVersion::GitVersion.verify!
+puts LastVersion::Driver::Git.last_version_tag
 
