@@ -21,5 +21,9 @@ describe LastVersion::Driver::Git do
       @driver.stubs(:all_tags).returns(tags)
       @driver.all_version_tags.should be == %w[v0.1.2 v0.1.1.rc3 v0.1.1 v0.1.0]
     end
+
+    it "should return last tag visible" do
+      @driver.last_tag("f4cfcc2").should be == "v0.0.1+"
+    end
   end
 end
