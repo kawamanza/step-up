@@ -38,6 +38,18 @@ module LastVersion
         objects_with_notes
       end
 
+      def note_message ref, commit
+        `git notes --ref=#{ ref } show #{ commit }`
+      end
+
+      def notes_messages objects_with_notes
+        notes = {}
+        notes_sections.each do |section|
+          notes[section] = (objects_with_notes[section] || []).map{ |commit| note_message(section, commit) }
+        end
+        notes
+      end
+
       def all_version_tags
         @version_tags ||= all_tags.map{ |tag| mask.parse(tag) }.compact.sort.map{ |tag| mask.format(tag) }.reverse
       end
