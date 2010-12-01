@@ -38,4 +38,14 @@ describe LastVersion::Driver::Git do
       @driver.class.last_version_tag("cdd4d5a").should be == "v0.0.0+"
     end
   end
+
+
+  context "fetching notes" do
+    before do
+      @driver.stubs(:notes_sections).returns(%w[test_changes test_bugfixes test_features])
+    end
+    it "should get all notes" do
+      @driver.all_objects_with_notes("f4cfcc2").should be == {"test_changes" => ["8299243c7dac8f27c3572424a348a7f83ef0ce28"], "test_bugfixes" => [], "test_features" => []}
+    end
+  end
 end
