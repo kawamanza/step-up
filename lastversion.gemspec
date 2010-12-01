@@ -18,6 +18,7 @@ Gem::Specification.new do |s|
   s.rubyforge_project         = "lastversion"
 
   s.add_development_dependency "rspec"
+  s.add_development_dependency "mocha" 
 
   excepts = %w[
     .gitignore
