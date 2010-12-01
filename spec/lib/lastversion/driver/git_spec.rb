@@ -41,11 +41,20 @@ describe LastVersion::Driver::Git do
 
 
   context "fetching notes" do
-    before do
-      @driver.stubs(:notes_sections).returns(%w[test_changes test_bugfixes test_features])
+    context "from test_* sections" do
+      before do
+        @driver.stubs(:notes_sections).returns(%w[test_changes test_bugfixes test_features])
+      end
+      it "should get all objects with notes" do
+        @driver.all_objects_with_notes("f4cfcc2").should be == {"test_changes" => ["8299243c7dac8f27c3572424a348a7f83ef0ce28", "2fb8a3281fb6777405aadcd699adb852b615a3e4"], "test_bugfixes" => [], "test_features" => []}
+      end
     end
-    it "should get all notes" do
-      @driver.all_objects_with_notes("f4cfcc2").should be == {"test_changes" => ["8299243c7dac8f27c3572424a348a7f83ef0ce28"], "test_bugfixes" => [], "test_features" => []}
+  end
+
+
+  context "checking helper methods" do
+    it "should load default notes' sections" do
+      @driver.send(:notes_sections).should be == LastVersion::CONFIG["notes"]["sections"]
     end
   end
 end
