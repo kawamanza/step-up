@@ -7,8 +7,8 @@ module LastVersion
       end
 
       def self.last_version_tag commit_base = nil
-        driver = new
-        driver.last_tag(commit_base) || "%s%s" % [driver.mask.blank, '+']
+        @driver ||= new
+        @driver.last_tag(commit_base) || "%s%s" % [@driver.mask.blank, '+']
       end
 
       def history_log commit_base, top = nil
