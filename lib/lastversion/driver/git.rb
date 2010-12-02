@@ -8,7 +8,7 @@ module LastVersion
 
       def self.last_version(commit_base = nil)
         @driver ||= new
-        @driver.last_tag(commit_base) || "%s%s" % [@driver.mask.blank, '+']
+        @driver.last_version_tag(commit_base) || "%s%s" % [@driver.mask.blank, '+']
       end
 
       def commit_history(commit_base, top = nil)
@@ -54,7 +54,7 @@ module LastVersion
         @version_tags ||= all_tags.map{ |tag| mask.parse(tag) }.compact.sort.map{ |tag| mask.format(tag) }.reverse
       end
 
-      def last_tag(commit_base = nil)
+      def last_version_tag(commit_base = nil)
         objects = commit_history(commit_base)
         all_version_tags.each do |tag|
           index = objects.index(commit_history(tag, 1).first)
