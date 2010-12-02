@@ -11,7 +11,7 @@ module LastVersion
         @driver.last_tag(commit_base) || "%s%s" % [@driver.mask.blank, '+']
       end
 
-      def history_log commit_base, top = nil
+      def commit_history commit_base, top = nil
         top = "-n#{ top }" unless top.nil?
         `git log --pretty=oneline --no-color --no-notes #{ top } #{ commit_base }`.gsub(/^(\w+)\s.*$/, '\1').split("\n")
       end
@@ -25,7 +25,7 @@ module LastVersion
       end
 
       def all_objects_with_notes commit_base = nil
-        objects = history_log(commit_base)
+        objects = commit_history(commit_base)
         objects_with_notes = {}
         notes_sections.each do |section|
           obj = objects_with_notes_of(section)
@@ -55,9 +55,9 @@ module LastVersion
       end
 
       def last_tag commit_base = nil
-        objects = history_log(commit_base)
+        objects = commit_history(commit_base)
         all_version_tags.each do |tag|
-          index = objects.index(history_log(tag, 1).first)
+          index = objects.index(commit_history(tag, 1).first)
           return "#{ tag }#{ '+' unless index.zero? }" unless index.nil?
         end
         nil
