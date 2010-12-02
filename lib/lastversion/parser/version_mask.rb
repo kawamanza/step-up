@@ -3,7 +3,7 @@ module LastVersion
     class VersionMask
       attr_reader :mask
       attr_reader :iterator
-      def initialize mask
+      def initialize(mask)
         @mask = mask.scan(/\D+[09]/)
         raise ArgumentError if mask != @mask.join
         @iterator = @mask.map do |token|
@@ -11,7 +11,7 @@ module LastVersion
         end
       end
 
-      def parse version
+      def parse(version)
         return unless version.is_a?(String)
         i = 0
         v = []
@@ -38,7 +38,7 @@ module LastVersion
         v
       end
 
-      def format version
+      def format(version)
         raise ArgumentError unless version.is_a?(Array) && version.size == mask.size
         v = []
         iterator.each_with_index do |pattern, index|
