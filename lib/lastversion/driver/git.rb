@@ -6,7 +6,7 @@ module LastVersion
         @mask = Parser::VersionMask.new(CONFIG["versioning"]["version_mask"])
       end
 
-      def self.last_version_tag(commit_base = nil)
+      def self.last_version(commit_base = nil)
         @driver ||= new
         @driver.last_tag(commit_base) || "%s%s" % [@driver.mask.blank, '+']
       end

@@ -15,7 +15,7 @@ module LastVersion
   if v.nil?
     path = File.expand_path('../../../.git', __FILE__)
     if File.exists?(path)
-      v = Driver::Git.last_version_tag
+      v = Driver::Git.last_version
     end
   end
   if v.nil?

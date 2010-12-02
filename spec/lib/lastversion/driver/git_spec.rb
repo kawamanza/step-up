@@ -25,8 +25,8 @@ describe LastVersion::Driver::Git do
     it "should return last tag visible" do
       @driver.last_tag("f4cfcc2").should be == "v0.0.1+"
       @driver.last_tag("570fe2e").should be == "v0.0.1"
-      @driver.class.last_version_tag("f4cfcc2").should be == "v0.0.1+"
-      @driver.class.last_version_tag("570fe2e").should be == "v0.0.1"
+      @driver.class.last_version("f4cfcc2").should be == "v0.0.1+"
+      @driver.class.last_version("570fe2e").should be == "v0.0.1"
     end
 
     it "should get no tag visible" do
@@ -35,7 +35,7 @@ describe LastVersion::Driver::Git do
 
     it "should get a blank tag" do
       @driver.mask.blank.should be == "v0.0.0"
-      @driver.class.last_version_tag("cdd4d5a").should be == "v0.0.0+"
+      @driver.class.last_version("cdd4d5a").should be == "v0.0.0+"
     end
   end
 end
