@@ -50,13 +50,13 @@ describe LastVersion::Driver::Git do
       end
       it "should get all notes messages" do
         objects_with_notes = @driver.all_objects_with_notes("f4cfcc2")
-        @driver.notes_messages(objects_with_notes).should be == {"test_changes" => ["removing files from gemspec\n  .gitignore\n  lastversion.gemspec\n", "loading default configuration yaml\n\nloading external configuration yaml\n"], "test_bugfixes" => ["sorting tags according to the mask parser\n"], "test_features" => []}
+        objects_with_notes.should respond_to(:messages)
+        objects_with_notes.messages.should be == {"test_changes" => ["removing files from gemspec\n  .gitignore\n  lastversion.gemspec\n", "loading default configuration yaml\n\nloading external configuration yaml\n"], "test_bugfixes" => ["sorting tags according to the mask parser\n"], "test_features" => []}
       end
       it "should get changelog message" do
         objects_with_notes = @driver.all_objects_with_notes("f4cfcc2")
-        notes_messages = @driver.notes_messages(objects_with_notes)
-        notes_messages.should respond_to(:to_changelog)
-        notes_messages.sections.should be == @driver.notes_sections
+        objects_with_notes.should respond_to(:to_changelog)
+        objects_with_notes.sections.should be == @driver.notes_sections
         message = <<-MSG
   - removing files from gemspec
     - .gitignore
@@ -68,7 +68,7 @@ Test bugfixes:
 
   - sorting tags according to the mask parser
 MSG
-        notes_messages.to_changelog.should be == message
+        objects_with_notes.to_changelog.should be == message
       end
     end
   end

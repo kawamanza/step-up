@@ -26,7 +26,8 @@ module LastVersion
 
       def all_objects_with_notes(commit_base = nil)
         objects = commit_history(commit_base)
-        objects_with_notes = {}
+        objects_with_notes = {}.extend NotesTransformation
+        objects_with_notes.driver = self
         notes_sections.each do |section|
           obj = objects_with_notes_of(section)
           obj = obj.collect { |object|
@@ -43,11 +44,7 @@ module LastVersion
       end
 
       def notes_messages(objects_with_notes)
-        notes = {}.extend NotesTransformation
-        notes_sections.each do |section|
-          notes[section] = (objects_with_notes[section] || []).map{ |commit| note_message(section, commit) }
-        end
-        notes
+        objects_with_notes.messages
       end
 
       def all_version_tags
@@ -74,31 +71,56 @@ module LastVersion
   module NotesTransformation
     def self.extend_object(base)
       super
-      base.instance_eval do
-        @sections = []
-      end
       class << base
         attr_reader :sections
+        attr_writer :driver, :parent
         def []=(p1, p2)
           super
           sections << p1 unless sections.include?(p1)
         end
       end
+      base.instance_eval do
+        @sections = []
+      end
+    end
+
+    def driver
+      @driver ||= parent.driver
+    end
+
+    def sections
+      @sections ||= parent.sections.dup
+    end
+
+    def parent
+      @parent ||= self
+    end
+
+    def messages
+      unless defined? @messages
+        notes = {}.extend NotesTransformation
+        notes.parent = self
+        sections.each do |section|
+          notes[section] = (parent[section] || []).map{ |commit| driver.note_message(section, commit) }
+        end
+        @messages = notes
+      end
+      @messages
     end
 
     def to_changelog
       changelog = []
       sections.each_with_index do |section, index|
-        unless index.zero? || self[section].empty?
+        unless index.zero? || messages[section].empty?
           changelog << "#{ section.capitalize.gsub(/_/, ' ') }:"
           changelog << ""
         end
-        self[section].each do |note|
+        messages[section].each do |note|
           changelog += note.split(/\n+/).collect do |line|
             line.sub(/^(\s*)/, '\1  - ')
           end
         end
-        changelog << "" unless self[section].empty?
+        changelog << "" unless messages[section].empty?
       end
       changelog.join("\n")
     end
