@@ -43,7 +43,7 @@ module LastVersion
       end
 
       def notes_messages(objects_with_notes)
-        notes = {}
+        notes = {}.extend NotesTransformation
         notes_sections.each do |section|
           notes[section] = (objects_with_notes[section] || []).map{ |commit| note_message(section, commit) }
         end
@@ -68,6 +68,39 @@ module LastVersion
       def notes_sections
         CONFIG["notes"]["sections"]
       end
+    end
+  end
+
+  module NotesTransformation
+    def self.extend_object(base)
+      super
+      base.instance_eval do
+        @sections = []
+      end
+      class << base
+        attr_reader :sections
+        def []=(p1, p2)
+          super
+          sections << p1 unless sections.include?(p1)
+        end
+      end
+    end
+
+    def to_changelog
+      changelog = []
+      sections.each_with_index do |section, index|
+        unless index.zero? || self[section].empty?
+          changelog << "#{ section.capitalize.gsub(/_/, ' ') }:"
+          changelog << ""
+        end
+        self[section].each do |note|
+          changelog += note.split(/\n+/).collect do |line|
+            line.sub(/^(\s*)/, '\1  - ')
+          end
+        end
+        changelog << "" unless self[section].empty?
+      end
+      changelog.join("\n")
     end
   end
 end
