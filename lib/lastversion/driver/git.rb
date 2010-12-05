@@ -72,15 +72,11 @@ module LastVersion
     def self.extend_object(base)
       super
       class << base
-        attr_reader :sections
         attr_writer :driver, :parent
         def []=(p1, p2)
           super
           sections << p1 unless sections.include?(p1)
         end
-      end
-      base.instance_eval do
-        @sections = []
       end
     end
 
@@ -89,7 +85,7 @@ module LastVersion
     end
 
     def sections
-      @sections ||= parent.sections.dup
+      @sections ||= parent != self && parent.sections && parent.sections.dup || []
     end
 
     def parent
