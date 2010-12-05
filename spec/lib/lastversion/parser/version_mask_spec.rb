@@ -32,4 +32,20 @@ describe LastVersion::Parser::VersionMask do
       lambda {@mask.format([0, 1, 0, 0, 0, 0, 0])}.should raise_error ArgumentError
     end
   end
+
+
+  context "increasing version" do
+    before do
+      @mask.stubs(:version_parts).returns(%w[major minor tiny patch build rc])
+    end
+    it "should increase by parts" do
+      version = "v2.3.1.6.4.rc5"
+      @mask.increase_version(version, "major").should be == "v3.0.0"
+      @mask.increase_version(version, "minor").should be == "v2.4.0"
+      @mask.increase_version(version, "tiny").should be == "v2.3.2"
+      @mask.increase_version(version, "patch").should be == "v2.3.1.7"
+      @mask.increase_version(version, "build").should be == "v2.3.1.6.5"
+      @mask.increase_version(version, "rc").should be == "v2.3.1.6.4.rc6"
+    end
+  end
 end

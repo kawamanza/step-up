@@ -50,8 +50,23 @@ module LastVersion
         v.join
       end
 
+      def increase_version(version, part)
+        v = parse version
+        part = version_parts.index(part)
+        (v.size-part).times do |index|
+          v[part+index] = (index.zero? ? v[part+index]+1 : 0)
+        end
+        format v
+      end
+
       def blank
         format mask.size.times.map{ 0 }
+      end
+
+      private
+
+      def version_parts
+        CONFIG["versioning"]["version_parts"]
       end
     end
   end
