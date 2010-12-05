@@ -27,7 +27,7 @@ Gem::Specification.new do |s|
   tests = `git ls-files -- {test,spec,features}/*`.split("\n")
   s.files              = `git ls-files`.split("\n") - excepts - tests
   s.test_files         = tests
-  s.executables        = %w(lastversion)
-  s.default_executable = "lastversion"
+  s.executables        = %w(version)
+  s.default_executable = "version"
   s.require_paths      = ["lib"]
 end
