@@ -44,20 +44,9 @@ describe LastVersion::Driver::Git do
     context "from test_* sections" do
       before do
         @driver.stubs(:notes_sections).returns(%w[test_changes test_bugfixes test_features])
-      end
-      it "should get all objects with notes" do
-        @driver.all_objects_with_notes("f4cfcc2").should be == {"test_changes" => ["8299243c7dac8f27c3572424a348a7f83ef0ce28", "2fb8a3281fb6777405aadcd699adb852b615a3e4"], "test_bugfixes" => ["d7b0fa26ca547b963569d7a82afd7d7ca11b71ae"], "test_features" => []}
-      end
-      it "should get all notes messages" do
-        objects_with_notes = @driver.all_objects_with_notes("f4cfcc2")
-        objects_with_notes.should respond_to(:messages)
-        objects_with_notes.messages.should be == {"test_changes" => ["removing files from gemspec\n  .gitignore\n  lastversion.gemspec\n", "loading default configuration yaml\n\nloading external configuration yaml\n"], "test_bugfixes" => ["sorting tags according to the mask parser\n"], "test_features" => []}
-      end
-      it "should get changelog message" do
-        objects_with_notes = @driver.all_objects_with_notes("f4cfcc2")
-        objects_with_notes.should respond_to(:to_changelog)
-        objects_with_notes.sections.should be == @driver.notes_sections
-        message = <<-MSG
+        @objects_with_notes = {"test_changes" => ["8299243c7dac8f27c3572424a348a7f83ef0ce28", "2fb8a3281fb6777405aadcd699adb852b615a3e4"], "test_bugfixes" => ["d7b0fa26ca547b963569d7a82afd7d7ca11b71ae"], "test_features" => []}
+        @messages = {"test_changes" => ["removing files from gemspec\n  .gitignore\n  lastversion.gemspec\n", "loading default configuration yaml\n\nloading external configuration yaml\n"], "test_bugfixes" => ["sorting tags according to the mask parser\n"], "test_features" => []}
+        @changelog = <<-MSG
   - removing files from gemspec
     - .gitignore
     - lastversion.gemspec
@@ -68,7 +57,22 @@ Test bugfixes:
 
   - sorting tags according to the mask parser
 MSG
-        objects_with_notes.to_changelog.should be == message
+      end
+      it "should get all objects with notes" do
+        @driver.all_objects_with_notes("f4cfcc2").should be == @objects_with_notes
+      end
+      it "should get all notes messages" do
+        objects_with_notes = @driver.all_objects_with_notes("f4cfcc2")
+        objects_with_notes.should respond_to(:messages)
+        objects_with_notes.messages.should be == @messages
+      end
+      it "should get changelog message" do
+        objects_with_notes = @driver.all_objects_with_notes("f4cfcc2")
+        objects_with_notes.should respond_to(:to_changelog)
+        objects_with_notes.sections.should be == @driver.notes_sections
+        objects_with_notes.messages.should be == @messages
+        objects_with_notes.messages.to_changelog.should be == @changelog
+        objects_with_notes.to_changelog.should be == @changelog
       end
     end
   end
