@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+
+require 'lastversion/cli'
+
+begin
+  LastVersion::CLI.start
+rescue Exception => e
+  puts e.message
+end

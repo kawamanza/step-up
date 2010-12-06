@@ -1,6 +1,0 @@
-#!/usr/bin/env ruby
-
-require 'lastversion'
-
-puts LastVersion::Driver::Git.last_version
-
