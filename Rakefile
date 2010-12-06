@@ -23,7 +23,7 @@ desc "Build the gem"
 task :build do
   opers = Dir.glob('*.gem')
   opers = ["rm #{ opers.join(' ') }"] unless opers.empty?
-  opers << ["gem build lastversion.gemspec"]
+  opers << ["gem build step-up.gemspec"]
   system opers.join(" && ")
 end
 
