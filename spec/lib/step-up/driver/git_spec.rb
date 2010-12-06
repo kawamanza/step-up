@@ -81,37 +81,80 @@ MSG
   context "increasing version" do
     before do
       @driver.stubs(:notes_sections).returns(%w[test_changes test_bugfixes test_features])
-      @steps = <<-STEPS
-      git fetch
-
-      git tag -a -m "  - removing files from gemspec
-          - .gitignore
-          - lastversion.gemspec
-        - loading default configuration yaml
-        - loading external configuration yaml
-      
-      Test bugfixes:
-      
-        - sorting tags according to the mask parser
-      " v0.1.0
-
-      git push --tags
-
-      git notes --ref=test_changes remove 8299243c7dac8f27c3572424a348a7f83ef0ce28
-
-      git notes --ref=test_changes remove 2fb8a3281fb6777405aadcd699adb852b615a3e4
-
-      git push origin refs/notes/test_changes
-
-      git notes --ref=test_bugfixes remove d7b0fa26ca547b963569d7a82afd7d7ca11b71ae
-
-      git push origin refs/notes/test_bugfixes
-      STEPS
-      @steps = @steps.chomp.split(/\n\n/).collect{ |step| step.gsub /^\s{6}/, '' }
     end
-    it "should return steps" do
-      @driver.should respond_to :increase_version_tag
-      @driver.increase_version_tag("minor", "f4cfcc2").should be == @steps
+
+
+    context "using 'remove' as after_versioned:strategy" do
+      before do
+        @driver.stubs(:notes_after_versioned).returns({"strategy" => "remove", "section" => "test_versioning"})
+        @steps = <<-STEPS
+        git fetch
+
+        git tag -a -m "  - removing files from gemspec
+            - .gitignore
+            - lastversion.gemspec
+          - loading default configuration yaml
+          - loading external configuration yaml
+        
+        Test bugfixes:
+        
+          - sorting tags according to the mask parser
+        " v0.1.0
+
+        git push --tags
+
+        git notes --ref=test_changes remove 8299243c7dac8f27c3572424a348a7f83ef0ce28
+
+        git notes --ref=test_changes remove 2fb8a3281fb6777405aadcd699adb852b615a3e4
+
+        git push origin refs/notes/test_changes
+
+        git notes --ref=test_bugfixes remove d7b0fa26ca547b963569d7a82afd7d7ca11b71ae
+
+        git push origin refs/notes/test_bugfixes
+        STEPS
+        @steps = @steps.chomp.split(/\n\n/).collect{ |step| step.gsub(/^\s{8}/, '') }
+      end
+      it "should return steps" do
+        @driver.should respond_to :increase_version_tag
+        @driver.increase_version_tag("minor", "f4cfcc2").should be == @steps
+      end
+    end
+
+
+    context "using 'keep' as after_versioned:strategy" do
+      before do
+        @driver.stubs(:notes_after_versioned).returns({"strategy" => "keep", "section" => "test_versioning"})
+        @steps = <<-STEPS
+        git fetch
+
+        git tag -a -m "  - removing files from gemspec
+            - .gitignore
+            - lastversion.gemspec
+          - loading default configuration yaml
+          - loading external configuration yaml
+        
+        Test bugfixes:
+        
+          - sorting tags according to the mask parser
+        " v0.1.0
+
+        git push --tags
+
+        git notes --ref=test_versioning add -m "available on v0.1.0" 8299243c7dac8f27c3572424a348a7f83ef0ce28
+
+        git notes --ref=test_versioning add -m "available on v0.1.0" 2fb8a3281fb6777405aadcd699adb852b615a3e4
+
+        git notes --ref=test_versioning add -m "available on v0.1.0" d7b0fa26ca547b963569d7a82afd7d7ca11b71ae
+
+        git push origin refs/notes/test_versioning
+        STEPS
+        @steps = @steps.chomp.split(/\n\n/).collect{ |step| step.gsub(/^\s{8}/, '') }
+      end
+      it "should return steps" do
+        @driver.should respond_to :increase_version_tag
+        @driver.increase_version_tag("minor", "f4cfcc2").should be == @steps
+      end
     end
   end
 

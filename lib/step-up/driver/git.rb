@@ -60,11 +60,24 @@ module StepUp
         commands << "git fetch"
         commands << "git tag -a -m \"#{ message.to_changelog }\" #{ tag }"
         commands << "git push --tags"
+        objects = []
         message.sections.each do |section|
           message[section].each do |object|
-            commands << "git notes --ref=#{ section } remove #{ object }"
+            if notes_after_versioned["strategy"] == "remove"
+              commands << "git notes --ref=#{ section } remove #{ object }"
+            elsif notes_after_versioned["strategy"] == "keep"
+              unless objects.include?(object)
+                objects << object
+                commands << "git notes --ref=#{ notes_after_versioned["section"] } add -m \"available on #{ tag }\" #{ object }"
+              end
+            end
           end
-          commands << "git push origin refs/notes/#{ section }" unless message[section].empty?
+          if notes_after_versioned["strategy"] == "remove"
+            commands << "git push origin refs/notes/#{ section }" unless message[section].empty?
+          end
+        end
+        if notes_after_versioned["strategy"] == "keep"
+          commands << "git push origin refs/notes/#{ notes_after_versioned["section"] }" unless objects.empty?
         end
         commands
       end
@@ -82,6 +95,10 @@ module StepUp
 
       def notes_sections
         CONFIG["notes"]["sections"]
+      end
+
+      def notes_after_versioned
+        CONFIG["notes"]["after_versioned"]
       end
     end
   end

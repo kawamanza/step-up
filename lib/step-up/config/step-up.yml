@@ -1,4 +1,8 @@
 notes:
+  after_versioned:
+    strategy: "remove"
+    #strategy: "keep"
+    section: "versioning"
   sections:
     - changes
     - bugfixes
