@@ -51,6 +51,24 @@ module StepUp
         @version_tags ||= all_tags.map{ |tag| mask.parse(tag) }.compact.sort.map{ |tag| mask.format(tag) }.reverse
       end
 
+      def increase_version_tag(part, commit_base = nil)
+        commands = []
+        tag = last_version_tag(commit_base)
+        tag = tag.sub(/\+$/, '')
+        tag = mask.increase_version(tag, part)
+        message = all_objects_with_notes(commit_base)
+        commands << "git fetch"
+        commands << "git tag -a -m \"#{ message.to_changelog }\" #{ tag }"
+        commands << "git push --tags"
+        message.sections.each do |section|
+          message[section].each do |object|
+            commands << "git notes --ref=#{ section } remove #{ object }"
+          end
+          commands << "git push origin refs/notes/#{ section }" unless message[section].empty?
+        end
+        commands
+      end
+
       def last_version_tag(commit_base = nil)
         objects = commit_history(commit_base)
         all_version_tags.each do |tag|

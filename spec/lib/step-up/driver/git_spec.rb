@@ -38,7 +38,7 @@ describe StepUp::Driver::Git do
       @driver.class.last_version("cdd4d5a").should be == "v0.0.0+"
     end
   end
-  
+
 
   context "fetching notes" do
     context "from test_* sections" do
@@ -78,9 +78,47 @@ MSG
   end
 
 
+  context "increasing version" do
+    before do
+      @driver.stubs(:notes_sections).returns(%w[test_changes test_bugfixes test_features])
+      @steps = <<-STEPS
+      git fetch
+
+      git tag -a -m "  - removing files from gemspec
+          - .gitignore
+          - lastversion.gemspec
+        - loading default configuration yaml
+        - loading external configuration yaml
+      
+      Test bugfixes:
+      
+        - sorting tags according to the mask parser
+      " v0.1.0
+
+      git push --tags
+
+      git notes --ref=test_changes remove 8299243c7dac8f27c3572424a348a7f83ef0ce28
+
+      git notes --ref=test_changes remove 2fb8a3281fb6777405aadcd699adb852b615a3e4
+
+      git push origin refs/notes/test_changes
+
+      git notes --ref=test_bugfixes remove d7b0fa26ca547b963569d7a82afd7d7ca11b71ae
+
+      git push origin refs/notes/test_bugfixes
+      STEPS
+      @steps = @steps.chomp.split(/\n\n/).collect{ |step| step.gsub /^\s{6}/, '' }
+    end
+    it "should return steps" do
+      @driver.should respond_to :increase_version_tag
+      @driver.increase_version_tag("minor", "f4cfcc2").should be == @steps
+    end
+  end
+
+
   context "checking helper methods" do
     it "should load default notes' sections" do
       @driver.send(:notes_sections).should be == StepUp::CONFIG["notes"]["sections"]
     end
-  end  
+  end
 end
