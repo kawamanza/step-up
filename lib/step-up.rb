@@ -1,10 +1,10 @@
-module LastVersion
-  autoload :CONFIG, 'lastversion/config.rb'
-  autoload :VERSION, 'lastversion/version.rb'
+module StepUp
+  autoload :CONFIG, 'step-up/config.rb'
+  autoload :VERSION, 'step-up/version.rb'
   module Driver
-    autoload :Git, 'lastversion/driver/git.rb'
+    autoload :Git, 'step-up/driver/git.rb'
   end
   module Parser
-    autoload :VersionMask, 'lastversion/parser/version_mask.rb'
+    autoload :VersionMask, 'step-up/parser/version_mask.rb'
   end
 end

@@ -1,4 +1,4 @@
-module LastVersion
+module StepUp
   module Parser
     class VersionMask
       attr_reader :mask

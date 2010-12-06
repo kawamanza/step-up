@@ -1,12 +1,12 @@
-module LastVersion
+module StepUp
   path = File.expand_path('../..', __FILE__)
   v = nil
-  if path =~ /\/lastversion-([\w\.\-]+)/
+  if path =~ /\/step-up-([\w\.\-]+)/
     v = $1
   end
   if v.nil?
     $:.each do |path|
-      if path =~ /\/lastversion-([\w\.\-]+)/
+      if path =~ /\/step-up-([\w\.\-]+)/
         v = $1
         break
       end

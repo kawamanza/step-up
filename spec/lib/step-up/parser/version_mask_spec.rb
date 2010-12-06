@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-describe LastVersion::Parser::VersionMask do
+describe StepUp::Parser::VersionMask do
   before do
     lambda {
-      @mask = LastVersion::Parser::VersionMask.new("v0.0.0.9.9.rc9")
+      @mask = StepUp::Parser::VersionMask.new("v0.0.0.9.9.rc9")
     }.should_not raise_error ArgumentError
   end
 

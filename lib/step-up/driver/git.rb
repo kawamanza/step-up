@@ -1,4 +1,4 @@
-module LastVersion
+module StepUp
   module Driver
     class Git
       attr_reader :mask

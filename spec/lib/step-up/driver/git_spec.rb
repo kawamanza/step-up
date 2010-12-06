@@ -1,8 +1,8 @@
 require 'spec_helper'
 
-describe LastVersion::Driver::Git do
+describe StepUp::Driver::Git do
   before do
-    @driver = LastVersion::Driver::Git.new
+    @driver = StepUp::Driver::Git.new
   end
 
 
@@ -80,7 +80,7 @@ MSG
 
   context "checking helper methods" do
     it "should load default notes' sections" do
-      @driver.send(:notes_sections).should be == LastVersion::CONFIG["notes"]["sections"]
+      @driver.send(:notes_sections).should be == StepUp::CONFIG["notes"]["sections"]
     end
   end  
 end
