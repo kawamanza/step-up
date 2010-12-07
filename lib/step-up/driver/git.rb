@@ -1,6 +1,7 @@
 module StepUp
   module Driver
     class Git
+      include GitExtensions::Notes
       attr_reader :mask
       def initialize
         @mask = Parser::VersionMask.new(CONFIG["versioning"]["version_mask"])
@@ -60,28 +61,7 @@ module StepUp
         commands << "git fetch"
         commands << "git tag -a -m \"#{ message.to_changelog }\" #{ tag }"
         commands << "git push --tags"
-        objects = []
-        changelog_message = notes_after_versioned["changelog_message"]
-        message.sections.each do |section|
-          message[section].each do |object|
-            if notes_after_versioned["strategy"] == "remove"
-              commands << "git notes --ref=#{ section } remove #{ object }"
-            elsif notes_after_versioned["strategy"] == "keep"
-              unless objects.include?(object)
-                objects << object
-                kept_message = changelog_message.gsub(/\{version\}/, tag)
-                commands << "git notes --ref=#{ notes_after_versioned["section"] } add -m \"#{ kept_message }\" #{ object }"
-              end
-            end
-          end
-          if notes_after_versioned["strategy"] == "remove"
-            commands << "git push origin refs/notes/#{ section }" unless message[section].empty?
-          end
-        end
-        if notes_after_versioned["strategy"] == "keep"
-          commands << "git push origin refs/notes/#{ notes_after_versioned["section"] }" unless objects.empty?
-        end
-        commands
+        commands + steps_for_archiving_notes(message, tag)
       end
 
       def last_version_tag(commit_base = nil)
@@ -91,16 +71,6 @@ module StepUp
           return "#{ tag }#{ '+' unless index.zero? }" unless index.nil?
         end
         nil
-      end
-
-      private
-
-      def notes_sections
-        CONFIG["notes"]["sections"]
-      end
-
-      def notes_after_versioned
-        CONFIG["notes"]["after_versioned"]
       end
     end
   end
