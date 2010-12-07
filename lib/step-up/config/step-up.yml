@@ -3,6 +3,7 @@ notes:
     strategy: "remove"
     #strategy: "keep"
     section: "versioning"
+    changelog_message: "available on {version}"
   sections:
     - changes
     - bugfixes

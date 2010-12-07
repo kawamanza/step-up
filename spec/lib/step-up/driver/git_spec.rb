@@ -86,7 +86,7 @@ MSG
 
     context "using 'remove' as after_versioned:strategy" do
       before do
-        @driver.stubs(:notes_after_versioned).returns({"strategy" => "remove", "section" => "test_versioning"})
+        @driver.stubs(:notes_after_versioned).returns({"strategy" => "remove", "section" => "test_versioning", "changelog_message" => "available on {version}"})
         @steps = <<-STEPS
         git fetch
 
@@ -124,7 +124,7 @@ MSG
 
     context "using 'keep' as after_versioned:strategy" do
       before do
-        @driver.stubs(:notes_after_versioned).returns({"strategy" => "keep", "section" => "test_versioning"})
+        @driver.stubs(:notes_after_versioned).returns({"strategy" => "keep", "section" => "test_versioning", "changelog_message" => "available on {version}"})
         @steps = <<-STEPS
         git fetch
 

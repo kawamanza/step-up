@@ -61,6 +61,7 @@ module StepUp
         commands << "git tag -a -m \"#{ message.to_changelog }\" #{ tag }"
         commands << "git push --tags"
         objects = []
+        changelog_message = notes_after_versioned["changelog_message"]
         message.sections.each do |section|
           message[section].each do |object|
             if notes_after_versioned["strategy"] == "remove"
@@ -68,7 +69,8 @@ module StepUp
             elsif notes_after_versioned["strategy"] == "keep"
               unless objects.include?(object)
                 objects << object
-                commands << "git notes --ref=#{ notes_after_versioned["section"] } add -m \"available on #{ tag }\" #{ object }"
+                kept_message = changelog_message.gsub(/\{version\}/, tag)
+                commands << "git notes --ref=#{ notes_after_versioned["section"] } add -m \"#{ kept_message }\" #{ object }"
               end
             end
           end
