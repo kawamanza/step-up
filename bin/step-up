@@ -1,9 +1,9 @@
 #!/usr/bin/env ruby
 
-require 'lastversion/cli'
+require 'step-up/cli'
 
 begin
-  LastVersion::CLI.start
+  StepUp::CLI.start
 rescue Exception => e
   puts e.message
 end

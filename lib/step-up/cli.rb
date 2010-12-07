@@ -1,7 +1,7 @@
 require 'thor'
-require 'lastversion'
+require 'step-up'
 
-module LastVersion
+module StepUp
   class CLI < Thor
     map %w(--version -v) => :gem_version
     
@@ -9,12 +9,12 @@ module LastVersion
 
     desc "", "show the last version of the application"
     def version
-      puts LastVersion::Driver::Git.last_version
+      puts StepUp::Driver::Git.last_version
     end
     
     desc "-v, --version", "show the last version of the gem"
     def gem_version
-      puts LastVersion::VERSION
+      puts StepUp::VERSION
     end
   end
 end
