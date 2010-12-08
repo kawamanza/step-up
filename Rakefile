@@ -27,4 +27,14 @@ task :build do
   sh opers.join(" && ")
 end
 
+desc "Build and install the gem, removing old installation"
+task :install => :build do
+  gem = Dir.glob('*.gem').first
+  if gem.nil?
+    puts "could not install the gem"
+  else
+    sh "gem uninstall step-up && gem install #{ gem }"
+  end
+end
+
 task :default => :spec
