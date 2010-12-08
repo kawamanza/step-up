@@ -62,15 +62,10 @@ module StepUp
       def to_changelog(options = {})
         changelog = []
         sections.each_with_index do |section, index|
-          unless index.zero? || messages[section].empty?
-            changelog << "#{ section.capitalize.gsub(/_/, ' ') }:"
-            changelog << ""
-          end
+          changelog << "#{ section.capitalize.gsub(/_/, ' ') }:\n" unless index.zero? || messages[section].empty?
           messages[section].each_with_index do |note, index|
             note = note.sub(/$/, " (#{ parent[section][index] })") if options[:mode] == :with_objects
-            changelog += note.split(/\n+/).collect do |line|
-              line.sub(/^(\s*)/, '\1  - ')
-            end
+            changelog += note.split(/\n+/).collect{ |line| line.sub(/^(\s*)/, '\1  - ') }
           end
           changelog << "" unless messages[section].empty?
         end
