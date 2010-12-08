@@ -29,7 +29,7 @@ Gem::Specification.new do |s|
   tests = `git ls-files -- {test,spec,features}/*`.split("\n")
   s.files              = `git ls-files`.split("\n") - excepts - tests
   s.test_files         = tests
-  s.executables        = %w(step-up)
-  s.default_executable = "step-up"
+  s.executables        = %w(stepup)
+  s.default_executable = "stepup"
   s.require_paths      = ["lib"]
 end
