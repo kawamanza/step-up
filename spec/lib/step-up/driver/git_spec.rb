@@ -46,17 +46,18 @@ describe StepUp::Driver::Git do
         @driver.stubs(:notes_sections).returns(%w[test_changes test_bugfixes test_features])
         @objects_with_notes = {"test_changes" => ["8299243c7dac8f27c3572424a348a7f83ef0ce28", "2fb8a3281fb6777405aadcd699adb852b615a3e4"], "test_bugfixes" => ["d7b0fa26ca547b963569d7a82afd7d7ca11b71ae"], "test_features" => []}
         @messages = {"test_changes" => ["removing files from gemspec\n  .gitignore\n  lastversion.gemspec\n", "loading default configuration yaml\n\nloading external configuration yaml\n"], "test_bugfixes" => ["sorting tags according to the mask parser\n"], "test_features" => []}
-        @changelog = <<-MSG
-  - removing files from gemspec
+        @changelog_full = <<-MSG
+  - removing files from gemspec (8299243c7dac8f27c3572424a348a7f83ef0ce28)
     - .gitignore
     - lastversion.gemspec
-  - loading default configuration yaml
+  - loading default configuration yaml (2fb8a3281fb6777405aadcd699adb852b615a3e4)
   - loading external configuration yaml
 
 Test bugfixes:
 
-  - sorting tags according to the mask parser
+  - sorting tags according to the mask parser (d7b0fa26ca547b963569d7a82afd7d7ca11b71ae)
 MSG
+      @changelog = @changelog_full.gsub(/\s\(\w+\)$/, '')
       end
       it "should get all objects with notes" do
         @driver.all_objects_with_notes("f4cfcc2").should be == @objects_with_notes
@@ -73,6 +74,8 @@ MSG
         objects_with_notes.messages.should be == @messages
         objects_with_notes.messages.to_changelog.should be == @changelog
         objects_with_notes.to_changelog.should be == @changelog
+        objects_with_notes.messages.to_changelog(:mode => :with_objects).should be == @changelog_full
+        objects_with_notes.to_changelog(:mode => :with_objects).should be == @changelog_full
       end
     end
   end
