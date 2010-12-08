@@ -12,9 +12,10 @@ module StepUp
       puts StepUp::Driver::Git.last_version
     end
 
-    desc "notes [OBJECT]", "show notes for the next version"
+    desc "notes [object]", "show notes for the next version"
+    method_options :clean => :boolean
     def notes(commit_base = nil)
-      puts StepUp::Driver::Git.unversioned_notes(commit_base)
+      puts StepUp::Driver::Git.unversioned_notes(commit_base, options[:clean])
     end
     
     desc "-v, --version", "show the last version of the gem"

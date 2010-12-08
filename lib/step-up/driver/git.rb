@@ -12,8 +12,10 @@ module StepUp
         @driver.last_version_tag(commit_base) || "%s%s" % [@driver.mask.blank, '+']
       end
 
-      def self.unversioned_notes(commit_base = nil)
-        new.all_objects_with_notes(commit_base).to_changelog(:mode => :with_objects)
+      def self.unversioned_notes(commit_base = nil, clean = false)
+        options = {:mode => :with_objects}
+        options.delete :mode if clean
+        new.all_objects_with_notes(commit_base).to_changelog(options)
       end
 
       def commit_history(commit_base, top = nil)
