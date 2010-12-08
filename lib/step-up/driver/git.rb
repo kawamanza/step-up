@@ -27,7 +27,7 @@ module StepUp
 
       def all_objects_with_notes(commit_base = nil)
         objects = commit_history(commit_base)
-        objects_with_notes = {}.extend NotesTransformation
+        objects_with_notes = {}.extend GitExtensions::NotesTransformation
         objects_with_notes.driver = self
         notes_sections.each do |section|
           obj = objects_with_notes_of(section)
@@ -72,60 +72,6 @@ module StepUp
         end
         nil
       end
-    end
-  end
-
-  module NotesTransformation
-    def self.extend_object(base)
-      super
-      class << base
-        attr_writer :driver, :parent
-        def []=(p1, p2)
-          super
-          sections << p1 unless sections.include?(p1)
-        end
-      end
-    end
-
-    def driver
-      @driver ||= parent.driver
-    end
-
-    def sections
-      @sections ||= parent != self && parent.sections && parent.sections.dup || []
-    end
-
-    def parent
-      @parent ||= self
-    end
-
-    def messages
-      unless defined? @messages
-        notes = {}.extend NotesTransformation
-        notes.parent = self
-        sections.each do |section|
-          notes[section] = (parent[section] || []).map{ |commit| driver.note_message(section, commit) }
-        end
-        @messages = notes
-      end
-      @messages
-    end
-
-    def to_changelog
-      changelog = []
-      sections.each_with_index do |section, index|
-        unless index.zero? || messages[section].empty?
-          changelog << "#{ section.capitalize.gsub(/_/, ' ') }:"
-          changelog << ""
-        end
-        messages[section].each do |note|
-          changelog += note.split(/\n+/).collect do |line|
-            line.sub(/^(\s*)/, '\1  - ')
-          end
-        end
-        changelog << "" unless messages[section].empty?
-      end
-      changelog.join("\n")
     end
   end
 end
