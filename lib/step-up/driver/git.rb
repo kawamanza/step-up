@@ -12,6 +12,10 @@ module StepUp
         @driver.last_version_tag(commit_base) || "%s%s" % [@driver.mask.blank, '+']
       end
 
+      def self.unversioned_notes(commit_base = nil)
+        new.all_objects_with_notes(commit_base).to_changelog(:mode => :with_objects)
+      end
+
       def commit_history(commit_base, top = nil)
         top = "-n#{ top }" unless top.nil?
         `git log --pretty=oneline --no-color --no-notes #{ top } #{ commit_base }`.gsub(/^(\w+)\s.*$/, '\1').split("\n")
