@@ -18,6 +18,7 @@ gem install step-up
 ### Usage
 
 1) Enter your directory project
+
 2) Run StepUp and see the magic 
 
 ### Commands
