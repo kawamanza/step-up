@@ -27,7 +27,7 @@ module StepUp
       def self.extend_object(base)
         super
         class << base
-          attr_writer :driver, :parent
+          attr_writer :driver, :parent, :kept_notes
           def []=(p1, p2)
             super
             sections << p1 unless sections.include?(p1)
@@ -45,6 +45,24 @@ module StepUp
 
       def parent
         @parent ||= self
+      end
+
+      def kept_notes
+        @kept_notes ||= driver.objects_with_notes_of(kept_notes_section)
+      end
+
+      def kept_notes_section
+        driver.send(:notes_after_versioned)["section"]
+      end
+
+      def unversioned_only
+        notes = {}.extend NotesTransformation
+        notes.driver = driver
+        notes.kept_notes = kept_notes
+        sections.each do |section|
+          notes[section] = (parent[section] || []).select{ |commit| not kept_notes.include?(commit) }
+        end
+        notes
       end
 
       def messages

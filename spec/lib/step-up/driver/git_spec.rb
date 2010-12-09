@@ -57,25 +57,31 @@ Test bugfixes:
 
   - sorting tags according to the mask parser (d7b0fa26ca547b963569d7a82afd7d7ca11b71ae)
 MSG
-      @changelog = @changelog_full.gsub(/\s\(\w+\)$/, '')
+        @changelog = @changelog_full.gsub(/\s\(\w+\)$/, '')
+        @all_objects_with_notes = @driver.all_objects_with_notes("f4cfcc2")
       end
       it "should get all objects with notes" do
-        @driver.all_objects_with_notes("f4cfcc2").should be == @objects_with_notes
+        @all_objects_with_notes.should be == @objects_with_notes
       end
       it "should get all notes messages" do
-        objects_with_notes = @driver.all_objects_with_notes("f4cfcc2")
-        objects_with_notes.should respond_to(:messages)
-        objects_with_notes.messages.should be == @messages
+        @all_objects_with_notes.should respond_to(:messages)
+        @all_objects_with_notes.messages.should be == @messages
       end
       it "should get changelog message" do
-        objects_with_notes = @driver.all_objects_with_notes("f4cfcc2")
-        objects_with_notes.should respond_to(:to_changelog)
-        objects_with_notes.sections.should be == @driver.notes_sections
-        objects_with_notes.messages.should be == @messages
-        objects_with_notes.messages.to_changelog.should be == @changelog
-        objects_with_notes.to_changelog.should be == @changelog
-        objects_with_notes.messages.to_changelog(:mode => :with_objects).should be == @changelog_full
-        objects_with_notes.to_changelog(:mode => :with_objects).should be == @changelog_full
+        @all_objects_with_notes.should respond_to(:to_changelog)
+        @all_objects_with_notes.sections.should be == @driver.notes_sections
+        @all_objects_with_notes.messages.should be == @messages
+        @all_objects_with_notes.messages.to_changelog.should be == @changelog
+        @all_objects_with_notes.to_changelog.should be == @changelog
+        @all_objects_with_notes.messages.to_changelog(:mode => :with_objects).should be == @changelog_full
+        @all_objects_with_notes.to_changelog(:mode => :with_objects).should be == @changelog_full
+      end
+      it "should get unversioned changelog message" do
+        @all_objects_with_notes.should be == @objects_with_notes
+        object = @objects_with_notes["test_changes"].shift
+        @all_objects_with_notes.stubs(:kept_notes).returns([object])
+        @all_objects_with_notes.should respond_to(:unversioned_only)
+        @all_objects_with_notes.unversioned_only.should be == @objects_with_notes
       end
     end
   end
