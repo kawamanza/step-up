@@ -24,7 +24,9 @@ gem install step-up
 ### Commands
 
 stepup
+
   Shows your application version
   
 stepup -h
+
   Shows the current features
