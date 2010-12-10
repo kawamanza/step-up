@@ -10,5 +10,5 @@ module StepUp
   end
 
   load_config File.expand_path('../config/step-up.yml', __FILE__)
-  load_config '.versionrc' # from working folder
+  load_config '.stepuprc' # from working folder
 end
