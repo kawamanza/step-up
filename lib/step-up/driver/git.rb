@@ -78,6 +78,13 @@ module StepUp
         end
         nil
       end
+
+      def fetched_remotes(refs_type = 'heads')
+        config = `git config --get-regexp 'remote'`.split(/\n/)
+        config.collect{ |line|
+          $1 if line =~ /^remote\.(\w+)\.fetch\s\+refs\/#{ refs_type }/
+        }.compact.uniq.sort
+      end
     end
   end
 end
