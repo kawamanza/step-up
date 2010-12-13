@@ -51,8 +51,16 @@ module StepUp
         @kept_notes ||= driver.objects_with_notes_of(kept_notes_section)
       end
 
+      def config
+        driver.send(:notes_after_versioned)
+      end
+
       def kept_notes_section
-        driver.send(:notes_after_versioned)["section"]
+        config["section"]
+      end
+
+      def kept_notes_message
+        config["changelog_message"]
       end
 
       def unversioned_only
@@ -61,6 +69,26 @@ module StepUp
         notes.kept_notes = kept_notes
         sections.each do |section|
           notes[section] = (parent[section] || []).select{ |commit| not kept_notes.include?(commit) }
+        end
+        notes
+      end
+
+      def available_on(version_tag)
+        version = driver.mask.parse(version_tag)
+        notes = {}.extend NotesTransformation
+        notes.driver = driver
+        notes.kept_notes = kept_notes
+        if version.nil?
+          sections.each{ |section| notes[section] = [] }
+          return notes
+        end
+        version_tag = driver.mask.format(version)
+        matcher = /^#{ kept_notes_message.gsub(/([\.\*\?\{\}])/, '\\\\\1').sub(/\\\{version\\\}/, "(?:#{ version_tag.gsub(/([\.\*\?\{\}])/, '\\\\\1') })") }$/
+        sections.each do |section|
+          notes[section] = (parent[section] || []).select do |commit|
+            pos = kept_notes.index(commit)
+            ! pos.nil? && driver.note_message(kept_notes_section, kept_notes[pos]).chomp =~ matcher
+          end
         end
         notes
       end

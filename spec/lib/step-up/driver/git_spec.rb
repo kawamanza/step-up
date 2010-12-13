@@ -87,6 +87,17 @@ MSG
         @all_objects_with_notes.unversioned_only.should be == @objects_with_notes
       end
     end
+
+    context "from default sections" do
+      before do
+        @all_objects_with_notes = @driver.all_objects_with_notes("v0.1.0")
+        @objects_with_notes = {"deploy_steps"=>[], "bugfixes"=>[], "features"=>["3baad37d5098ad3b09935229e14e617c3ec8b7ee"], "changes"=>[]}
+      end
+      it "should get versioned changelog message" do
+        @all_objects_with_notes.should be == @objects_with_notes
+        @all_objects_with_notes.available_on("v0.1.0").should be == @objects_with_notes
+      end
+    end
   end
 
 
