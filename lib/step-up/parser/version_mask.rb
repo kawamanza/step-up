@@ -11,6 +11,14 @@ module StepUp
         end
       end
 
+      def to_regex
+        re = []
+        mask.each_with_index do |part, index|
+          re << "(?:#{ iterator[index].source })#{ '?' if part.end_with?('9') }"
+        end
+        re.join
+      end
+
       def parse(version)
         return unless version.is_a?(String)
         i = 0

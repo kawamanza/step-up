@@ -48,4 +48,25 @@ describe StepUp::Parser::VersionMask do
       @mask.increase_version(version, "rc").should be == "v2.3.1.6.4.rc6"
     end
   end
+
+
+  context "getting Regepx" do
+    it "should get regexp string" do
+      @mask.should respond_to(:to_regex)
+      @mask.to_regex.should be == "(?:v(\\d+))(?:\\.(\\d+))(?:\\.(\\d+))(?:\\.(\\d+))?(?:\\.(\\d+))?(?:\\.rc(\\d+))?"
+    end
+    it "should parse message" do
+      re = /^available on (?:#{ @mask.to_regex })$/
+      "available on v0.1.0".should =~ re
+      "available on v0.1.0.rc3".should =~ re
+      "available on v0.1.0.1.rc3".should =~ re
+      "available on v0.1.0.2.4.rc3".should =~ re
+    end
+    it "should not parse message" do
+      re = /^available on (?:#{ @mask.to_regex })$/
+      "available on v0.1".should_not =~ re
+      "now in v0.1.0".should_not =~ re
+      "available on v0.1.0 tag".should_not =~ re
+    end
+  end
 end
