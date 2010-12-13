@@ -50,9 +50,10 @@ module StepUp
         raise ArgumentError unless version.is_a?(Array) && version.size == mask.size
         v = []
         iterator.each_with_index do |pattern, index|
-          raise ArgumentError unless version[index].is_a?(Fixnum)
-          unless version[index].zero? && mask[index] =~ /9$/
-            v << mask[index].sub(/[09]$/, version[index].to_s)
+          part = version[index] || 0
+          raise ArgumentError unless part.is_a?(Fixnum)
+          unless part.zero? && mask[index] =~ /9$/
+            v << mask[index].sub(/[09]$/, part.to_s)
           end
         end
         v.join
@@ -62,7 +63,7 @@ module StepUp
         v = parse version
         part = version_parts.index(part)
         (v.size-part).times do |index|
-          v[part+index] = (index.zero? ? v[part+index]+1 : 0)
+          v[part+index] = (index.zero? ? (v[part+index] || 0) + 1 : nil)
         end
         format v
       end
