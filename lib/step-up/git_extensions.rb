@@ -12,6 +12,18 @@ module StepUp
         NOTES_STRATEGIES[strategy].steps_for_archiving_notes(objects_with_notes, tag, self)
       end
 
+      def steps_for_add_notes(section, message, commit_base = nil)
+        commands = []
+        commands << "git fetch"
+        commands << "git notes --ref=#{ section } add -m \"#{ message.gsub(/([\$"])/, '\\\\\1') }\" #{ commit_base }"
+        commands << "git push #{ notes_remote } refs/notes/#{ section }"
+        commands
+      end
+
+      def notes_remote
+        fetched_remotes('notes').first
+      end
+
       private
 
       def notes_sections
@@ -127,7 +139,7 @@ module StepUp
             objects_with_notes[section].each do |object|
               commands << "git notes --ref=#{ section } remove #{ object }"
             end
-            commands << "git push origin refs/notes/#{ section }" unless objects_with_notes[section].empty?
+            commands << "git push #{ driver.notes_remote } refs/notes/#{ section }" unless objects_with_notes[section].empty?
           end
           commands
         end
@@ -143,11 +155,11 @@ module StepUp
               unless objects.include?(object)
                 objects << object
                 kept_message = changelog_message.gsub(/\{version\}/, tag)
-                commands << "git notes --ref=#{ driver.notes_after_versioned["section"] } add -m \"#{ kept_message }\" #{ object }"
+                commands << "git notes --ref=#{ driver.notes_after_versioned["section"] } add -m \"#{ kept_message.gsub(/([\$"])/, '\\\\\1') }\" #{ object }"
               end
             end
           end
-          commands << "git push origin refs/notes/#{ driver.notes_after_versioned["section"] }" unless objects.empty?
+          commands << "git push #{ driver.notes_remote } refs/notes/#{ driver.notes_after_versioned["section"] }" unless objects.empty?
           commands
         end
       end

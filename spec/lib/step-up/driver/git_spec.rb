@@ -101,6 +101,23 @@ MSG
   end
 
 
+  context "adding notes" do
+    before do
+      @steps = <<-STEPS
+      git fetch
+
+      git notes --ref=jjj_changes add -m "alteracao na variavel de ambiente \\"\\$ENV\\"" v0.1.0~1
+
+      git push origin refs/notes/jjj_changes
+      STEPS
+      @steps = @steps.chomp.split(/\n\n/).collect{ |step| step.gsub(/^\s{6}/, '') }
+    end
+    it "should return steps" do
+      @driver.steps_for_add_notes("jjj_changes", "alteracao na variavel de ambiente \"$ENV\"", "v0.1.0~1").should be == @steps
+    end
+  end
+
+
   context "increasing version" do
     before do
       @driver.stubs(:notes_sections).returns(%w[test_changes test_bugfixes test_features])
