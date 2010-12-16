@@ -33,7 +33,7 @@ task :install => :build do
   if gem.nil?
     puts "could not install the gem"
   else
-    sh "gem uninstall step-up && gem install #{ gem }"
+    sh "gem uninstall step-up; gem install #{ gem }"
   end
 end
 
