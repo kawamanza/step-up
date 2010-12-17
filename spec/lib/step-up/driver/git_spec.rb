@@ -12,6 +12,15 @@ describe StepUp::Driver::Git do
       @driver.commit_history("f4cfcc2").should be == ["f4cfcc2c8b1f7edb1b7817b4e8a9063d21db089b", "2fb8a3281fb6777405aadcd699adb852b615a3e4", "d7b0fa26ca547b963569d7a82afd7d7ca11b71ae", "8b38f7c842496fd50b4e1b7ca5e883940b9cbf83", "f76c8d7bf64678963aeef84009be54f1819e3389", "8299243c7dac8f27c3572424a348a7f83ef0ce28", "570fe2e6e7f0b06140ae109e50a1e86628819493", "cdd4d5aa885b22136f4a08c1b35076f888f9536e", "72174c160b50ec73a8f67c8150e0dcd976857411", "b2da007b4fb35e0274858c14a83a836852d055a4", "4f0e7e0f6b3df2d49ed0029ed01998bf2102b28f"]
       @driver.commit_history("f4cfcc2", 3).should be == ["f4cfcc2c8b1f7edb1b7817b4e8a9063d21db089b", "2fb8a3281fb6777405aadcd699adb852b615a3e4", "d7b0fa26ca547b963569d7a82afd7d7ca11b71ae"]
     end
+    it "should get commits between a fist commit and a last_commit" do
+      @driver.should respond_to :commits_between
+      @driver.commits_between("63c8b23", "d133b9e").should be == %w[
+        d133b9e3b5be37c8a3332a83e55b410e87d9c3a3
+        abd9ee53283de0981fd6fd659af50a2aef4fc5c6
+        13de54b5cfdaf05fd4e3c3db57ec9f021362d9c7
+        67931ecf42431719b5c67f88ec65cb57e7e11744
+      ]
+    end
     it "should get all remotes" do
       @driver.fetched_remotes.should be == %w[origin]
     end

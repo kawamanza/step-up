@@ -23,6 +23,10 @@ module StepUp
         `git log --pretty=oneline --no-color --no-notes #{ top } #{ commit_base }`.gsub(/^(\w+)\s.*$/, '\1').split("\n")
       end
 
+      def commits_between(first_commit, last_commit = "HEAD")
+        commit_history("#{ first_commit }..#{ last_commit }")
+      end
+
       def all_tags
         `git tag -l`.split("\n")
       end
