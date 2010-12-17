@@ -20,6 +20,7 @@ describe StepUp::Driver::Git do
         13de54b5cfdaf05fd4e3c3db57ec9f021362d9c7
         67931ecf42431719b5c67f88ec65cb57e7e11744
       ]
+      @driver.commits_between("67931ec", "d133b9e").size.should be == 6
     end
     it "should get all remotes" do
       @driver.fetched_remotes.should be == %w[origin]
