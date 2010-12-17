@@ -101,7 +101,7 @@ module StepUp
     def get_message(prompt1, prompt2, total_breaks = 1)
       lines = []
       prompt = prompt1
-      empty = 0
+      empty = total_breaks - 1
       line = nil
       begin
         lines << line unless line.nil?
