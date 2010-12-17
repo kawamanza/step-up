@@ -85,17 +85,18 @@ module StepUp
         notes
       end
 
-      def available_on(version_tag)
-        version = driver.mask.parse(version_tag)
+      def available_on(version_tags)
+        version_tags = version_tags.split(/\|/) unless version_tags.is_a?(Array)
+        version = version_tags.map{ |version_tag| driver.mask.parse(version_tag) }.compact
         notes = {}.extend NotesTransformation
         notes.driver = driver
         notes.kept_notes = kept_notes
-        if version.nil?
+        if version.empty?
           sections.each{ |section| notes[section] = [] }
           return notes
         end
-        version_tag = driver.mask.format(version)
-        matcher = /^#{ kept_notes_message.gsub(/([\.\*\?\{\}])/, '\\\\\1').sub(/\\\{version\\\}/, "(?:#{ version_tag.gsub(/([\.\*\?\{\}])/, '\\\\\1') })") }$/
+        version_tag = version.map{ |v| driver.mask.format(v).gsub(/([\.\*\?\{\}])/, '\\\\\1') }.join('|')
+        matcher = /^#{ kept_notes_message.gsub(/([\.\*\?\{\}])/, '\\\\\1').sub(/\\\{version\\\}/, "(?:#{ version_tag })") }$/
         sections.each do |section|
           notes[section] = (parent[section] || []).select do |commit|
             pos = kept_notes.index(commit)
