@@ -105,11 +105,16 @@ module StepUp
       line = nil
       begin
         lines << line unless line.nil?
-        line = ask(prompt)
+        line = raw_ask(prompt)
         prompt = prompt2
         empty = line.empty? ? empty + 1 : 0
       end while empty < total_breaks
       lines.join("\n").gsub(/\n+\z/, '').gsub(/\A\n+/, '')
+    end
+
+    def raw_ask(statement, color = nil)
+      say("#{statement} ", color)
+      $stdin.gets.chomp
     end
   end
 end
