@@ -10,7 +10,7 @@ module StepUp
 
     desc "", "show the last version of the application"
     def version
-      puts StepUp::Driver::Git.last_version
+      puts StepUp::Driver::Git.last_version("HEAD", true)
     end
 
     desc "init", "adds .stepuprc to your project and prepare your local repository to use notes"

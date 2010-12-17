@@ -7,9 +7,9 @@ module StepUp
         @mask = Parser::VersionMask.new(CONFIG["versioning"]["version_mask"])
       end
 
-      def self.last_version(commit_base = nil)
+      def self.last_version(commit_base = "HEAD", count_commits = false)
         @driver ||= new
-        @driver.last_version_tag(commit_base) || "%s%s" % [@driver.mask.blank, '+']
+        @driver.last_version_tag(commit_base, count_commits) || "%s%s" % [@driver.mask.blank, '+']
       end
 
       def self.unversioned_notes(commit_base = nil, clean = false)
@@ -74,11 +74,17 @@ module StepUp
         commands + steps_for_archiving_notes(message, tag)
       end
 
-      def last_version_tag(commit_base = nil)
+      def last_version_tag(commit_base = "HEAD", count_commits = false)
         objects = commit_history(commit_base)
         all_version_tags.each do |tag|
           index = objects.index(commit_history(tag, 1).first)
-          return "#{ tag }#{ '+' unless index.zero? }" unless index.nil?
+          unless index.nil?
+            unless index.zero?
+              count = count_commits == true ? commits_between(tag, commit_base).size : 0
+              tag = "#{ tag }+#{ count unless count.zero? }"
+            end
+            return tag
+          end
         end
         nil
       end

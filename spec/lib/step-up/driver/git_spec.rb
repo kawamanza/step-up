@@ -49,6 +49,12 @@ describe StepUp::Driver::Git do
       @driver.mask.blank.should be == "v0.0.0"
       @driver.class.last_version("cdd4d5a").should be == "v0.0.0+"
     end
+
+    it "should get last tag visible with the count of commits after it" do
+      @driver.last_version_tag("f42bdd1", true).should be == "v0.0.2+22"
+      @driver.last_version_tag("13de54b", true).should be == "v0.0.2+22"
+      @driver.last_version_tag("d133b9e", true).should be == "v0.0.2+27"
+    end
   end
 
 
