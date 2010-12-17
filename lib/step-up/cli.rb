@@ -84,15 +84,15 @@ module StepUp
 
     private
 
-    def choose(list, enunciation)
-      puts enunciation
+    def choose(list, statement)
+      puts statement
       list.each_with_index do |item, index|
         puts "  #{ index + 1 }. #{ item }"
       end
       value = ask(">>")
       if value =~ /^\d+$/
         value = value.to_i
-        value > 0 && list.size > value ? list[value - 1] : nil
+        value > 0 && list.size > value - 1 ? list[value - 1] : nil
       else
         value.empty? ? nil : value
       end
