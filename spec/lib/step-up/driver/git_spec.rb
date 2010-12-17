@@ -30,9 +30,9 @@ describe StepUp::Driver::Git do
 
   context 'fetching tags' do
     it "should get tags sorted" do
-      tags = %w[note-v0.2.0-1 v0.1.0 v0.1.1 v0.1.2 v0.1.1.rc3]
+      tags = %w[note-v0.2.0-1 v0.1.0 v0.1.1 v0.1.10 v0.1.2 v0.1.1.rc3]
       @driver.stubs(:all_tags).returns(tags)
-      @driver.all_version_tags.should be == %w[v0.1.2 v0.1.1.rc3 v0.1.1 v0.1.0]
+      @driver.all_version_tags.should be == %w[v0.1.10 v0.1.2 v0.1.1.rc3 v0.1.1 v0.1.0]
     end
 
     it "should return last tag visible" do
