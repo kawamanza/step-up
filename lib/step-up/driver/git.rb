@@ -9,7 +9,7 @@ module StepUp
 
       def self.last_version(commit_base = "HEAD", count_commits = false)
         @driver ||= new
-        @driver.last_version_tag(commit_base, count_commits) || "%s%s" % [@driver.mask.blank, '+']
+        @driver.last_version_tag(commit_base, count_commits) || "%s+%s" % [@driver.mask.blank, "#{ @driver.commit_history(commit_base).size if count_commits }"]
       end
 
       def self.unversioned_notes(commit_base = nil, clean = false)

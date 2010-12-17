@@ -49,6 +49,7 @@ describe StepUp::Driver::Git do
     it "should get a blank tag" do
       @driver.mask.blank.should be == "v0.0.0"
       @driver.class.last_version("cdd4d5a").should be == "v0.0.0+"
+      @driver.class.last_version("cdd4d5a", true).should be == "v0.0.0+4"
     end
 
     it "should get last tag visible with the count of commits after it" do
