@@ -14,11 +14,14 @@ module StepUp
     end
 
     desc "init", "adds .stepuprc to your project and prepare your local repository to use notes"
+    method_options :update => :boolean
     def init
       content = File.read(File.expand_path("../config/step-up.yml", __FILE__))
-      puts "#{File.exists?(".stepuprc") ? 'updating' : 'creating' } .stepuprc"
-      File.open(".stepuprc", "w") do |f|
-        f.write content
+      if options[:update] || ! File.exists?(".stepuprc")
+        puts "#{File.exists?(".stepuprc") ? 'updating' : 'creating' } .stepuprc"
+        File.open(".stepuprc", "w") do |f|
+          f.write content
+        end
       end
       driver = StepUp::Driver::Git.new
       remotes_with_notes = driver.fetched_remotes('notes')
