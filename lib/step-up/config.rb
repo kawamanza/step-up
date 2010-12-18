@@ -2,7 +2,23 @@ require 'yaml'
 module StepUp
   CONFIG = {}
 
-  def self.load_config path
+  module ConfigExt
+    def method_missing(m, *args, &block)
+      super unless self.key?(m.to_s)
+      value = self[m.to_s]
+      if value.is_a?(Hash) && ! value.kind_of?(ConfigExt)
+        class << value
+          include ConfigExt
+        end
+      end
+      value
+    end
+  end
+  class << CONFIG
+    include ConfigExt
+  end
+
+  def self.load_config(path)
     return CONFIG unless File.exists? path
     CONFIG.merge! YAML.load_file(path)
   rescue TypeError => e
