@@ -7,7 +7,7 @@ module StepUp
 
     module Notes
       def steps_for_archiving_notes(objects_with_notes, tag)
-        strategy = notes_after_versioned["strategy"]
+        strategy = __notes.after_versioned.strategy
         raise ArgumentError, "unknown strategy: #{ strategy }" unless NOTES_STRATEGIES.include?(strategy)
         NOTES_STRATEGIES[strategy].steps_for_archiving_notes(objects_with_notes, tag, self)
       end
@@ -23,22 +23,13 @@ module StepUp
       def notes_remote
         fetched_remotes('notes').first
       end
-
-      private
-
-      def notes_sections
-        CONFIG["notes"]["sections"]
-      end
-
-      def notes_after_versioned
-        CONFIG["notes"]["after_versioned"]
-      end
     end
 
     module NotesTransformation
       def self.extend_object(base)
         super
         class << base
+          include ConfigShortcut
           attr_writer :driver, :parent, :kept_notes
           def []=(p1, p2)
             super
@@ -64,15 +55,15 @@ module StepUp
       end
 
       def config
-        driver.send(:notes_after_versioned)
+        __notes.after_versioned
       end
 
       def kept_notes_section
-        config["section"]
+        config.section
       end
 
       def kept_notes_message
-        config["changelog_message"]
+        config.changelog_message
       end
 
       def unversioned_only
@@ -147,20 +138,21 @@ module StepUp
       end
 
       class KeepNotes
+        include ConfigShortcut
         def steps_for_archiving_notes(objects_with_notes, tag, driver)
           commands = []
           objects = []
-          changelog_message = driver.notes_after_versioned["changelog_message"]
+          changelog_message = __notes.after_versioned.changelog_message
           objects_with_notes.sections.each do |section|
             objects_with_notes[section].each do |object|
               unless objects.include?(object)
                 objects << object
                 kept_message = changelog_message.gsub(/\{version\}/, tag)
-                commands << "git notes --ref=#{ driver.notes_after_versioned["section"] } add -m \"#{ kept_message.gsub(/([\$"])/, '\\\\\1') }\" #{ object }"
+                commands << "git notes --ref=#{ __notes.after_versioned.section } add -m \"#{ kept_message.gsub(/([\$\\"])/, '\\\\\1') }\" #{ object }"
               end
             end
           end
-          commands << "git push #{ driver.notes_remote } refs/notes/#{ driver.notes_after_versioned["section"] }" unless objects.empty?
+          commands << "git push #{ driver.notes_remote } refs/notes/#{ __notes.after_versioned.section }" unless objects.empty?
           commands
         end
       end

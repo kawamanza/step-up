@@ -63,7 +63,7 @@ describe StepUp::Driver::Git do
   context "fetching notes" do
     context "from test_* sections" do
       before do
-        @driver.stubs(:notes_sections).returns(%w[test_changes test_bugfixes test_features])
+        @driver.stubs(:__notes_sections).returns(%w[test_changes test_bugfixes test_features])
         @objects_with_notes = {"test_changes" => ["8299243c7dac8f27c3572424a348a7f83ef0ce28", "2fb8a3281fb6777405aadcd699adb852b615a3e4"], "test_bugfixes" => ["d7b0fa26ca547b963569d7a82afd7d7ca11b71ae"], "test_features" => []}
         @messages = {"test_changes" => ["removing files from gemspec\n  .gitignore\n  lastversion.gemspec\n", "loading default configuration yaml\n\nloading external configuration yaml\n"], "test_bugfixes" => ["sorting tags according to the mask parser\n"], "test_features" => []}
         @changelog_full = <<-MSG
@@ -89,7 +89,7 @@ MSG
       end
       it "should get changelog message" do
         @all_objects_with_notes.should respond_to(:to_changelog)
-        @all_objects_with_notes.sections.should be == @driver.notes_sections
+        @all_objects_with_notes.sections.should be == @driver.__notes_sections
         @all_objects_with_notes.messages.should be == @messages
         @all_objects_with_notes.messages.to_changelog.should be == @changelog
         @all_objects_with_notes.to_changelog.should be == @changelog
@@ -137,13 +137,14 @@ MSG
 
   context "increasing version" do
     before do
-      @driver.stubs(:notes_sections).returns(%w[test_changes test_bugfixes test_features])
+      @driver.stubs(:__notes_sections).returns(%w[test_changes test_bugfixes test_features])
+      @driver.__notes.after_versioned.stubs(:section).returns("test_versioning")
     end
 
 
     context "using 'remove' as after_versioned:strategy" do
       before do
-        @driver.stubs(:notes_after_versioned).returns({"strategy" => "remove", "section" => "test_versioning", "changelog_message" => "available on {version}"})
+        @driver.__notes.after_versioned.stubs(:strategy).returns("remove")
         @steps = <<-STEPS
         git fetch
 
@@ -181,7 +182,7 @@ MSG
 
     context "using 'keep' as after_versioned:strategy" do
       before do
-        @driver.stubs(:notes_after_versioned).returns({"strategy" => "keep", "section" => "test_versioning", "changelog_message" => "available on {version}"})
+        @driver.__notes.after_versioned.stubs(:strategy).returns("keep")
         @steps = <<-STEPS
         git fetch
 
@@ -218,7 +219,7 @@ MSG
 
   context "checking helper methods" do
     it "should load default notes' sections" do
-      @driver.send(:notes_sections).should be == StepUp::CONFIG["notes"]["sections"]
+      @driver.send(:__notes_sections).should be == StepUp::CONFIG["notes"]["sections"]
     end
   end
 end
