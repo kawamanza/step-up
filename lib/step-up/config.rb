@@ -27,6 +27,10 @@ module StepUp
       map{ |section| section.is_a?(String) ? to_label(section) : (section["label"] || to_label(section["name"])) }
     end
 
+    def label(section)
+      labels[names.index(section)]
+    end
+
     private
 
     def to_prefix(name)

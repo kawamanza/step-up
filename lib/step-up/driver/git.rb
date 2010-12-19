@@ -40,7 +40,7 @@ module StepUp
         objects = commit_history(commit_base)
         objects_with_notes = {}.extend GitExtensions::NotesTransformation
         objects_with_notes.driver = self
-        __notes_sections.each do |section|
+        __notes_sections.names.each do |section|
           obj = objects_with_notes_of(section)
           obj = obj.collect { |object|
             pos = objects.index(object)
