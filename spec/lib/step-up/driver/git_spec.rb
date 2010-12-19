@@ -27,38 +27,75 @@ describe StepUp::Driver::Git do
     end
   end
 
-
-  context 'fetching tags' do
+  context 'replacing the absence of tags' do
+    it "should get a blank tag" do
+      @driver.mask.blank.should be == "v0.0.0"
+    end
+  end
+  
+  context 'fetching all tags' do
     it "should get tags sorted" do
       tags = %w[note-v0.2.0-1 v0.1.0 v0.1.1 v0.1.10 v0.1.2 v0.1.1.rc3]
       @driver.stubs(:all_tags).returns(tags)
       @driver.all_version_tags.should be == %w[v0.1.10 v0.1.2 v0.1.1.rc3 v0.1.1 v0.1.0]
     end
-
+  end
+  
+  context "fetching the last version tag" do
     it "should return last tag visible" do
       @driver.last_version_tag("f4cfcc2").should be == "v0.0.1+"
       @driver.last_version_tag("570fe2e").should be == "v0.0.1"
-      @driver.class.last_version("f4cfcc2").should be == "v0.0.1+"
-      @driver.class.last_version("570fe2e").should be == "v0.0.1"
     end
-
-    it "should get no tag visible" do
-      @driver.last_version_tag("cdd4d5a").should be_nil
-    end
-
-    it "should get a blank tag" do
-      @driver.mask.blank.should be == "v0.0.0"
-      @driver.class.last_version("cdd4d5a").should be == "v0.0.0+"
-      @driver.class.last_version("cdd4d5a", true).should be == "v0.0.0+4"
-    end
-
+        
     it "should get last tag visible with the count of commits after it" do
       @driver.last_version_tag("f42bdd1", true).should be == "v0.0.2+22"
       @driver.last_version_tag("13de54b", true).should be == "v0.0.2+22"
       @driver.last_version_tag("d133b9e", true).should be == "v0.0.2+27"
     end
+        
+    context "if there is no version tag" do
+      context "in the project" do
+        before do
+          @driver.stubs(:all_version_tags).returns([])
+        end
+        
+        it "should return a blank tag" do
+          @driver.last_version_tag.should == "v0.0.0+"
+        end
+      end
+      
+      context "in the commit history, but there is in the project" do
+        it "should return nil" do
+          @driver.last_version_tag("cdd4d5a").should be_nil
+        end
+      end
+    end
   end
-
+  
+  context "fetching the last version" do
+    it "should return last tag visible" do
+      @driver.class.last_version("f4cfcc2").should be == "v0.0.1+"
+      @driver.class.last_version("570fe2e").should be == "v0.0.1"
+    end
+        
+    context "if there is no version tag" do
+      context "in the project" do
+        before do
+          StepUp::Driver::Git.any_instance.stubs(:all_version_tags).returns([])
+        end
+        
+        it "should return a blank tag" do
+          @driver.class.last_version.should == "v0.0.0+"
+        end
+      end
+      
+      context "in the commit history, but there is in the project" do
+        it "should return proper message" do
+          @driver.class.last_version("cdd4d5a").should be == "v0.0.0+"
+        end
+      end
+    end
+  end
 
   context "fetching notes" do
     context "from test_* sections" do

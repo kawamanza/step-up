@@ -76,19 +76,24 @@ module StepUp
       end
 
       def last_version_tag(commit_base = "HEAD", count_commits = false)
-        commits = commit_history(commit_base)
-        all_version_tags.each do |tag|
-          commit_under_the_tag = commit_history(tag, 1).first
-          index = commits.index(commit_under_the_tag)
-          unless index.nil?
-            unless index.zero?
-              count = count_commits == true ? commits_between(tag, commit_base).size : 0
-              tag = "#{ tag }+#{ count unless count.zero? }"
+        all_versions = all_version_tags
+        unless all_versions.empty?
+          commits = commit_history(commit_base)
+          all_versions.each do |tag|
+            commit_under_the_tag = commit_history(tag, 1).first
+            index = commits.index(commit_under_the_tag)
+            unless index.nil?
+              unless index.zero?
+                count = count_commits == true ? commits_between(tag, commit_base).size : 0
+                tag = "#{ tag }+#{ count unless count.zero? }"
+              end
+              return tag
             end
-            return tag
           end
+          no_tag_version_in_commit_history = nil
+        else
+          "%s+%s" % [mask.blank, "#{ @driver.commit_history(commit_base).size if count_commits }"]
         end
-        nil
       end
 
       def fetched_remotes(refs_type = 'heads')
