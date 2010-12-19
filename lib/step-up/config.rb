@@ -14,8 +14,41 @@ module StepUp
       value
     end
   end
+  module ConfigSectionsExt
+    def names
+      map{ |section| section.is_a?(String) ? section : section["name"] }
+    end
+
+    def prefixes
+      map{ |section| section.is_a?(String) ? to_prefix(section) : (section["prefix"] || to_prefix(section["name"])) }
+    end
+
+    def labels
+      map{ |section| section.is_a?(String) ? to_label(section) : (section["label"] || to_label(section["name"])) }
+    end
+
+    private
+
+    def to_prefix(name)
+      "#{ (name.respond_to?(:singularize) ? name.singularize : name).gsub(/_/, ' ') }: "
+    end
+
+    def to_label(name)
+      "#{ name.capitalize.gsub(/_/, ' ') }:"
+    end
+  end
   class << CONFIG
     include ConfigExt
+
+    def notes_sections
+      sections = notes.sections
+      unless sections.kind_of?(ConfigSectionsExt)
+        class << sections
+          include ConfigSectionsExt
+        end
+      end
+      sections
+    end
   end
 
   def self.load_config(path)

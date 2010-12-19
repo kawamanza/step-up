@@ -22,4 +22,25 @@ describe StepUp::CONFIG do
       @c.notes.after_versioned.section.should be_kind_of(String)
     end
   end
+
+
+  context "getting notes sections" do
+    it "by names" do
+      @c.notes_sections.should be_kind_of(Array)
+      @c.notes_sections.should respond_to(:names)
+      @c.notes_sections.names.should be == %w[changes bugfixes features deploy_steps]
+    end
+
+    it "by prefixes" do
+      @c.notes_sections.should be_kind_of(Array)
+      @c.notes_sections.should respond_to(:prefixes)
+      @c.notes_sections.prefixes.should be == ["changes: ", "bugfixes: ", "features: ", "deploy steps: "]
+    end
+
+    it "by labels" do
+      @c.notes_sections.should be_kind_of(Array)
+      @c.notes_sections.should respond_to(:labels)
+      @c.notes_sections.labels.should be == ["Changes:", "Bugfixes:", "Features:", "Deploy steps:"]
+    end
+  end
 end
