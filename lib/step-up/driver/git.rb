@@ -63,12 +63,12 @@ module StepUp
         @version_tags ||= all_tags.map{ |tag| mask.parse(tag) }.compact.sort.map{ |tag| mask.format(tag) }.reverse
       end
 
-      def increase_version_tag(part, commit_base = nil)
-        commands = []
+      def steps_to_increase_version(part, commit_base = "HEAD")
         tag = last_version_tag(commit_base)
         tag = tag.sub(/\+$/, '')
         tag = mask.increase_version(tag, part)
         message = all_objects_with_notes(commit_base)
+        commands = []
         commands << "git fetch"
         commands << "git tag -a -m \"#{ message.to_changelog }\" #{ tag }"
         commands << "git push --tags"
@@ -76,9 +76,10 @@ module StepUp
       end
 
       def last_version_tag(commit_base = "HEAD", count_commits = false)
-        objects = commit_history(commit_base)
+        commits = commit_history(commit_base)
         all_version_tags.each do |tag|
-          index = objects.index(commit_history(tag, 1).first)
+          commit_under_the_tag = commit_history(tag, 1).first
+          index = commits.index(commit_under_the_tag)
           unless index.nil?
             unless index.zero?
               count = count_commits == true ? commits_between(tag, commit_base).size : 0

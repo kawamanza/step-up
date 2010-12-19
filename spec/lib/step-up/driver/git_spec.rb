@@ -182,8 +182,8 @@ MSG
         @steps = @steps.chomp.split(/\n\n/).collect{ |step| step.gsub(/^\s{8}/, '') }
       end
       it "should return steps" do
-        @driver.should respond_to :increase_version_tag
-        @driver.increase_version_tag("minor", "f4cfcc2").should be == @steps
+        @driver.should respond_to :steps_to_increase_version
+        @driver.steps_to_increase_version("minor", "f4cfcc2").should be == @steps
       end
     end
 
@@ -218,8 +218,8 @@ MSG
         @steps = @steps.chomp.split(/\n\n/).collect{ |step| step.gsub(/^\s{8}/, '') }
       end
       it "should return steps" do
-        @driver.should respond_to :increase_version_tag
-        @driver.increase_version_tag("minor", "f4cfcc2").should be == @steps
+        @driver.should respond_to :steps_to_increase_version
+        @driver.steps_to_increase_version("minor", "f4cfcc2").should be == @steps
       end
     end
   end
