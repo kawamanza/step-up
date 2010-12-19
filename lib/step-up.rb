@@ -1,5 +1,6 @@
 module StepUp
   autoload :CONFIG, 'step-up/config.rb'
+  autoload :ConfigShortcut, 'step-up/config_shortcut.rb'
   autoload :VERSION, 'step-up/version.rb'
   module Driver
     autoload :Git, 'step-up/driver/git.rb'
