@@ -2,10 +2,9 @@ module StepUp
   module Driver
     class Git
       include GitExtensions::Notes
-      include ConfigShortcut
       attr_reader :mask
       def initialize
-        @mask = Parser::VersionMask.new(__versioning.version_mask)
+        @mask = Parser::VersionMask.new(CONFIG.versioning.version_mask)
       end
 
       def self.last_version(commit_base = "HEAD", count_commits = false)
@@ -40,7 +39,7 @@ module StepUp
         objects = commit_history(commit_base)
         objects_with_notes = {}.extend GitExtensions::NotesTransformation
         objects_with_notes.driver = self
-        __notes_sections.names.each do |section|
+        CONFIG.notes_sections.names.each do |section|
           obj = objects_with_notes_of(section)
           obj = obj.collect { |object|
             pos = objects.index(object)

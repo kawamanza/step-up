@@ -93,7 +93,7 @@ MSG
       end
       it "should get changelog message" do
         @all_objects_with_notes.should respond_to(:to_changelog)
-        @all_objects_with_notes.sections.should be == @driver.__notes_sections
+        @all_objects_with_notes.sections.should be == StepUp::CONFIG.notes_sections
         @all_objects_with_notes.messages.should be == @messages
         @all_objects_with_notes.messages.to_changelog.should be == @changelog
         @all_objects_with_notes.to_changelog.should be == @changelog
@@ -227,7 +227,7 @@ MSG
 
   context "checking helper methods" do
     it "should load default notes' sections" do
-      @driver.send(:__notes_sections).should be == StepUp::CONFIG["notes"]["sections"]
+      StepUp::CONFIG.notes_sections.should be == StepUp::CONFIG["notes"]["sections"]
     end
   end
 end

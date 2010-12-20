@@ -7,7 +7,7 @@ module StepUp
 
     module Notes
       def steps_for_archiving_notes(objects_with_notes, tag)
-        strategy = __notes.after_versioned.strategy
+        strategy = CONFIG.notes.after_versioned.strategy
         raise ArgumentError, "unknown strategy: #{ strategy }" unless NOTES_STRATEGIES.include?(strategy)
         NOTES_STRATEGIES[strategy].steps_for_archiving_notes(objects_with_notes, tag, self)
       end
@@ -29,7 +29,6 @@ module StepUp
       def self.extend_object(base)
         super
         class << base
-          include ConfigShortcut
           attr_writer :driver, :parent, :kept_notes
           def []=(p1, p2)
             super
@@ -55,7 +54,7 @@ module StepUp
       end
 
       def config
-        __notes.after_versioned
+        CONFIG.notes.after_versioned
       end
 
       def kept_notes_section
@@ -112,7 +111,7 @@ module StepUp
       def to_changelog(options = {})
         changelog = []
         sections.each_with_index do |section, index|
-          changelog << "#{ __notes_sections.label(section) }\n" unless index.zero? || messages[section].empty?
+          changelog << "#{ CONFIG.notes_sections.label(section) }\n" unless index.zero? || messages[section].empty?
           messages[section].each_with_index do |note, index|
             note = note.sub(/$/, " (#{ parent[section][index] })") if options[:mode] == :with_objects
             changelog += note.split(/\n+/).collect{ |line| line.sub(/^(\s*)/, '\1  - ') }
@@ -138,21 +137,20 @@ module StepUp
       end
 
       class KeepNotes
-        include ConfigShortcut
         def steps_for_archiving_notes(objects_with_notes, tag, driver)
           commands = []
           objects = []
-          changelog_message = __notes.after_versioned.changelog_message
+          changelog_message = CONFIG.notes.after_versioned.changelog_message
           objects_with_notes.sections.each do |section|
             objects_with_notes[section].each do |object|
               unless objects.include?(object)
                 objects << object
                 kept_message = changelog_message.gsub(/\{version\}/, tag)
-                commands << "git notes --ref=#{ __notes.after_versioned.section } add -m \"#{ kept_message.gsub(/([\$\\"])/, '\\\\\1') }\" #{ object }"
+                commands << "git notes --ref=#{ CONFIG.notes.after_versioned.section } add -m \"#{ kept_message.gsub(/([\$\\"])/, '\\\\\1') }\" #{ object }"
               end
             end
           end
-          commands << "git push #{ driver.notes_remote } refs/notes/#{ __notes.after_versioned.section }" unless objects.empty?
+          commands << "git push #{ driver.notes_remote } refs/notes/#{ CONFIG.notes.after_versioned.section }" unless objects.empty?
           commands
         end
       end
