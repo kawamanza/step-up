@@ -112,7 +112,7 @@ module StepUp
       def to_changelog(options = {})
         changelog = []
         sections.each_with_index do |section, index|
-          changelog << "#{ driver.__notes_sections.label(section) }\n" unless index.zero? || messages[section].empty?
+          changelog << "#{ __notes_sections.label(section) }\n" unless index.zero? || messages[section].empty?
           messages[section].each_with_index do |note, index|
             note = note.sub(/$/, " (#{ parent[section][index] })") if options[:mode] == :with_objects
             changelog += note.split(/\n+/).collect{ |line| line.sub(/^(\s*)/, '\1  - ') }

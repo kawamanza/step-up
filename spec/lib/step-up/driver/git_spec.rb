@@ -67,7 +67,7 @@ describe StepUp::Driver::Git do
         class << notes_sections
           include StepUp::ConfigSectionsExt
         end
-        @driver.stubs(:__notes_sections).returns(notes_sections)
+        StepUp::CONFIG.stubs(:notes_sections).returns(notes_sections)
         @objects_with_notes = {"test_changes" => ["8299243c7dac8f27c3572424a348a7f83ef0ce28", "2fb8a3281fb6777405aadcd699adb852b615a3e4"], "test_bugfixes" => ["d7b0fa26ca547b963569d7a82afd7d7ca11b71ae"], "test_features" => []}
         @messages = {"test_changes" => ["removing files from gemspec\n  .gitignore\n  lastversion.gemspec\n", "loading default configuration yaml\n\nloading external configuration yaml\n"], "test_bugfixes" => ["sorting tags according to the mask parser\n"], "test_features" => []}
         @changelog_full = <<-MSG
@@ -145,14 +145,14 @@ MSG
       class << notes_sections
         include StepUp::ConfigSectionsExt
       end
-      @driver.stubs(:__notes_sections).returns(notes_sections)
-      @driver.__notes.after_versioned.stubs(:section).returns("test_versioning")
+      StepUp::CONFIG.stubs(:notes_sections).returns(notes_sections)
+      StepUp::CONFIG.notes.after_versioned.stubs(:section).returns("test_versioning")
     end
 
 
     context "using 'remove' as after_versioned:strategy" do
       before do
-        @driver.__notes.after_versioned.stubs(:strategy).returns("remove")
+        StepUp::CONFIG.notes.after_versioned.stubs(:strategy).returns("remove")
         @steps = <<-STEPS
         git fetch
 
@@ -190,7 +190,7 @@ MSG
 
     context "using 'keep' as after_versioned:strategy" do
       before do
-        @driver.__notes.after_versioned.stubs(:strategy).returns("keep")
+        StepUp::CONFIG.notes.after_versioned.stubs(:strategy).returns("keep")
         @steps = <<-STEPS
         git fetch
 
