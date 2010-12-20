@@ -93,7 +93,7 @@ module StepUp
     def version_show
       if options[:levels]
         puts "Current version levels:"
-        version_parts.each  do |level|
+        version_levels.each  do |level|
           puts " - #{level}"
         end
       else
@@ -102,8 +102,8 @@ module StepUp
     end
 
     def version_create
-      level = options[:level] || version_parts.last
-      if version_parts.include? level
+      level = options[:level] || version_levels.last
+      if version_levels.include? level
         driver = StepUp::Driver::Git.new
         steps = driver.steps_to_increase_version(level)
         steps.each do |step|
@@ -149,8 +149,8 @@ module StepUp
       $stdin.gets.chomp
     end
 
-    def version_parts
-      CONFIG["versioning"]["version_parts"]
+    def version_levels
+      CONFIG["versioning"]["version_levels"]
     end
     
   end

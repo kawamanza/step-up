@@ -36,9 +36,9 @@ describe StepUp::Parser::VersionMask do
 
   context "increasing version" do
     before do
-      @mask.stubs(:version_parts).returns(%w[major minor tiny patch build rc])
+      @mask.stubs(:version_levels).returns(%w[major minor tiny patch build rc])
     end
-    it "should increase by parts" do
+    it "should increase by levels" do
       version = "v2.3.1.6.4.rc5"
       @mask.increase_version(version, "major").should be == "v3.0.0"
       @mask.increase_version(version, "minor").should be == "v2.4.0"

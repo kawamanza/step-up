@@ -63,10 +63,10 @@ module StepUp
         @version_tags ||= all_tags.map{ |tag| mask.parse(tag) }.compact.sort.map{ |tag| mask.format(tag) }.reverse
       end
 
-      def steps_to_increase_version(part, commit_base = "HEAD")
+      def steps_to_increase_version(level, commit_base = "HEAD")
         tag = last_version_tag(commit_base) || zero_version(commit_base)
         tag = tag.sub(/\+$/, '')
-        tag = mask.increase_version(tag, part)
+        tag = mask.increase_version(tag, level)
         message = all_objects_with_notes(commit_base)
         commands = []
         commands << "git fetch"
