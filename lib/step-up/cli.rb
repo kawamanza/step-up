@@ -8,9 +8,17 @@ module StepUp
     
     default_task :version
 
-    desc "", "show the last version of the application"
-    def version
-      puts StepUp::Driver::Git.last_version("HEAD", true)
+    desc "version ACTION [OPTIONS]", "manage versions of your project"
+    method_options %w(levels -ls) => :boolean
+    method_options %w(level -l) => :string
+    VERSION_ACTIONS = %w[show create help]
+    def version(action = nil)
+      action = "show" unless VERSION_ACTIONS.include?(action)
+      if self.respond_to?("version_#{action}")
+        send("version_#{action}")
+      else
+        puts "invalid action: #{action}"
+      end
     end
 
     desc "init", "adds .stepuprc to your project and prepare your local repository to use notes"
@@ -82,6 +90,30 @@ module StepUp
       end
     end
 
+    def version_show
+      if options[:levels]
+        puts "Current version levels:"
+        version_parts.each  do |level|
+          puts " - #{level}"
+        end
+      else
+        puts StepUp::Driver::Git.last_version("HEAD", true)
+      end
+    end
+
+    def version_create
+      level = options[:level] || version_parts.last
+      if version_parts.include? level
+        driver = StepUp::Driver::Git.new
+        steps = driver.steps_to_increase_version(level)
+        steps.each do |step|
+          run step
+        end
+      else
+        puts "invalid version create option: #{level}"
+      end
+    end
+    
     private
 
     def choose(list, statement)
@@ -116,5 +148,10 @@ module StepUp
       say("#{statement} ", color)
       $stdin.gets.chomp
     end
+
+    def version_parts
+      CONFIG["versioning"]["version_parts"]
+    end
+    
   end
 end
