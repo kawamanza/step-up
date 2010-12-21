@@ -18,13 +18,20 @@ module StepUp
         new.all_objects_with_notes(commit_base).unversioned_only.to_changelog(options)
       end
 
-      def commit_history(commit_base, top = nil)
+      def commit_history(commit_base, *args)
+        options = args.last.is_a?(Hash) ? args.pop : {}
+        top = args.shift
         top = "-n#{ top }" unless top.nil?
-        `git log --pretty=oneline --no-color --no-notes #{ top } #{ commit_base }`.gsub(/^(\w+)\s.*$/, '\1').split("\n")
+        commits = `git log --pretty=oneline --no-color --no-notes #{ top } #{ commit_base }`
+        if options[:with_messages]
+          commits.split(/\n/).map{ |commit| commit =~ /^(\w+)\s+(.*)$/ ? [$1, $2] : nil }
+        else
+          commits.gsub(/^(\w+)\s.*$/, '\1').split(/\n/)
+        end
       end
 
-      def commits_between(first_commit, last_commit = "HEAD")
-        commit_history("#{ first_commit }..#{ last_commit }")
+      def commits_between(first_commit, last_commit = "HEAD", *args)
+        commit_history("#{ first_commit }..#{ last_commit }", *args)
       end
 
       def all_tags
