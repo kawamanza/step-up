@@ -14,11 +14,11 @@ module StepUp
     end
 
     def notes
-      (visible_detached_notes + scoped_commit_notes).sort.reverse
+      (visible_detached_notes + scoped_commit_notes).sort.reverse.extend NotesArray
     end
 
     def all_notes
-      (visible_detached_notes + scoped_attached_notes + scoped_commit_notes).sort.reverse
+      (visible_detached_notes + scoped_attached_notes + scoped_commit_notes).sort.reverse.extend NotesArray
     end
 
     def all_commits
@@ -112,5 +112,16 @@ module StepUp
       notes
     end
 
+  end
+
+  module NotesArray
+    def as_hash
+      notes = {}
+      each do |note|
+        notes[note[1]] ||= []
+        notes[note[1]] << [note[3], note[4]] unless notes[note[1]].any?{ |n| n[0] == note[3] }
+      end
+      notes
+    end
   end
 end

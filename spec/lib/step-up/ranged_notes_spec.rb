@@ -33,6 +33,19 @@ describe StepUp::RangedNotes do
        [1, "test_changes", 1, "2fb8a3281fb6777405aadcd699adb852b615a3e4",
         "loading default configuration yaml\n\nloading external configuration yaml\n"]
      ]
+     @notes.notes.should respond_to :as_hash
+     @notes.notes.as_hash.should be == {
+       "test_changes" => [
+         ["8299243c7dac8f27c3572424a348a7f83ef0ce28",
+          "removing files from gemspec\n  .gitignore\n  lastversion.gemspec\n"],
+         ["2fb8a3281fb6777405aadcd699adb852b615a3e4",
+          "loading default configuration yaml\n\nloading external configuration yaml\n"]
+       ],
+       "test_bugfixes" => [
+         ["d7b0fa26ca547b963569d7a82afd7d7ca11b71ae",
+          "sorting tags according to the mask parser\n"]
+       ]
+     }
     end
   end
 end
