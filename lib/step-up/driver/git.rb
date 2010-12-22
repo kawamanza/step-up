@@ -38,31 +38,6 @@ module StepUp
         `git tag -l`.split("\n")
       end
 
-      def all_notes_between(first_commit, last_commit = "HEAD")
-        all_commits = commit_history(last_commit)
-        last_commits = commits_between(first_commit, last_commit, :with_messages => true).compact
-        all_notes = []
-        prefixes = CONFIG.notes_sections.prefixes
-        sections = CONFIG.notes_sections.names
-        last_commits.each do |commit|
-          prefixes.each_with_index do |prefix, index|
-            if commit.last.start_with?(prefix)
-              all_notes << [all_commits.index(commit.first), sections[index], 0, commit.first, commit.last[prefix.size..-1]]
-            end
-          end
-        end
-        last_commits = last_commits.collect(&:first)
-        sections.each_with_index do |section, index|
-          objects_with_notes_of(section).each do |commit|
-            if last_commits.include?(commit)
-              message = note_message(section, commit)
-              all_notes << [all_commits.index(commit), section, 1, commit, message]
-            end
-          end
-        end
-        all_notes.sort.reverse
-      end
-
       def objects_with_notes_of(ref)
         `git notes --ref=#{ ref } list`.gsub(/^\w+\s(\w+)$/, '\1').split(/\n/)
       end
