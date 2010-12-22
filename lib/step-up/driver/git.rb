@@ -31,7 +31,8 @@ module StepUp
       end
 
       def commits_between(first_commit, last_commit = "HEAD", *args)
-        commit_history("#{ first_commit }..#{ last_commit }", *args)
+        commit_base = first_commit.nil? ? last_commit : "#{ first_commit }..#{ last_commit }"
+        commit_history(commit_base, *args)
       end
 
       def all_tags
