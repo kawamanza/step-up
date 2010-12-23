@@ -135,7 +135,7 @@ module StepUp
     def parse_message(message)
       message = message.rstrip.gsub(/^(\s\s)?([^\s\-])/, '\1  - \2')
       begin
-        changed = message.sub!(/^(\s*-\s.*?\n)\n(\s*-\s)/, '\1\2')
+        changed = message.sub!(/^(\s*-\s.*?\n)\n+(\s*-\s)/, '\1\2')
       end until changed.nil?
       message
     end
