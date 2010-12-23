@@ -67,6 +67,7 @@ describe StepUp::RangedNotes do
           - sorting tags according to the mask parser
         EOF
         changelog.gsub!(/^\s{8}/, '')
+        changelog = changelog.rstrip
         @notes.notes.as_hash.to_changelog.should be == changelog
       end
       it "should get the changelog message with objects" do
@@ -83,6 +84,7 @@ describe StepUp::RangedNotes do
           - sorting tags according to the mask parser (d7b0fa26ca547b963569d7a82afd7d7ca11b71ae)
         EOF
         changelog.gsub!(/^\s{8}/, '')
+        changelog = changelog.rstrip
         @notes.notes.as_hash.to_changelog(:mode => :with_objects).should be == changelog
       end
     end

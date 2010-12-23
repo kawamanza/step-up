@@ -123,17 +123,21 @@ module StepUp
         self[section].each do |note|
           message = note[1]
           message = message.sub(/$/, " (#{ note[0] })") if options[:mode] == :with_objects
-          changelog += parse_message(message)
+          changelog << parse_message(message)
         end
         changelog << ""
       end
-      changelog.join("\n")
+      changelog.join("\n").rstrip
     end
 
     private
 
     def parse_message(message)
-      message.split(/\n+/).collect{ |line| line.sub(/^(\s*)/, '\1  - ') }
+      message = message.rstrip.gsub(/^(\s\s)?([^\s\-])/, '\1  - \2')
+      begin
+        changed = message.sub!(/^(\s*-\s.*?\n)\n(\s*-\s)/, '\1\2')
+      end until changed.nil?
+      message
     end
   end
 
