@@ -114,9 +114,32 @@ module StepUp
 
   end
 
+  module NotesHash
+    def to_changelog(options = {})
+      changelog = []
+      CONFIG.notes_sections.names.each_with_index do |section, index|
+        next unless has_key?(section)
+        changelog << "#{ CONFIG.notes_sections.label(section) }\n" unless index.zero?
+        self[section].each do |note|
+          message = note[1]
+          message = message.sub(/$/, " (#{ note[0] })") if options[:mode] == :with_objects
+          changelog += parse_message(message)
+        end
+        changelog << ""
+      end
+      changelog.join("\n")
+    end
+
+    private
+
+    def parse_message(message)
+      message.split(/\n+/).collect{ |line| line.sub(/^(\s*)/, '\1  - ') }
+    end
+  end
+
   module NotesArray
     def as_hash
-      notes = {}
+      notes = {}.extend NotesHash
       each do |note|
         notes[note[1]] ||= []
         notes[note[1]] << [note[3], note[4]] unless notes[note[1]].any?{ |n| n[0] == note[3] }
