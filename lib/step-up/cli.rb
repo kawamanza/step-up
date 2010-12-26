@@ -39,7 +39,7 @@ module StepUp
     end
 
     desc "notes ACTION [object] [OPTIONS]", "show notes for the next version"
-    method_options :clean => :boolean, :steps => :boolean, :"-m" => :string
+    method_options :clean => :boolean, :steps => :boolean, :"-m" => :string, :since => :string
     def notes(action = "show", commit_base = nil)
       unless %w[show add help].include?(action)
         commit_base ||= action
@@ -60,7 +60,19 @@ module StepUp
     protected
 
     def notes_show(commit_base = nil)
-      puts StepUp::Driver::Git.unversioned_notes(commit_base, options[:clean])
+      driver = StepUp::Driver::Git.new
+      tag = options[:since] || driver.last_version_tag
+      if tag =~ /[1-9]/
+        tag = tag.gsub(/\+\d*$/, '')
+      else
+        tag = nil
+      end
+      ranged_notes = StepUp::RangedNotes.new(driver, tag, "HEAD")
+      changelog_options = {}
+      changelog_options[:mode] = :with_objects unless options[:clean]
+      puts "Showing notes since #{ options[:since] }#{ " (including notes of tags: #{ ranged_notes.scoped_tags.join(", ")})" if ranged_notes.scoped_tags.any? }" unless options[:since].nil?
+      puts "---"
+      puts (options[:since].nil? ? ranged_notes.notes : ranged_notes.all_notes).as_hash.to_changelog(changelog_options)
     end
 
     def notes_add(commit_base = nil)
