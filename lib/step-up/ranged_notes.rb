@@ -88,7 +88,7 @@ module StepUp
         message = commit.last
         prefixes.each_with_index do |prefix, index|
           message = message[prefix.size..-1] if message.start_with?(prefix)
-          message.sub!(/\s*##{sections[index]}[\s\n]*\z/, '')
+          message = message.sub(/\s*##{sections[index]}[\s\n]*\z/, '')
           if message != commit.last
             notes << [all_commits.index(commit.first), sections[index], COMMIT_NOTE, commit.first, message]
             break
