@@ -71,7 +71,7 @@ module StepUp
       end
 
       def steps_to_increase_version(level, commit_base = "HEAD")
-        tag = last_version_tag(commit_base) || zero_version(commit_base)
+        tag = last_version_tag(commit_base)
         tag = tag.sub(/\+$/, '')
         tag = mask.increase_version(tag, level)
         message = all_objects_with_notes(commit_base)
@@ -99,7 +99,7 @@ module StepUp
           end
           no_tag_version_in_commit_history = nil
         else
-          "%s+%s" % [mask.blank, "#{ @driver.commit_history(commit_base).size if count_commits }"]
+          zero_version(commit_base, count_commits)
         end
       end
 
