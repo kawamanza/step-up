@@ -71,32 +71,6 @@ describe StepUp::Driver::Git do
       end
     end
   end
-  
-  context "fetching the last version" do
-    it "should return last tag visible" do
-      @driver.class.last_version("f4cfcc2").should be == "v0.0.1+"
-      @driver.class.last_version("570fe2e").should be == "v0.0.1"
-    end
-        
-    context "if there is no version tag" do
-      context "in the project" do
-        before do
-          StepUp::Driver::Git.any_instance.stubs(:all_version_tags).returns([])
-        end
-        
-        it "should return a blank tag" do
-          @driver.class.last_version.should == "v0.0.0+"
-        end
-      end
-      
-      context "in the commit history, but there is in the project" do
-        it "should return proper message" do
-          @driver.class.last_version("cdd4d5a").should be == "v0.0.0+"
-          @driver.class.last_version("cdd4d5a", true).should be == "v0.0.0+4"
-        end
-      end
-    end
-  end
 
   context "fetching notes" do
     context "from test_* sections" do

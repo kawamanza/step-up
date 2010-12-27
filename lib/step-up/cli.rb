@@ -135,7 +135,8 @@ module StepUp
           puts " - #{level}"
         end
       else
-        puts StepUp::Driver::Git.last_version("HEAD", true)
+        driver = StepUp::Driver::Git.new
+        puts driver.last_version_tag("HEAD", true)
       end
     end
 

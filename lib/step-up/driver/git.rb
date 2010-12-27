@@ -7,11 +7,6 @@ module StepUp
         @mask = Parser::VersionMask.new(CONFIG.versioning.version_mask)
       end
 
-      def self.last_version(commit_base = "HEAD", count_commits = false)
-        @driver ||= new
-        @driver.last_version_tag(commit_base, count_commits) || @driver.zero_version(commit_base, count_commits)
-      end
-
       def self.unversioned_notes(commit_base = nil, clean = false)
         options = {:mode => :with_objects}
         options.delete :mode if clean
