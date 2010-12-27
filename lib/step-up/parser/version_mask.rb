@@ -13,8 +13,8 @@ module StepUp
 
       def to_regex
         re = []
-        mask.each_with_index do |part, index|
-          re << "(?:#{ iterator[index].source })#{ '?' if part.end_with?('9') }"
+        mask.each_with_index do |level, index|
+          re << "(?:#{ iterator[index].source })#{ '?' if level.end_with?('9') }"
         end
         re.join
       end
@@ -50,20 +50,20 @@ module StepUp
         raise ArgumentError unless version.is_a?(Array) && version.size == mask.size
         v = []
         iterator.each_with_index do |pattern, index|
-          part = version[index] || 0
-          raise ArgumentError unless part.is_a?(Fixnum)
-          unless part.zero? && mask[index] =~ /9$/
-            v << mask[index].sub(/[09]$/, part.to_s)
+          level = version[index] || 0
+          raise ArgumentError unless level.is_a?(Fixnum)
+          unless level.zero? && mask[index] =~ /9$/
+            v << mask[index].sub(/[09]$/, level.to_s)
           end
         end
         v.join
       end
 
-      def increase_version(version, part)
+      def increase_version(version, level)
         v = parse version
-        part = version_parts.index(part)
-        (v.size-part).times do |index|
-          v[part+index] = (index.zero? ? (v[part+index] || 0) + 1 : nil)
+        level = version_levels.index(level)
+        (v.size-level).times do |index|
+          v[level+index] = (index.zero? ? (v[level+index] || 0) + 1 : nil)
         end
         format v
       end
@@ -74,8 +74,8 @@ module StepUp
 
       private
 
-      def version_parts
-        CONFIG["versioning"]["version_parts"]
+      def version_levels
+        CONFIG["versioning"]["version_levels"]
       end
     end
   end
