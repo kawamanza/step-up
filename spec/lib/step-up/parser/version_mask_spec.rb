@@ -6,7 +6,10 @@ describe StepUp::Parser::VersionMask do
       @mask = StepUp::Parser::VersionMask.new("v0.0.0.9.9.rc9")
     }.should_not raise_error ArgumentError
   end
-
+  
+  it "should be able to provide a blank mask" do
+    @mask.blank.should be == "v0.0.0"
+  end
 
   context "parsing" do
     it "should parse" do

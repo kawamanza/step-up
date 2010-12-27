@@ -26,12 +26,6 @@ describe StepUp::Driver::Git do
       @driver.fetched_remotes.should be == %w[origin]
     end
   end
-
-  context 'replacing the absence of tags' do
-    it "should get a blank tag" do
-      @driver.mask.blank.should be == "v0.0.0"
-    end
-  end
   
   context 'fetching all tags' do
     it "should get tags sorted" do
