@@ -34,7 +34,7 @@ describe StepUp::CONFIG do
     it "by prefixes" do
       @c.notes_sections.should be_kind_of(Array)
       @c.notes_sections.should respond_to(:prefixes)
-      @c.notes_sections.prefixes.should be == ["changes: ", "bugfixes: ", "features: ", "deploy steps: "]
+      @c.notes_sections.prefixes.should be == ["change: ", "bugfix: ", "feature: ", "deploy_step: "]
     end
 
     it "by labels" do
