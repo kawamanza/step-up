@@ -92,6 +92,7 @@ describe StepUp::Driver::Git do
       context "in the commit history, but there is in the project" do
         it "should return proper message" do
           @driver.class.last_version("cdd4d5a").should be == "v0.0.0+"
+          @driver.class.last_version("cdd4d5a", true).should be == "v0.0.0+4"
         end
       end
     end
