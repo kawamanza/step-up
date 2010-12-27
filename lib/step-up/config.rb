@@ -27,8 +27,16 @@ module StepUp
       map{ |section| section.is_a?(String) ? to_label(section) : (section["label"] || to_label(section["name"])) }
     end
 
+    def tags
+      map{ |section| section.is_a?(String) ? to_tag(section) : (section["tag"] || to_tag(section["name"])) }
+    end
+
     def label(section)
       labels[names.index(section)]
+    end
+
+    def tag(section)
+      tags[names.index(section)]
     end
 
     private
@@ -39,6 +47,10 @@ module StepUp
 
     def to_label(name)
       "#{ name.capitalize.gsub(/_/, ' ') }:"
+    end
+
+    def to_tag(name)
+      name.respond_to?(:singularize) ? name.singularize : name
     end
   end
   class << CONFIG

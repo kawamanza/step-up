@@ -87,12 +87,13 @@ module StepUp
     def scoped_commit_notes
       prefixes = CONFIG.notes_sections.prefixes
       sections = CONFIG.notes_sections.names
+      tags = CONFIG.notes_sections.tags
       notes = []
       scoped_commits.each do |commit|
         message = commit.last
         prefixes.each_with_index do |prefix, index|
           message = message[prefix.size..-1] if message.start_with?(prefix)
-          message = message.sub(/\s*##{sections[index]}[\s\n]*\z/, '')
+          message = message.sub(/\s*##{ tags[index] }[\s\n]*\z/, '')
           if message != commit.last
             notes << [all_commits.index(commit.first), sections[index], COMMIT_NOTE, commit.first, message]
             break
