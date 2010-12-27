@@ -11,6 +11,7 @@ module StepUp
     desc "version ACTION [OPTIONS]", "manage versions of your project"
     method_options %w(levels -s) => :boolean # $ stepup version [--levels|-s]
     method_options %w(level -l) => :string  # $ stepup version create [--level|-l] <level-name>
+    VERSION_ACTIONS = %w[show create help]
     def version(action = nil)
       action = "show" unless VERSION_ACTIONS.include?(action)
       if self.respond_to?("version_#{action}")
