@@ -41,7 +41,7 @@ module StepUp
     desc "notes ACTION [object] [OPTIONS]", "show notes for the next version"
     method_options :clean => :boolean, :steps => :boolean, :"-m" => :string, :since => :string
     def notes(action = "show", commit_base = nil)
-      unless %w[show add help].include?(action)
+      unless %w[show add remove help].include?(action)
         commit_base ||= action
         action = "show"
       end
@@ -73,6 +73,32 @@ module StepUp
       puts "Showing notes since #{ options[:since] }#{ " (including notes of tags: #{ ranged_notes.scoped_tags.join(", ")})" if ranged_notes.scoped_tags.any? }" unless options[:since].nil?
       puts "---"
       puts (options[:since].nil? ? ranged_notes.notes : ranged_notes.all_notes).as_hash.to_changelog(changelog_options)
+    end
+
+    def notes_remove(commit_base)
+      commit_base = "HEAD" if commit_base.nil?
+      driver = StepUp::Driver::Git.new
+      ranged_notes = StepUp::RangedNotes.new(driver, nil, commit_base)
+      notes = ranged_notes.notes_of(ranged_notes.last_commit).as_hash
+      sections = notes.keys
+      if sections.empty?
+        puts "No notes found"
+      else
+        if sections.size > 1
+          section = choose(sections, "Which section you want to remove notes?")
+          return unless sections.include?(section)
+        else
+          section = sections.first
+        end
+        steps = driver.steps_to_remove_notes(section, ranged_notes.last_commit)
+        if options[:steps]
+          puts steps.join("\n")
+        else
+          steps.each do |step|
+            run step
+          end
+        end
+      end
     end
 
     def notes_add(commit_base = nil)

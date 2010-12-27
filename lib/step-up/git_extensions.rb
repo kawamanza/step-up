@@ -20,6 +20,14 @@ module StepUp
         commands
       end
 
+      def steps_to_remove_notes(section, commit_base)
+        commands = []
+        commands << "git fetch"
+        commands << "git notes --ref=#{ section } remove #{ commit_base }"
+        commands << "git push #{ notes_remote } refs/notes/#{ section }"
+        commands
+      end
+
       def notes_remote
         fetched_remotes('notes').first
       end

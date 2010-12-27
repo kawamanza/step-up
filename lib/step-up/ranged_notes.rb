@@ -21,6 +21,10 @@ module StepUp
       (visible_detached_notes + scoped_attached_notes + scoped_commit_notes).sort.reverse.extend NotesArray
     end
 
+    def notes_of(commit)
+      all_visible_notes.select{ |note| note[3] == commit }.extend NotesArray
+    end
+
     def all_commits
       @all_commits ||= driver.commit_history(last_commit)
     end
