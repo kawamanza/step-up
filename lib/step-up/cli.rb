@@ -11,6 +11,7 @@ module StepUp
     desc "version ACTION [OPTIONS]", "manage versions of your project"
     method_options %w(levels -s) => :boolean # $ stepup version [--levels|-s]
     method_options %w(level -l) => :string  # $ stepup version create [--level|-l] <level-name>
+    method_options :steps => :boolean # $ stepup version create --steps
     VERSION_ACTIONS = %w[show create help]
     def version(action = nil)
       action = "show" unless VERSION_ACTIONS.include?(action)
@@ -145,8 +146,12 @@ module StepUp
       if version_levels.include? level
         driver = StepUp::Driver::Git.new
         steps = driver.steps_to_increase_version(level)
-        steps.each do |step|
-          run step
+        if options[:steps]
+          puts steps.join("\n")
+        else
+          steps.each do |step|
+            run step
+          end
         end
       else
         puts "invalid version create option: #{level}"
