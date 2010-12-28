@@ -99,13 +99,7 @@ module StepUp
           section = sections.first
         end
         steps = driver.steps_to_remove_notes(section, ranged_notes.last_commit)
-        if options[:steps]
-          puts steps.join("\n")
-        else
-          steps.each do |step|
-            run step
-          end
-        end
+        print_or_run(steps, options[:steps])
       end
     end
 
@@ -118,13 +112,7 @@ module StepUp
         section = choose(CONFIG["notes"]["sections"], "Choose a section to add the note:")
         return if section.nil? || ! CONFIG["notes"]["sections"].include?(section)
         steps = driver.steps_for_add_notes(section, message, commit_base)
-        if options[:steps]
-          puts steps.join("\n")
-        else
-          steps.each do |step|
-            run step
-          end
-        end
+        print_or_run(steps, options[:steps])
       end
     end
 
@@ -145,13 +133,7 @@ module StepUp
       if version_levels.include? level
         driver = StepUp::Driver::Git.new
         steps = driver.steps_to_increase_version(level)
-        if options[:steps]
-          puts steps.join("\n")
-        else
-          steps.each do |step|
-            run step
-          end
-        end
+        print_or_run(steps, options[:steps])
       else
         puts "invalid version create option: #{level}"
       end
@@ -194,6 +176,16 @@ module StepUp
 
     def version_levels
       CONFIG["versioning"]["version_levels"]
+    end
+    
+    def print_or_run(steps, print)
+      if print
+        puts steps.join("\n")
+      else
+        steps.each do |step|
+          run step
+        end
+      end
     end
     
   end
