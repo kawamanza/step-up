@@ -7,12 +7,6 @@ module StepUp
         @mask = Parser::VersionMask.new(CONFIG.versioning.version_mask)
       end
 
-      def self.unversioned_notes(commit_base = nil, clean = false)
-        options = {:mode => :with_objects}
-        options.delete :mode if clean
-        new.all_objects_with_notes(commit_base).unversioned_only.to_changelog(options)
-      end
-
       def commit_history(commit_base, *args)
         options = args.last.is_a?(Hash) ? args.pop : {}
         top = args.shift
@@ -38,21 +32,6 @@ module StepUp
         `git notes --ref=#{ ref } list`.gsub(/^\w+\s(\w+)$/, '\1').split(/\n/)
       end
 
-      def all_objects_with_notes(commit_base = nil)
-        objects = commit_history(commit_base)
-        objects_with_notes = {}.extend GitExtensions::NotesTransformation
-        objects_with_notes.driver = self
-        CONFIG.notes_sections.names.each do |section|
-          obj = objects_with_notes_of(section)
-          obj = obj.collect { |object|
-            pos = objects.index(object)
-            pos.nil? ? nil : [pos, object]
-          }.compact.sort.reverse
-          objects_with_notes[section] = obj.collect{ |o| o.last }
-        end
-        objects_with_notes
-      end
-
       def note_message(ref, commit)
         `git notes --ref=#{ ref } show #{ commit }`
       end
@@ -69,10 +48,10 @@ module StepUp
         tag = last_version_tag(commit_base)
         tag = tag.sub(/\+$/, '')
         tag = mask.increase_version(tag, level)
-        message = all_objects_with_notes(commit_base)
+        message = RangedNotes.new(self, nil, commit_base).notes.as_hash
         commands = []
         commands << "git fetch"
-        commands << "git tag -a -m \"#{ message.to_changelog }\" #{ tag }"
+        commands << "git tag -a -m \"#{ message.to_changelog.gsub(/([\$\\"])/, '\\\\\1') }\" #{ tag }"
         commands << "git push --tags"
         commands + steps_for_archiving_notes(message, tag)
       end

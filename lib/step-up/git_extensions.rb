@@ -33,112 +33,21 @@ module StepUp
       end
     end
 
-    module NotesTransformation
-      def self.extend_object(base)
-        super
-        class << base
-          attr_writer :driver, :parent, :kept_notes
-          def []=(p1, p2)
-            super
-            sections << p1 unless sections.include?(p1)
-          end
-        end
-      end
-
-      def driver
-        @driver ||= parent.driver
-      end
-
-      def sections
-        @sections ||= parent != self && parent.sections && parent.sections.dup || []
-      end
-
-      def parent
-        @parent ||= self
-      end
-
-      def kept_notes
-        @kept_notes ||= driver.objects_with_notes_of(kept_notes_section)
-      end
-
-      def config
-        CONFIG.notes.after_versioned
-      end
-
-      def kept_notes_section
-        config.section
-      end
-
-      def kept_notes_message
-        config.changelog_message
-      end
-
-      def unversioned_only
-        notes = {}.extend NotesTransformation
-        notes.driver = driver
-        notes.kept_notes = kept_notes
-        sections.each do |section|
-          notes[section] = (parent[section] || []).select{ |commit| not kept_notes.include?(commit) }
-        end
-        notes
-      end
-
-      def available_on(version_tags)
-        version_tags = version_tags.split(/\|/) unless version_tags.is_a?(Array)
-        version = version_tags.map{ |version_tag| driver.mask.parse(version_tag) }.compact
-        notes = {}.extend NotesTransformation
-        notes.driver = driver
-        notes.kept_notes = kept_notes
-        if version.empty?
-          sections.each{ |section| notes[section] = [] }
-          return notes
-        end
-        version_tag = version.map{ |v| driver.mask.format(v).gsub(/([\.\*\?\{\}])/, '\\\\\1') }.join('|')
-        matcher = /^#{ kept_notes_message.gsub(/([\.\*\?\{\}])/, '\\\\\1').sub(/\\\{version\\\}/, "(?:#{ version_tag })") }$/
-        sections.each do |section|
-          notes[section] = (parent[section] || []).select do |commit|
-            pos = kept_notes.index(commit)
-            ! pos.nil? && driver.note_message(kept_notes_section, kept_notes[pos]).chomp =~ matcher
-          end
-        end
-        notes
-      end
-
-      def messages
-        unless defined? @messages
-          notes = {}.extend NotesTransformation
-          notes.parent = self
-          sections.each do |section|
-            notes[section] = (parent[section] || []).map{ |commit| driver.note_message(section, commit) }
-          end
-          @messages = notes
-        end
-        @messages
-      end
-
-      def to_changelog(options = {})
-        changelog = []
-        sections.each_with_index do |section, index|
-          changelog << "#{ CONFIG.notes_sections.label(section) }\n" unless index.zero? || messages[section].empty?
-          messages[section].each_with_index do |note, index|
-            note = note.sub(/$/, " (#{ parent[section][index] })") if options[:mode] == :with_objects
-            changelog += note.split(/\n+/).collect{ |line| line.sub(/^(\s*)/, '\1  - ') }
-          end
-          changelog << "" unless messages[section].empty?
-        end
-        changelog.join("\n")
-      end
-    end
-
     module Strategy
       class RemoveNotes
         def steps_for_archiving_notes(objects_with_notes, tag, driver)
           commands = []
-          objects_with_notes.sections.each do |section|
+          CONFIG.notes_sections.names.each do |section|
+            next unless objects_with_notes.has_key?(section)
+            removed_notes = []
             objects_with_notes[section].each do |object|
-              commands << "git notes --ref=#{ section } remove #{ object }"
+              next if object[2] == RangedNotes::COMMIT_NOTE
+              removed_notes << "git notes --ref=#{ section } remove #{ object[0] }"
             end
-            commands << "git push #{ driver.notes_remote } refs/notes/#{ section }" unless objects_with_notes[section].empty?
+            unless removed_notes.empty?
+              commands += removed_notes
+              commands << "git push #{ driver.notes_remote } refs/notes/#{ section }"
+            end
           end
           commands
         end
@@ -149,12 +58,14 @@ module StepUp
           commands = []
           objects = []
           changelog_message = CONFIG.notes.after_versioned.changelog_message
-          objects_with_notes.sections.each do |section|
+          CONFIG.notes_sections.names.each do |section|
+            next unless objects_with_notes.has_key?(section)
             objects_with_notes[section].each do |object|
-              unless objects.include?(object)
-                objects << object
+              next if object[2] == RangedNotes::COMMIT_NOTE
+              unless objects.include?(object[0])
+                objects << object[0]
                 kept_message = changelog_message.gsub(/\{version\}/, tag)
-                commands << "git notes --ref=#{ CONFIG.notes.after_versioned.section } add -m \"#{ kept_message.gsub(/([\$\\"])/, '\\\\\1') }\" #{ object }"
+                commands << "git notes --ref=#{ CONFIG.notes.after_versioned.section } add -m \"#{ kept_message.gsub(/([\$\\"])/, '\\\\\1') }\" #{ object[0] }"
               end
             end
           end

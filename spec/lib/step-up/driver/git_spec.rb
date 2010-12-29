@@ -66,67 +66,6 @@ describe StepUp::Driver::Git do
     end
   end
 
-  context "fetching notes" do
-    context "from test_* sections" do
-      before do
-        notes_sections = %w[test_changes test_bugfixes test_features]
-        class << notes_sections
-          include StepUp::ConfigSectionsExt
-        end
-        StepUp::CONFIG.stubs(:notes_sections).returns(notes_sections)
-        @objects_with_notes = {"test_changes" => ["8299243c7dac8f27c3572424a348a7f83ef0ce28", "2fb8a3281fb6777405aadcd699adb852b615a3e4"], "test_bugfixes" => ["d7b0fa26ca547b963569d7a82afd7d7ca11b71ae"], "test_features" => []}
-        @messages = {"test_changes" => ["removing files from gemspec\n  .gitignore\n  lastversion.gemspec\n", "loading default configuration yaml\n\nloading external configuration yaml\n"], "test_bugfixes" => ["sorting tags according to the mask parser\n"], "test_features" => []}
-        @changelog_full = <<-MSG
-  - removing files from gemspec (8299243c7dac8f27c3572424a348a7f83ef0ce28)
-    - .gitignore
-    - lastversion.gemspec
-  - loading default configuration yaml (2fb8a3281fb6777405aadcd699adb852b615a3e4)
-  - loading external configuration yaml
-
-Test bugfixes:
-
-  - sorting tags according to the mask parser (d7b0fa26ca547b963569d7a82afd7d7ca11b71ae)
-MSG
-        @changelog = @changelog_full.gsub(/\s\(\w+\)$/, '')
-        @all_objects_with_notes = @driver.all_objects_with_notes("f4cfcc2")
-      end
-      it "should get all objects with notes" do
-        @all_objects_with_notes.should be == @objects_with_notes
-      end
-      it "should get all notes messages" do
-        @all_objects_with_notes.should respond_to(:messages)
-        @all_objects_with_notes.messages.should be == @messages
-      end
-      it "should get changelog message" do
-        @all_objects_with_notes.should respond_to(:to_changelog)
-        @all_objects_with_notes.sections.should be == StepUp::CONFIG.notes_sections
-        @all_objects_with_notes.messages.should be == @messages
-        @all_objects_with_notes.messages.to_changelog.should be == @changelog
-        @all_objects_with_notes.to_changelog.should be == @changelog
-        @all_objects_with_notes.messages.to_changelog(:mode => :with_objects).should be == @changelog_full
-        @all_objects_with_notes.to_changelog(:mode => :with_objects).should be == @changelog_full
-      end
-      it "should get unversioned changelog message" do
-        @all_objects_with_notes.should be == @objects_with_notes
-        object = @objects_with_notes["test_changes"].shift
-        @all_objects_with_notes.stubs(:kept_notes).returns([object])
-        @all_objects_with_notes.should respond_to(:unversioned_only)
-        @all_objects_with_notes.unversioned_only.should be == @objects_with_notes
-      end
-    end
-
-    context "from default sections" do
-      before do
-        @all_objects_with_notes = @driver.all_objects_with_notes("v0.1.0")
-        @objects_with_notes = {"deploy_steps"=>[], "bugfixes"=>[], "features"=>["3baad37d5098ad3b09935229e14e617c3ec8b7ee"], "changes"=>[]}
-      end
-      it "should get versioned changelog message" do
-        @all_objects_with_notes.should be == @objects_with_notes
-        @all_objects_with_notes.available_on("v0.1.0").should be == @objects_with_notes
-      end
-    end
-  end
-
 
   context "adding notes" do
     before do
@@ -137,7 +76,7 @@ MSG
 
       git push origin refs/notes/jjj_changes
       STEPS
-      @steps = @steps.chomp.split(/\n\n/).collect{ |step| step.gsub(/^\s{6}/, '') }
+      @steps = @steps.rstrip.split(/\n\n/).collect{ |step| step.gsub(/^\s{6}/, '') }
     end
     it "should return steps" do
       @driver.steps_for_add_notes("jjj_changes", "alteracao na variavel de ambiente \"$ENV\"", "v0.1.0~1").should be == @steps
@@ -170,8 +109,7 @@ MSG
         
         Test bugfixes:
         
-          - sorting tags according to the mask parser
-        " v0.1.0
+          - sorting tags according to the mask parser" v0.1.0
 
         git push --tags
 
@@ -185,7 +123,7 @@ MSG
 
         git push origin refs/notes/test_bugfixes
         STEPS
-        @steps = @steps.chomp.split(/\n\n/).collect{ |step| step.gsub(/^\s{8}/, '') }
+        @steps = @steps.rstrip.split(/\n\n/).collect{ |step| step.gsub(/^\s{8}/, '') }
       end
       it "should return steps" do
         @driver.should respond_to :steps_to_increase_version
@@ -208,8 +146,7 @@ MSG
         
         Test bugfixes:
         
-          - sorting tags according to the mask parser
-        " v0.1.0
+          - sorting tags according to the mask parser" v0.1.0
 
         git push --tags
 
@@ -221,7 +158,7 @@ MSG
 
         git push origin refs/notes/test_versioning
         STEPS
-        @steps = @steps.chomp.split(/\n\n/).collect{ |step| step.gsub(/^\s{8}/, '') }
+        @steps = @steps.rstrip.split(/\n\n/).collect{ |step| step.gsub(/^\s{8}/, '') }
       end
       it "should return steps" do
         @driver.should respond_to :steps_to_increase_version
