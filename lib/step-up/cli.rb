@@ -109,8 +109,8 @@ module StepUp
       message ||= get_message("Note message:\n>>", " >")
       unless message.empty?
         driver = StepUp::Driver::Git.new
-        section = choose(CONFIG["notes"]["sections"], "Choose a section to add the note:")
-        return if section.nil? || ! CONFIG["notes"]["sections"].include?(section)
+        section = choose(CONFIG.notes_sections.names, "Choose a section to add the note:")
+        return if section.nil? || ! CONFIG.notes_sections.names.include?(section)
         steps = driver.steps_for_add_notes(section, message, commit_base)
         print_or_run(steps, options[:steps])
       end
