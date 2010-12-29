@@ -151,7 +151,7 @@ module StepUp
       notes = {}.extend NotesHash
       each do |note|
         notes[note[1]] ||= []
-        notes[note[1]] << [note[3], note[4]] unless notes[note[1]].any?{ |n| n[0] == note[3] }
+        notes[note[1]] << [note[3], note[4], note[2]] unless notes[note[1]].any?{ |n| n[0] == note[3] }
       end
       notes
     end
