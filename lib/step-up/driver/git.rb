@@ -7,6 +7,10 @@ module StepUp
         @mask = Parser::VersionMask.new(CONFIG.versioning.version_mask)
       end
 
+      def self.last_version
+        new.last_version_tag
+      end
+
       def commit_history(commit_base, *args)
         options = args.last.is_a?(Hash) ? args.pop : {}
         top = args.shift
