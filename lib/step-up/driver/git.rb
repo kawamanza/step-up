@@ -51,13 +51,13 @@ module StepUp
       def steps_to_increase_version(level, commit_base = "HEAD")
         tag = last_version_tag(commit_base)
         tag = tag.sub(/\+$/, '')
-        tag = mask.increase_version(tag, level)
-        message = RangedNotes.new(self, nil, commit_base).notes.as_hash
+        new_tag = mask.increase_version(tag, level)
+        message = RangedNotes.new(self, tag, commit_base).notes.as_hash
         commands = []
         commands << "git fetch"
-        commands << "git tag -a -m \"#{ message.to_changelog.gsub(/([\$\\"])/, '\\\\\1') }\" #{ tag }"
+        commands << "git tag -a -m \"#{ message.to_changelog.gsub(/([\$\\"])/, '\\\\\1') }\" #{ new_tag }"
         commands << "git push --tags"
-        commands + steps_for_archiving_notes(message, tag)
+        commands + steps_for_archiving_notes(message, new_tag)
       end
 
       def last_version_tag(commit_base = "HEAD", count_commits = false)
