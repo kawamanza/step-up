@@ -36,11 +36,12 @@ module StepUp
       unfetched_remotes = driver.fetched_remotes - remotes_with_notes
       unless remotes_with_notes.any? || unfetched_remotes.empty?
         if unfetched_remotes.size > 1
-          puts "Too mutch remotes, please edit your .git/config and add 'fetch' attribute to the right remote"
-          # TODO ask which remote will be used
+          remote = choose(unfetched_remotes, "Which remote would you like to fetch notes?")
+          return unless unfetched_remotes.include?(remote)
+        else
+          remote = unfetched_remotes.first
         end
-        remote = unfetched_remotes.first
-        puts "Adding attribute bellow to .git/config (remote.#{ remote })"
+        puts "Adding attribute below to .git/config (remote.#{ remote })"
         puts "  fetch = +refs/notes/*:refs/notes/*"
         `git config --add remote.#{ remote }.fetch +refs/notes/*:refs/notes/*`
       end
