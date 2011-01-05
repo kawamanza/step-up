@@ -69,19 +69,11 @@ module StepUp
     protected
 
     def notes_show(commit_base = nil)
-      driver = StepUp::Driver::Git.new
-      tag = options[:since] || driver.last_version_tag
-      if tag =~ /[1-9]/
-        tag = tag.gsub(/\+\d*$/, '')
-      else
-        tag = nil
-      end
-      ranged_notes = StepUp::RangedNotes.new(driver, tag, "HEAD")
-      changelog_options = {}
-      changelog_options[:mode] = :with_objects unless options[:clean]
-      puts "Showing notes since #{ options[:since] }#{ " (including notes of tags: #{ ranged_notes.scoped_tags.join(", ")})" if ranged_notes.scoped_tags.any? }" unless options[:since].nil?
-      puts "---"
-      puts (options[:since].nil? ? ranged_notes.notes : ranged_notes.all_notes).as_hash.to_changelog(changelog_options)
+      message = []
+      message << "Showing notes since #{ options[:since] }#{ " (including notes of tags: #{ ranged_notes.scoped_tags.join(", ")})" if ranged_notes.scoped_tags.any? }" unless options[:since].nil?
+      message << "---"
+      message << get_notes
+      puts message.join("\n")
     end
 
     def notes_remove(commit_base)
@@ -141,6 +133,26 @@ module StepUp
     end
     
     private
+
+    def ranged_notes
+      unless defined? @ranged_notes
+        driver = StepUp::Driver::Git.new
+        tag = options[:since] || driver.last_version_tag
+        if tag =~ /[1-9]/
+          tag = tag.gsub(/\+\d*$/, '')
+        else
+          tag = nil
+        end
+        @ranged_notes = StepUp::RangedNotes.new(driver, tag, "HEAD")
+      end
+      @ranged_notes
+    end
+
+    def get_notes(clean = options[:clean])
+      changelog_options = {}
+      changelog_options[:mode] = :with_objects unless clean
+      (options[:since].nil? ? ranged_notes.notes : ranged_notes.all_notes).as_hash.to_changelog(changelog_options)
+    end
 
     def choose(list, statement)
       puts statement
