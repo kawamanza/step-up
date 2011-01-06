@@ -129,6 +129,19 @@ module StepUp
     
     private
 
+    def edit_message(temp_file, initial_content)
+      File.open(temp_file, "w"){ |f| f.write initial_content }
+      editor = driver.editor_name
+      if editor =~ /\w/
+        if editor =~ /^vim?\b/
+          system "#{ editor } #{ temp_file }"
+        else
+          `#{ editor } #{ temp_file } && wait $!`
+        end
+        File.read(temp_file).rstrip
+      end
+    end
+
     def driver
       @driver ||= StepUp::Driver::Git.new
     end

@@ -87,7 +87,11 @@ module StepUp
           $1 if line =~ /^remote\.(\w+)\.fetch\s\+refs\/#{ refs_type }/
         }.compact.uniq.sort
       end
-      
+
+      def editor_name
+        ENV["EDITOR"] || `git config core.editor`.chomp
+      end
+
       def zero_version(commit_base = "HEAD", count_commits = false)
         "%s+%s" % [mask.blank, "#{ commit_history(commit_base).size if count_commits }"]
       end
