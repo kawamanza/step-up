@@ -48,16 +48,16 @@ module StepUp
         @version_tags ||= all_tags.map{ |tag| mask.parse(tag) }.compact.sort.map{ |tag| mask.format(tag) }.reverse
       end
 
-      def steps_to_increase_version(level, commit_base = "HEAD")
+      def steps_to_increase_version(level, commit_base = "HEAD", message = nil)
         tag = last_version_tag(commit_base)
         tag = tag.sub(/\+$/, '')
         new_tag = mask.increase_version(tag, level)
-        message = RangedNotes.new(self, tag, commit_base).notes.as_hash
+        notes = RangedNotes.new(self, tag, commit_base).notes.as_hash
         commands = []
         commands << "git fetch"
-        commands << "git tag -a -m \"#{ message.to_changelog.gsub(/([\$\\"])/, '\\\\\1') }\" #{ new_tag }"
+        commands << "git tag -a -m \"#{ (message || notes.to_changelog).gsub(/([\$\\"])/, '\\\\\1') }\" #{ new_tag }"
         commands << "git push --tags"
-        commands + steps_for_archiving_notes(message, new_tag)
+        commands + steps_for_archiving_notes(notes, new_tag)
       end
 
       def last_version_tag(commit_base = "HEAD", count_commits = false)
