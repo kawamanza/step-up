@@ -31,7 +31,6 @@ module StepUp
           f.write content
         end
       end
-      driver = StepUp::Driver::Git.new
       remotes_with_notes = driver.fetched_remotes('notes')
       unfetched_remotes = driver.fetched_remotes - remotes_with_notes
       unless remotes_with_notes.any? || unfetched_remotes.empty?
@@ -78,7 +77,6 @@ module StepUp
 
     def notes_remove(commit_base)
       commit_base = "HEAD" if commit_base.nil?
-      driver = StepUp::Driver::Git.new
       ranged_notes = StepUp::RangedNotes.new(driver, nil, commit_base)
       notes = ranged_notes.notes_of(ranged_notes.last_commit).as_hash
       sections = notes.keys
@@ -101,7 +99,6 @@ module StepUp
       message = nil if options[:m] =~ /^(|m)$/
       message ||= get_message("Note message:\n>>", " >")
       unless message.empty?
-        driver = StepUp::Driver::Git.new
         section = choose(CONFIG.notes_sections.names, "Choose a section to add the note:")
         return if section.nil? || ! CONFIG.notes_sections.names.include?(section)
         steps = driver.steps_for_add_notes(section, message, commit_base)
@@ -116,7 +113,6 @@ module StepUp
           puts " - #{level}"
         end
       else
-        driver = StepUp::Driver::Git.new
         puts driver.last_version_tag("HEAD", true)
       end
     end
@@ -124,7 +120,6 @@ module StepUp
     def version_create
       level = options[:level] || version_levels.last
       if version_levels.include? level
-        driver = StepUp::Driver::Git.new
         steps = driver.steps_to_increase_version(level)
         print_or_run(steps, options[:steps])
       else
@@ -134,9 +129,12 @@ module StepUp
     
     private
 
+    def driver
+      @driver ||= StepUp::Driver::Git.new
+    end
+
     def ranged_notes
       unless defined? @ranged_notes
-        driver = StepUp::Driver::Git.new
         tag = options[:since] || driver.last_version_tag
         if tag =~ /[1-9]/
           tag = tag.gsub(/\+\d*$/, '')
