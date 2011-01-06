@@ -119,8 +119,9 @@ module StepUp
 
     def version_create
       level = options[:level] || version_levels.last
+      message = edit_message(".git/TAG_EDITMSG", get_notes(true))
       if version_levels.include? level
-        steps = driver.steps_to_increase_version(level)
+        steps = driver.steps_to_increase_version(level, "HEAD", message)
         print_or_run(steps, options[:steps])
       else
         puts "invalid version create option: #{level}"
