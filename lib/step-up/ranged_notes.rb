@@ -122,6 +122,13 @@ module StepUp
   module NotesHash
     def to_changelog(options = {})
       changelog = []
+
+      if options[:custom_message]
+        changelog << "Custom message:\n"
+        changelog << parse_message(options[:custom_message])
+        changelog << ""
+      end
+
       CONFIG.notes_sections.names.each do |section|
         next unless has_key?(section)
         changelog << "#{ CONFIG.notes_sections.label(section) }\n"

@@ -91,6 +91,50 @@ describe StepUp::RangedNotes do
         changelog = changelog.rstrip
         @notes.notes.as_hash.to_changelog(:mode => :with_objects).should be == changelog
       end
+      it "should get the changelog message with custom message" do
+        @notes.notes.as_hash.should respond_to :to_changelog
+        changelog = <<-EOF
+        Custom message:
+        
+          - New version create feature
+          - Removed old version create feature
+        
+        Test changes:
+        
+          - removing files from gemspec
+            - .gitignore
+            - lastversion.gemspec
+          - loading default configuration yaml
+          - loading external configuration yaml
+        
+        Test bugfixes:
+        
+          - sorting tags according to the mask parser
+        EOF
+        changelog.gsub!(/^\s{8}/, '')
+        changelog = changelog.rstrip
+        message_option = {:custom_message => "New version create feature\n\nRemoved old version create feature"}
+        @notes.notes.as_hash.to_changelog(message_option).should be == changelog
+      end
+      it "should get the changelog message without custom message" do
+        @notes.notes.as_hash.should respond_to :to_changelog
+        changelog = <<-EOF
+        Test changes:
+        
+          - removing files from gemspec
+            - .gitignore
+            - lastversion.gemspec
+          - loading default configuration yaml
+          - loading external configuration yaml
+        
+        Test bugfixes:
+        
+          - sorting tags according to the mask parser
+        EOF
+        changelog.gsub!(/^\s{8}/, '')
+        changelog = changelog.rstrip
+        @notes.notes.as_hash.to_changelog.should be == changelog
+      end
     end
   end
 end

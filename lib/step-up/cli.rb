@@ -10,7 +10,7 @@ module StepUp
 
     desc "version ACTION [OPTIONS]", "manage versions of your project"
     method_options %w(levels -L) => :boolean # $ stepup version [--levels|-L]
-    method_options %w(level -l) => :string, %w(steps -s) => :boolean  # $ stepup version create [--level|-l] <level-name> [--steps|-s]
+    method_options %w(level -l) => :string, %w(steps -s) => :boolean, %w(message -m) => :string  # $ stepup version create [--level|-l <level-name>] [--steps|-s] [--message|-m <comment-string>]
     VERSION_ACTIONS = %w[show create help]
     def version(action = nil)
       action = "show" unless VERSION_ACTIONS.include?(action)
@@ -119,7 +119,9 @@ module StepUp
 
     def version_create
       level = options[:level] || version_levels.last
-      message = edit_message(driver.class::VERSION_MESSAGE_FILE_PATH, get_notes(true))
+      message = get_notes(true, options[:message])
+      message = edit_message(driver.class::VERSION_MESSAGE_FILE_PATH, message)
+
       if version_levels.include? level
         steps = driver.steps_to_increase_version(level, "HEAD", message)
         print_or_run(steps, options[:steps])
@@ -160,10 +162,12 @@ module StepUp
       @ranged_notes
     end
 
-    def get_notes(clean = options[:clean])
+    def get_notes(clean = options[:clean], custom_message = nil)
       changelog_options = {}
       changelog_options[:mode] = :with_objects unless clean
-      (options[:since].nil? ? ranged_notes.notes : ranged_notes.all_notes).as_hash.to_changelog(changelog_options)
+      changelog_options[:custom_message] ||= custom_message
+      notes = (options[:since].nil? ? ranged_notes.notes : ranged_notes.all_notes)
+      notes.as_hash.to_changelog(changelog_options)
     end
 
     def choose(list, statement)
