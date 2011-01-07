@@ -10,7 +10,7 @@ module StepUp
 
     desc "version ACTION [OPTIONS]", "manage versions of your project"
     method_options %w(levels -L) => :boolean # $ stepup version [--levels|-L]
-    method_options %w(level -l) => :string, %w(steps -s) => :boolean, %w(message -m) => :string  # $ stepup version create [--level|-l <level-name>] [--steps|-s] [--message|-m <comment-string>]
+    method_options %w(level -l) => :string, %w(steps -s) => :boolean, %w(message -m) => :string, :'no-editor' => :boolean  # $ stepup version create [--level|-l <level-name>] [--steps|-s] [--message|-m <comment-string>] [--no-editor]
     VERSION_ACTIONS = %w[show create help]
     def version(action = nil)
       action = "show" unless VERSION_ACTIONS.include?(action)
@@ -120,7 +120,7 @@ module StepUp
     def version_create
       level = options[:level] || version_levels.last
       message = get_notes(true, options[:message])
-      message = edit_message(driver.class::VERSION_MESSAGE_FILE_PATH, message)
+      message = edit_message(driver.class::VERSION_MESSAGE_FILE_PATH, message) unless options[:'no-editor']
 
       if version_levels.include? level
         steps = driver.steps_to_increase_version(level, "HEAD", message)
