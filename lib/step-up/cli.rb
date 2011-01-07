@@ -119,7 +119,7 @@ module StepUp
 
     def version_create
       level = options[:level] || version_levels.last
-      message = edit_message(".git/TAG_EDITMSG", get_notes(true))
+      message = edit_message(driver.class::VERSION_MESSAGE_FILE_PATH, get_notes(true))
       if version_levels.include? level
         steps = driver.steps_to_increase_version(level, "HEAD", message)
         print_or_run(steps, options[:steps])

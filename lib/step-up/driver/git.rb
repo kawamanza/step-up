@@ -1,6 +1,8 @@
 module StepUp
   module Driver
     class Git
+      VERSION_MESSAGE_FILE_PATH = ".git/TAG_EDITMSG"
+      
       include GitExtensions::Notes
       attr_reader :mask
       def initialize
