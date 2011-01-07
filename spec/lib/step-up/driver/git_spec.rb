@@ -25,6 +25,9 @@ describe StepUp::Driver::Git do
     it "should get all remotes" do
       @driver.fetched_remotes.should be == %w[origin]
     end
+    it "should get version tag info" do
+      @driver.version_tag_info("v0.1.0").should be == {:message => "Features:\n\n  - command line to show notes for the next version (unversioned notes)", :tagger => "Marcelo Manzan", :date => Time.parse("Thu Dec 9 02:42:14 2010 -0200")}
+    end
   end
   
   context 'fetching all tags' do

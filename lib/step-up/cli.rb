@@ -46,6 +46,20 @@ module StepUp
       end
     end
 
+    desc "changelog --top=<num> --format={default|wiki|html}", "show changelog from each version tag"
+    method_options %w[top -n] => :numeric
+    method_options %w[format -f] => :string
+    def changelog
+      log = []
+      method_name = "changelog_format_#{ options[:format] }"
+      method_name = "changelog_format_default" unless respond_to?(method_name)
+      driver.all_version_tags.each_with_index do |tag, index|
+        break if options[:top] && index >= options[:top]
+        log << send(method_name, tag)
+      end
+      puts log.join("\n\n")
+    end
+
     desc "notes ACTION [object] [OPTIONS]", "show notes for the next version"
     method_options :clean => :boolean, :steps => :boolean, :"-m" => :string, :since => :string
     def notes(action = "show", commit_base = nil)
@@ -66,6 +80,33 @@ module StepUp
     end
 
     protected
+
+    def changelog_format_default(tag)
+      tag_info = driver.version_tag_info(tag)
+      created_at = tag_info[:date].strftime("%b/%d %Y %H:%M %z")
+    "\033[0;33m#{tag} (#{created_at} by #{tag_info[:tagger]})\033[0m\n\n#{ tag_info[:message] }"
+    end
+
+    def changelog_format_html(tag)
+      tag_info = driver.version_tag_info(tag)
+      created_at = tag_info[:date].strftime("%b/%d %Y %H:%M %z")
+      log = []
+      log << "<h3 class=\"changelog_header\">#{tag} (#{created_at} by #{tag_info[:tagger]})</h3>"
+      log << " <pre class=\"changelog_description\">"
+      log << tag_info[:message].gsub(/^/, '  ')
+      log << " </pre>"
+      log << "<br/>"
+      log.join("\n")
+    end
+
+    def changelog_format_wiki(tag)
+      tag_info = driver.version_tag_info(tag)
+      created_at = tag_info[:date].strftime("%b/%d %Y %H:%M %z")
+      log = []
+      log << "== #{tag} (#{created_at} by #{tag_info[:tagger]}) ==\n"
+      log << tag_info[:message].gsub(/^(\s+)-/, '\1*')
+      log.join("\n")
+    end
 
     def notes_show(commit_base = nil)
       message = []

@@ -50,6 +50,14 @@ module StepUp
         @version_tags ||= all_tags.map{ |tag| mask.parse(tag) }.compact.sort.map{ |tag| mask.format(tag) }.reverse
       end
 
+      def version_tag_info(tag)
+        full_message = `git show #{ tag }`
+        tag_message = full_message[/\A.*?\n\n(.*)\n\ncommit\s\w{40}\n/m, 1]
+        tagger = full_message[/\A.*?\nTagger:\s(.*?)\s</m, 1]
+        date = Time.parse(full_message[/\A.*?\nDate:\s+(.*?)\n/m, 1])
+        {:message => tag_message, :tagger => tagger, :date => date}
+      end
+
       def steps_to_increase_version(level, commit_base = "HEAD", message = nil)
         tag = last_version_tag(commit_base)
         tag = tag.sub(/\+$/, '')
