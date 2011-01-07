@@ -101,7 +101,9 @@ describe StepUp::Driver::Git do
         @steps = <<-STEPS
         git fetch
 
-        git tag -a -m "  - removing files from gemspec
+        git tag -a -m "Test changes:
+        
+          - removing files from gemspec
             - .gitignore
             - lastversion.gemspec
           - loading default configuration yaml
@@ -138,7 +140,9 @@ describe StepUp::Driver::Git do
         @steps = <<-STEPS
         git fetch
 
-        git tag -a -m "  - removing files from gemspec
+        git tag -a -m "Test changes:
+        
+          - removing files from gemspec
             - .gitignore
             - lastversion.gemspec
           - loading default configuration yaml

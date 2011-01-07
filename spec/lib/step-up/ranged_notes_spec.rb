@@ -56,6 +56,8 @@ describe StepUp::RangedNotes do
       it "should get the changelog message without objects" do
         @notes.notes.as_hash.should respond_to :to_changelog
         changelog = <<-EOF
+        Test changes:
+        
           - removing files from gemspec
             - .gitignore
             - lastversion.gemspec
@@ -73,6 +75,8 @@ describe StepUp::RangedNotes do
       it "should get the changelog message with objects" do
         @notes.notes.as_hash.should respond_to :to_changelog
         changelog = <<-EOF
+        Test changes:
+        
           - removing files from gemspec (8299243c7dac8f27c3572424a348a7f83ef0ce28)
             - .gitignore
             - lastversion.gemspec

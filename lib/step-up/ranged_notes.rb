@@ -122,9 +122,9 @@ module StepUp
   module NotesHash
     def to_changelog(options = {})
       changelog = []
-      CONFIG.notes_sections.names.each_with_index do |section, index|
+      CONFIG.notes_sections.names.each do |section|
         next unless has_key?(section)
-        changelog << "#{ CONFIG.notes_sections.label(section) }\n" unless index.zero?
+        changelog << "#{ CONFIG.notes_sections.label(section) }\n"
         self[section].each do |note|
           message = note[1]
           message = message.sub(/$/, " (#{ note[0] })") if options[:mode] == :with_objects
