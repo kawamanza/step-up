@@ -1,0 +1,31 @@
+notes:
+  after_versioned:
+    #strategy: "remove"
+    strategy: "keep"
+    section: "versioning"
+    changelog_message: "available on {version}"
+  sections:
+    - name: "changes"
+      prefix: "change: "
+      label: "Changes:"
+      tag: "change"
+    - name: "bugfixes"
+      prefix: "bugfix: "
+      label: "Bugfixes:"
+      tag: "bugfix"
+    - name: "features"
+      prefix: "feature: "
+      label: "Features:"
+      tag: "feature"
+    - name: "deploy_steps"
+      prefix: "deploy_step: "
+      label: "Deploy steps:"
+      tag: "deploy_step"
+versioning:
+  version_mask: "v0.0.0.9.rc9"
+  version_levels:
+    - major
+    - minor
+    - tiny
+    - patch
+    - rc
