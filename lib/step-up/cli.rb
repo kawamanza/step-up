@@ -163,6 +163,11 @@ module StepUp
       message = get_notes(true, options[:message])
       message = edit_message(driver.class::VERSION_MESSAGE_FILE_PATH, message) unless options[:'no-editor']
 
+      if message.strip.empty?
+        puts "\ninvalid version message: too short"
+        return
+      end
+
       if version_levels.include? level
         steps = driver.steps_to_increase_version(level, "HEAD", message)
         print_or_run(steps, options[:steps])
