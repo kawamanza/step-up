@@ -160,7 +160,7 @@ module StepUp
 
     def version_create
       level = options[:level] || version_levels.last
-      message = get_notes(true, options[:message])
+      message = get_notes(true, get_custom_message)
       message = edit_message(driver.class::VERSION_MESSAGE_FILE_PATH, message) unless options[:'no-editor']
 
       if message.strip.empty?
@@ -211,7 +211,7 @@ module StepUp
     def get_notes(clean = options[:clean], custom_message = nil)
       changelog_options = {}
       changelog_options[:mode] = :with_objects unless clean
-      changelog_options[:custom_message] ||= custom_message
+      changelog_options[:custom_message] = custom_message
       notes = (options[:since].nil? ? ranged_notes.notes : ranged_notes.all_notes)
       notes.as_hash.to_changelog(changelog_options)
     end
@@ -263,5 +263,9 @@ module StepUp
       end
     end
     
+    def get_custom_message
+      message = options[:message]
+      (message && !message.strip.empty?) ? message : nil
+    end
   end
 end
