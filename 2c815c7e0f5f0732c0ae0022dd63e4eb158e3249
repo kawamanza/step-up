@@ -1,0 +1,4 @@
+command line 'changelog', with some formats
+  default format (similar to git-log)
+  wiki format
+  HTML format
