@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'time'
 
 describe StepUp::Driver::Git do
   before do
