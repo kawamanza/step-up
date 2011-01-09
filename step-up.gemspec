@@ -10,9 +10,9 @@ Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Marcelo Manzan", "Eric Adrien Fer"]
   s.email       = ["manzan@gmail.com", "eric.fer@gmail.com"]
-  s.homepage    = "https://github.com/redoc/step-up"
+  s.homepage    = "https://github.com/kawamanza/step-up"
   s.summary     = %q{The best way to manage your project's versioning}
-  s.description = %q{StepUp manages a project's versioning through its entire life}
+  s.description = %q{StepUp manages a project's versioning through its entire lifecycle}
 
   s.required_rubygems_version = ">= 1.3.6"
   s.rubyforge_project         = "step-up"
