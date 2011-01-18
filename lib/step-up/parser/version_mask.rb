@@ -61,7 +61,7 @@ module StepUp
 
       def increase_version(version, level)
         v = parse version
-        level = version_levels.index(level)
+        level = CONFIG.versioning.version_levels.index(level)
         (v.size-level).times do |index|
           v[level+index] = (index.zero? ? (v[level+index] || 0) + 1 : nil)
         end
@@ -70,12 +70,6 @@ module StepUp
 
       def blank
         format mask.size.times.map{ 0 }
-      end
-
-      private
-
-      def version_levels
-        CONFIG["versioning"]["version_levels"]
       end
     end
   end

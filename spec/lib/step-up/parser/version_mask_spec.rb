@@ -39,7 +39,7 @@ describe StepUp::Parser::VersionMask do
 
   context "increasing version" do
     before do
-      @mask.stubs(:version_levels).returns(%w[major minor tiny patch build rc])
+      StepUp::CONFIG.versioning.stubs(:version_levels).returns(%w[major minor tiny patch build rc])
     end
     it "should increase by levels" do
       version = "v2.3.1.6.4.rc5"
