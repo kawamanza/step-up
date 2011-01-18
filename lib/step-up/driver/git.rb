@@ -30,8 +30,8 @@ module StepUp
         commit_history(commit_base, *args)
       end
 
-      def all_tags
-        `git tag -l`.split("\n")
+      def tags
+        @tags ||= `git tag -l`
       end
 
       def objects_with_notes_of(ref)
@@ -47,7 +47,7 @@ module StepUp
       end
 
       def all_version_tags
-        @version_tags ||= all_tags.map{ |tag| mask.parse(tag) }.compact.sort.map{ |tag| mask.format(tag) }.reverse
+        @version_tags ||= tags.scan(mask.regex).map{ |tag| tag.collect(&:to_i) }.sort.map{ |tag| mask.format(tag) }.reverse
       end
 
       def version_tag_info(tag)

@@ -2,58 +2,29 @@ module StepUp
   module Parser
     class VersionMask
       attr_reader :mask
-      attr_reader :iterator
+      attr_reader :to_regex, :regex
       def initialize(mask)
-        @mask = mask.scan(/\D+[09]/)
-        raise ArgumentError if mask != @mask.join
-        @iterator = @mask.map do |token|
-          Regexp.new token.sub(/\./, '\\.').sub(/[09]$/,'(\d+)')
-        end
-      end
-
-      def to_regex
-        re = []
-        mask.each_with_index do |level, index|
-          re << "(?:#{ iterator[index].source })#{ '?' if level.end_with?('9') }"
-        end
-        re.join
+        raise ArgumentError if mask.nil? || mask =~ /[1-8]|[09][09]|9.+0/
+        @mask = mask.scan(/(\D*)([09])/)
+        @to_regex = ""
+        @mask.each { |level| @to_regex << "(?:#{level.first.gsub(/([\\\.\*\?\{\}\(\)\[\]])/, '\\\\\1')}(\\d+))#{'?' if level.last == '9'}" }
+        @regex = /^#{to_regex}$/
       end
 
       def parse(version)
         return unless version.is_a?(String)
-        i = 0
-        v = []
-        iterator.each_with_index do |pattern, index|
-          pos = version.index(pattern, i)
-          if pos.nil?
-            if mask[index] =~ /9$/
-              v << 0
-            else
-              return
-            end
-          else
-            if pos == i
-              n = $1
-              i += mask[index].size + n.size - 1
-              v << n.to_i
-            elsif mask[index] =~ /9$/
-              v << 0
-            else
-              return
-            end
-          end
-        end
-        v
+        v = version.scan(regex).first
+        v.nil? ? nil : v.collect(&:to_i)
       end
 
       def format(version)
         raise ArgumentError unless version.is_a?(Array) && version.size == mask.size
         v = []
-        iterator.each_with_index do |pattern, index|
+        mask.each_with_index do |part, index|
           level = version[index] || 0
           raise ArgumentError unless level.is_a?(Fixnum)
-          unless level.zero? && mask[index] =~ /9$/
-            v << mask[index].sub(/[09]$/, level.to_s)
+          unless level.zero? && part.last == '9'
+            v << "#{part.first}#{level}"
           end
         end
         v.join
