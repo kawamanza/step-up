@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe StepUp::CONFIG do
+describe "StepUp::CONFIG" do
   before do
     @c = StepUp::CONFIG
   end
