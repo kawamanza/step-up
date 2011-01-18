@@ -17,7 +17,7 @@ module StepUp
         options = args.last.is_a?(Hash) ? args.pop : {}
         top = args.shift
         top = "-n#{ top }" unless top.nil?
-        commits = `git log --pretty=oneline --no-color --no-notes #{ top } #{ commit_base }`
+        commits = `git log --pretty=oneline --no-color #{ top } #{ commit_base }`
         if options[:with_messages]
           commits.split(/\n/).map{ |commit| commit =~ /^(\w+)\s+(.*)$/ ? [$1, $2] : nil }
         else
