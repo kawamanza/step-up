@@ -11,6 +11,7 @@ module StepUp
     desc "version ACTION [OPTIONS]", "manage versions of your project"
     method_options %w(levels -L) => :boolean # $ stepup version [--levels|-L]
     method_options %w(level -l) => :string, %w(steps -s) => :boolean, %w(message -m) => :string, :'no-editor' => :boolean  # $ stepup version create [--level|-l <level-name>] [--steps|-s] [--message|-m <comment-string>] [--no-editor]
+    method_options %w(mask -M) => :string # stepup version show --mask development_hudson_build_0
     VERSION_ACTIONS = %w[show create help]
     def version(action = nil)
       action = "show" unless VERSION_ACTIONS.include?(action)
@@ -154,7 +155,9 @@ module StepUp
           puts " - #{level}"
         end
       else
-        puts driver.last_version_tag("HEAD", true)
+        mask = options[:mask]
+        mask = nil if mask !~ /0/
+        puts driver(mask).last_version_tag("HEAD", true)
       end
     end
 
@@ -191,7 +194,8 @@ module StepUp
       end
     end
 
-    def driver
+    def driver(mask = nil)
+      return StepUp::Driver::Git.new mask unless mask.nil?
       @driver ||= StepUp::Driver::Git.new
     end
 

@@ -5,8 +5,8 @@ module StepUp
       
       include GitExtensions::Notes
       attr_reader :mask
-      def initialize
-        @mask = Parser::VersionMask.new(CONFIG.versioning.version_mask)
+      def initialize(mask = nil)
+        @mask = Parser::VersionMask.new(mask || CONFIG.versioning.version_mask)
       end
 
       def self.last_version
