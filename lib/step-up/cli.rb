@@ -43,7 +43,8 @@ module StepUp
         end
         puts "Adding attribute below to .git/config (remote.#{ remote })"
         puts "  fetch = +refs/notes/*:refs/notes/*"
-        `git config --add remote.#{ remote }.fetch +refs/notes/*:refs/notes/*`
+        cmds = ["git config --add remote.#{ remote }.fetch +refs/notes/*:refs/notes/*"]
+        print_or_run(cmds, false)
       end
     end
 
@@ -258,11 +259,12 @@ module StepUp
     end
     
     def print_or_run(steps, print)
+      options = {:capture => false}
       if print
         puts steps.join("\n")
       else
         steps.each do |step|
-          run step
+          run(step, options) || abort("Fail when running `#{step}`: exit status #{$?.exitstatus}")
         end
       end
     end
