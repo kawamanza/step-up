@@ -19,9 +19,9 @@ module StepUp
         top = "-n#{ top }" unless top.nil?
         commits = `git log --pretty=oneline --no-color #{ top } #{ commit_base }`
         if options[:with_messages]
-          commits.split(/\n/).map{ |commit| commit =~ /^(\w+)\s+(.*)$/ ? [$1, $2] : nil }
+          commits.scan(/^(\w+)\s+(.*)$/)
         else
-          commits.gsub(/^(\w+)\s.*$/, '\1').split(/\n/)
+          commits.scan(/^(\w+)\s/).flatten
         end
       end
 
