@@ -259,13 +259,20 @@ module StepUp
     end
     
     def print_or_run(steps, print)
-      options = {:capture => false}
+      opts = {:capture => false}
       if print
-        puts steps.join("\n")
+        steps.each{ |step| say_status :step, step, :green }
       else
+        status = true
         steps.each do |step|
-          run(step, options) || abort("Fail when running `#{step}`: exit status #{$?.exitstatus}")
+          if status
+            status = run(step, opts)
+            say_status(:fail, "Problems when running `#{step}` (exit status #{$?.exitstatus})", :red) unless status
+          else
+            say_status(:skip, step, :yellow)
+          end
         end
+        exit(1) unless status
       end
     end
     
