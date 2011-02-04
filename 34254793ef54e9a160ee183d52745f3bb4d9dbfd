@@ -1,0 +1,5 @@
+new steps added to stepup-init commandline
+  changing Gemfile of the project (if found)
+  creating lib/version.rb in the project
+  creating rake task to generate tempfile with the current version
+  Appending .gitignore to ignore CURRENT_VERSION tempfile
