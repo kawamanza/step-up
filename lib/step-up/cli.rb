@@ -25,13 +25,17 @@ module StepUp
     desc "init", "adds .stepuprc to your project and prepare your local repository to use notes"
     method_options :update => :boolean
     def init
+      # creates .stepuprc file
       content = File.read(File.expand_path("../config/step-up.yml", __FILE__))
       if options[:update] || ! File.exists?(".stepuprc")
-        puts "#{File.exists?(".stepuprc") ? 'updating' : 'creating' } .stepuprc"
+        say_status File.exists?(".stepuprc") ? :update : :create, ".stepuprc", :green
         File.open(".stepuprc", "w") do |f|
           f.write content
         end
+      else
+        say_status :skip, "Creating .stepuprc", :yellow
       end
+      # add entry to .git/config
       remotes_with_notes = driver.fetched_remotes('notes')
       unfetched_remotes = driver.fetched_remotes - remotes_with_notes
       unless remotes_with_notes.any? || unfetched_remotes.empty?
@@ -41,10 +45,66 @@ module StepUp
         else
           remote = unfetched_remotes.first
         end
-        puts "Adding attribute below to .git/config (remote.#{ remote })"
-        puts "  fetch = +refs/notes/*:refs/notes/*"
         cmds = ["git config --add remote.#{ remote }.fetch +refs/notes/*:refs/notes/*"]
         print_or_run(cmds, false)
+      end
+      # Changing Gemfile
+      if File.exists?("Gemfile")
+        gem_file = File.read("Gemfile")
+        if gem_file =~ /\bstep-up\b/
+          say_status :skip, "Adding dependency to step-up on Gemfile", :yellow
+        else
+          say_status :update, "Adding dependency to step-up on Gemfile", :green
+          content = File.read(File.expand_path(File.join(__FILE__, '..', '..', '..', 'templates', 'default', 'Gemfile')))
+          stepup_dependency = template_render(content)
+          File.open("Gemfile", "w") do |f|
+            f.write gem_file
+            f.write "\n" unless gem_file.end_with?("\n")
+            f.write stepup_dependency
+          end
+        end
+      else
+        say_status :skip, "Gemfile not found", :yellow
+      end
+      # Creating lib/version.rb
+      content = File.read(File.expand_path(File.join(__FILE__, '..', '..', '..', 'templates', 'default', 'lib', 'version.rb')))
+      new_version_rb = template_render(content)
+      Dir.mkdir('lib') unless File.exists?('lib')
+      if File.exists?("lib/version.rb")
+        version_rb = File.read("lib/version.rb")
+        if version_rb =~ /\bStepUp\b/
+          say_status :skip, "Creating lib/version.rb", :yellow
+        else
+          say_status :update, "Appending to lib/version.rb", :green
+          File.open("lib/version.rb", "w") do |f|
+            f.write version_rb
+            f.write "\n" unless version_rb.end_with?("\n")
+            f.write new_version_rb
+          end
+        end
+      else
+        say_status :create, "Creating lib/version.rb", :green
+        File.open("lib/version.rb", "w") do |f|
+          f.write new_version_rb
+        end
+      end
+      # Creating lib/tasks/versioning.rake
+      if File.exists?("lib/tasks/versioning.rake")
+        say_status :skip, "Creating lib/tasks/versioning.rake", :yellow
+      else
+        say_status :create, "Creating lib/tasks/versioning.rake", :green
+        content = File.read(File.expand_path(File.join(__FILE__, '..', '..', '..', 'templates', 'default', 'lib', 'tasks', 'versioning.rake')))
+        content = template_render(content)
+        Dir.mkdir('lib/tasks') unless File.exists?('lib/tasks')
+        File.open("lib/tasks/versioning.rake", "w") do |f|
+          f.write content
+        end
+      end
+      # Appending .gitignore
+      unless File.exists?(".gitignore") && File.read(".gitignore") =~ /^#{gsub_params['version_file']}$/
+        run "echo #{gsub_params['version_file']} >> .gitignore"
+      else
+        say_status :skip, "Adding #{gsub_params['version_file']} to .gitignore", :yellow
       end
     end
 
@@ -279,6 +339,18 @@ module StepUp
     def get_custom_message
       message = options[:message]
       (message && !message.strip.empty?) ? message : nil
+    end
+
+    def gsub_params
+      @gsub_params ||= {
+        'stepup_version' => StepUp::VERSION,
+        'version_file' => "CURRENT_VERSION",
+        'version_blank' => driver.mask.blank
+      }
+    end
+
+    def template_render(tmpl)
+      tmpl.gsub(/\{\{(.*?)\}\}/){ |m| gsub_params[$1] || m }
     end
   end
 end
