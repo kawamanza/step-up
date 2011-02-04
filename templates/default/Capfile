@@ -1,0 +1,8 @@
+
+after   "deploy:update_code"    , "stepup:version_file"
+namespace :stepup do
+  desc "[internal] Creates tempfile {{version_file}}"
+  task :version_file do
+    run %(cd #{current_release};rake stepup:version_file)
+  end
+end

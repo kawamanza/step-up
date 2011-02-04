@@ -89,15 +89,35 @@ module StepUp
         end
       end
       # Creating lib/tasks/versioning.rake
-      if File.exists?("lib/tasks/versioning.rake")
-        say_status :skip, "Creating lib/tasks/versioning.rake", :yellow
+      if File.exists?("Rakefile")
+        if File.exists?("lib/tasks/versioning.rake")
+          say_status :skip, "Creating lib/tasks/versioning.rake", :yellow
+        else
+          say_status :create, "Creating lib/tasks/versioning.rake", :green
+          content = File.read(File.expand_path(File.join(__FILE__, '..', '..', '..', 'templates', 'default', 'lib', 'tasks', 'versioning.rake')))
+          content = template_render(content)
+          Dir.mkdir('lib/tasks') unless File.exists?('lib/tasks')
+          File.open("lib/tasks/versioning.rake", "w") do |f|
+            f.write content
+          end
+        end
       else
-        say_status :create, "Creating lib/tasks/versioning.rake", :green
-        content = File.read(File.expand_path(File.join(__FILE__, '..', '..', '..', 'templates', 'default', 'lib', 'tasks', 'versioning.rake')))
-        content = template_render(content)
-        Dir.mkdir('lib/tasks') unless File.exists?('lib/tasks')
-        File.open("lib/tasks/versioning.rake", "w") do |f|
-          f.write content
+        say_status :ignore, "Ignoring creation of lib/tasks/versioning.rake", :yellow
+      end
+      # Updating Capfile
+      content = File.read(File.expand_path(File.join(__FILE__, '..', '..', '..', 'templates', 'default', 'Capfile')))
+      content = template_render(content)
+      if File.exists?("Capfile") && File.exists?("Rakefile")
+        cap_file = File.read("Capfile")
+        if cap_file =~ /\bstepup\b/
+          say_status :skip, "Appending to Capfile", :yellow
+        else
+          say_status :update, "Appending to Capfile", :green
+          File.open("Capfile", "w") do |f|
+            f.write cap_file
+            f.write "\n" unless cap_file.end_with?("\n")
+            f.write content
+          end
         end
       end
       # Appending .gitignore
