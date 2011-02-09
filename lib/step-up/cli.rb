@@ -39,7 +39,15 @@ module StepUp
       if File.exists?("Gemfile")
         gem_file = File.read("Gemfile")
         if gem_file =~ /\bstep-up\b/
-          say_status :skip, "Adding dependency to step-up on Gemfile", :yellow
+          regex = /^(\s*gem\s+(?:'step-up'|"step-up")\s*,\s*['"])((?:~>|=>|=)\s*.*?)(['"])/
+          if gem_file =~ regex && ! $2.end_with?(StepUp::VERSION)
+            say_status :update, "Updating dependency to step-up on Gemfile", :green
+            File.open("Gemfile", "w") do |f|
+              f.write gem_file.gsub(regex, '\1~> '+StepUp::VERSION+'\3')
+            end
+          else
+            say_status :skip, "Adding dependency to step-up on Gemfile", :yellow
+          end
         else
           say_status :update, "Adding dependency to step-up on Gemfile", :green
           content = File.read(File.expand_path(File.join(__FILE__, '..', '..', '..', 'templates', 'default', 'Gemfile')))
