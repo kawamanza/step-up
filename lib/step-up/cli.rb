@@ -75,16 +75,23 @@ module StepUp
           f.write new_version_rb
         end
       end
-      # Creating lib/tasks/versioning.rake
+      # Updating Rakefile
       if File.exists?("Rakefile")
-        if File.exists?("lib/tasks/versioning.rake")
-          say_status :skip, "Creating lib/tasks/versioning.rake", :yellow
+        content = File.read(File.expand_path(File.join(__FILE__, '..', '..', '..', 'templates', 'default', 'Rakefile')))
+        content = template_render(content)
+        if File.exists?("lib/tasks/versioning.rake") && File.read("lib/tasks/versioning.rake") =~ /\bstep-up\b/
+          content = File.read("lib/tasks/versioning.rake")
+          say_status :remove, "Removing lib/tasks/versioning.rake", :blue
+          `rm lib/tasks/versioning.rake`
+        end
+        rake_file = File.read("Rakefile")
+        if rake_file =~ /\bstep-up\b/
+          say_status :skip, "Appending to Rakefile", :yellow
         else
-          say_status :create, "Creating lib/tasks/versioning.rake", :green
-          content = File.read(File.expand_path(File.join(__FILE__, '..', '..', '..', 'templates', 'default', 'lib', 'tasks', 'versioning.rake')))
-          content = template_render(content)
-          Dir.mkdir('lib/tasks') unless File.exists?('lib/tasks')
-          File.open("lib/tasks/versioning.rake", "w") do |f|
+          say_status :update, "Appending to Rakefile", :green
+          File.open("Rakefile", "w") do |f|
+            f.write rake_file
+            f.write "\n" unless rake_file.end_with?("\n")
             f.write content
           end
         end
@@ -92,9 +99,9 @@ module StepUp
         say_status :ignore, "Ignoring creation of lib/tasks/versioning.rake", :yellow
       end
       # Updating Capfile
-      content = File.read(File.expand_path(File.join(__FILE__, '..', '..', '..', 'templates', 'default', 'Capfile')))
-      content = template_render(content)
       if File.exists?("Capfile") && File.exists?("Rakefile")
+        content = File.read(File.expand_path(File.join(__FILE__, '..', '..', '..', 'templates', 'default', 'Capfile')))
+        content = template_render(content)
         cap_file = File.read("Capfile")
         if cap_file =~ /\bstepup\b/
           say_status :skip, "Appending to Capfile", :yellow
