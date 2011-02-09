@@ -35,19 +35,6 @@ module StepUp
       else
         say_status :skip, "Creating .stepuprc", :yellow
       end
-      # add entry to .git/config
-      remotes_with_notes = driver.fetched_remotes('notes')
-      unfetched_remotes = driver.fetched_remotes - remotes_with_notes
-      unless remotes_with_notes.any? || unfetched_remotes.empty?
-        if unfetched_remotes.size > 1
-          remote = choose(unfetched_remotes, "Which remote would you like to fetch notes?")
-          return unless unfetched_remotes.include?(remote)
-        else
-          remote = unfetched_remotes.first
-        end
-        cmds = ["git config --add remote.#{ remote }.fetch +refs/notes/*:refs/notes/*"]
-        print_or_run(cmds, false)
-      end
       # Changing Gemfile
       if File.exists?("Gemfile")
         gem_file = File.read("Gemfile")
@@ -150,7 +137,7 @@ module StepUp
         action = "show"
       end
       if self.respond_to?("notes_#{action}")
-        send("notes_#{action}", commit_base)
+        check_notes_config && send("notes_#{action}", commit_base)
       else
         puts "invalid action: #{action}"
       end
@@ -354,6 +341,24 @@ module StepUp
         end
         exit(1) unless status
       end
+    end
+
+    def check_notes_config
+      remotes_with_notes = driver.fetched_remotes('notes')
+      unfetched_remotes = driver.fetched_remotes - remotes_with_notes
+      unless remotes_with_notes.any? || unfetched_remotes.empty?
+        answer = raw_ask("To perform this operation you need some additional fetch instruction on your git-config file.\nMay stepup add the missing instruction for you? [yes/no]:")
+        return false unless answer == "yes"
+        if unfetched_remotes.size > 1
+          remote = choose(unfetched_remotes, "Which remote would you like to fetch notes?")
+          return false unless unfetched_remotes.include?(remote)
+        else
+          remote = unfetched_remotes.first
+        end
+        cmds = ["git config --add remote.#{remote}.fetch +refs/notes/*:refs/notes/*", "git fetch #{remote}"]
+        print_or_run(cmds, false)
+      end
+      true
     end
     
     def get_custom_message
