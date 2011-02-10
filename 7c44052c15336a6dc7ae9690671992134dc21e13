@@ -1,0 +1,2 @@
+The command 'stepup init' now updates Rakefile instead of creates lib/tasks/versioning.rake
+The command 'stepup init' now updates Gemfile with the current installed step-up gem
