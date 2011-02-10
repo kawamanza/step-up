@@ -1,7 +1,7 @@
 notes:
   after_versioned:
-    strategy: "remove"
-    #strategy: "keep"
+    #strategy: "remove"
+    strategy: "keep"
     section: "versioning"
     changelog_message: "available on {version}"
   sections:
