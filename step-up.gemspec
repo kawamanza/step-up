@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.name        = "step-up"
   s.version     = StepUp::VERSION
   s.platform    = Gem::Platform::RUBY
-  s.authors     = ["Marcelo Manzan", "Eric Adrien Fer"]
+  s.authors     = ["Marcelo Manzan", "Eric Fer"]
   s.email       = ["manzan@gmail.com", "eric.fer@gmail.com"]
   s.homepage    = "https://github.com/kawamanza/step-up"
   s.summary     = %q{The best way to manage your project's versioning}
