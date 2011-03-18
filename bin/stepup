@@ -4,6 +4,8 @@ require 'step-up/cli'
 
 begin
   StepUp::CLI.start
+rescue SystemExit => e
+  raise e
 rescue Exception => e
-  puts e.message
+  puts "StepUp Exception: #{e.message}"
 end

@@ -251,7 +251,7 @@ module StepUp
 
       if message.strip.empty?
         puts "\ninvalid version message: too short"
-        return
+        exit(1)
       end
 
       if version_levels.include? level
@@ -259,6 +259,7 @@ module StepUp
         print_or_run(steps, options[:steps])
       else
         puts "invalid version create option: #{level}"
+        exit(1)
       end
     end
     
