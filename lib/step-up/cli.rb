@@ -188,7 +188,7 @@ module StepUp
       created_at = tag_info[:date].strftime("%b/%d %Y %H:%M %z")
       log = []
       log << "== #{tag} (#{created_at} by #{tag_info[:tagger]}) ==\n"
-      log << tag_info[:message].gsub(/^(\s+)-/, '\1*')
+      log << tag_info[:message].gsub(/^(?:\t\t|\s\s\s\s)-\s/, "** ").gsub(/^(?:\t|\s\s)-\s/, "* ")
       log.join("\n")
     end
 
