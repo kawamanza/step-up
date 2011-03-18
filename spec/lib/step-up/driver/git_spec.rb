@@ -3,7 +3,7 @@ require 'time'
 
 describe StepUp::Driver::Git do
   before do
-    @driver = StepUp::Driver::Git.new
+    @driver = StepUp::Driver::Git.new("v0.0.0.9.rc9")
   end
 
 
