@@ -18,7 +18,7 @@ module StepUp
     end
 
     def all_notes
-      (visible_detached_notes + scoped_attached_notes + scoped_commit_notes).sort.reverse.extend NotesArray
+      (visible_detached_notes + scoped_commit_notes + scoped_attached_notes).sort.reverse.extend NotesArray
     end
 
     def notes_of(commit)
@@ -37,10 +37,13 @@ module StepUp
       unless defined? @scoped_tags
         tags = []
         commits = scoped_commits.collect(&:first)
-        driver.all_version_tags.each do |version_tag|
+        all_version_tags = driver.all_version_tags
+        all_version_tags.each do |version_tag|
           object = driver.commit_history(version_tag, 1).first
           tags << version_tag if commits.include?(object)
         end
+        last_tag_version = all_version_tags[(all_version_tags.index(tags.last).next)]
+        tags << last_tag_version if last_tag_version
         @scoped_tags = tags
       end
       @scoped_tags
