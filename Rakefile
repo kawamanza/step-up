@@ -21,19 +21,21 @@ end
 
 desc "Build the gem"
 task :build do
+  gem_name = 'step-up'
   opers = Dir.glob('*.gem')
   opers = ["rm #{ opers.join(' ') }"] unless opers.empty?
-  opers << ["gem build step-up.gemspec"]
+  opers << ["gem build #{gem_name}.gemspec"]
   sh opers.join(" && ")
 end
 
 desc "Build and install the gem, removing old installation"
 task :install => :build do
   gem = Dir.glob('*.gem').first
+  gem_name = 'step-up'
   if gem.nil?
     puts "could not install the gem"
   else
-    sh "gem uninstall --ignore-dependencies --executables step-up; gem install #{ gem }"
+    sh "gem uninstall --ignore-dependencies --executables #{gem_name}; gem install #{ gem }"
   end
 end
 
