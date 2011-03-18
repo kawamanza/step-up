@@ -194,7 +194,11 @@ module StepUp
 
     def notes_show(commit_base = nil)
       message = []
-      message << "Showing notes since #{ options[:since] }#{ " (including notes of tags: #{ ranged_notes.scoped_tags.join(", ")})" if ranged_notes.scoped_tags.any? }" unless options[:since].nil?
+      unless options[:since].nil?
+        message_header = "Showing notes since #{ options[:since] }"
+        message_header << " (including notes of tags: #{ ranged_notes.scoped_tags.join(", ")})" if ranged_notes.scoped_tags.any?
+        message << message_header
+      end
       message << "---"
       message << get_notes
       puts message.join("\n")
@@ -295,23 +299,23 @@ module StepUp
 
     def ranged_notes
       unless defined? @ranged_notes
-        tag = options[:since] || driver.last_version_tag
-        if tag =~ /[1-9]/
-          tag = tag.gsub(/\+\d*$/, '')
+        initial_tag = options[:since] || driver.last_version_tag
+        if initial_tag =~ /[1-9]/
+          initial_tag = initial_tag.gsub(/\+\d*$/, '')
         else
-          tag = nil
+          initial_tag = nil
         end
-        @ranged_notes = StepUp::RangedNotes.new(driver, tag, "HEAD")
+        @ranged_notes = StepUp::RangedNotes.new(driver, initial_tag, "HEAD")
       end
       @ranged_notes
     end
 
     def get_notes(clean = options[:clean], custom_message = nil)
-      changelog_options = {}
-      changelog_options[:mode] = :with_objects unless clean
-      changelog_options[:custom_message] = custom_message
+      notes_options = {}
+      notes_options[:mode] = :with_objects unless clean
+      notes_options[:custom_message] = custom_message
       notes_hash = (options[:since].nil? ? driver.cached_detached_notes_as_hash("HEAD") : ranged_notes.all_notes.as_hash)
-      notes_hash.to_changelog(changelog_options)
+      notes_hash.to_changelog(notes_options)
     end
 
     def choose(list, statement)
