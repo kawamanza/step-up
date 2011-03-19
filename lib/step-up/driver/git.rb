@@ -1,6 +1,6 @@
 module StepUp
   module Driver
-    class Git
+    class Git < Base
       VERSION_MESSAGE_FILE_PATH = ".git/TAG_EDITMSG"
       
       include GitExtensions::Notes
