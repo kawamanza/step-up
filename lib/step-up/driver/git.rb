@@ -4,10 +4,6 @@ module StepUp
       VERSION_MESSAGE_FILE_PATH = ".git/TAG_EDITMSG"
       
       include GitExtensions::Notes
-      attr_reader :mask
-      def initialize(mask = nil)
-        @mask = Parser::VersionMask.new(mask || CONFIG.versioning.version_mask)
-      end
 
       def self.last_version
         new.last_version_tag
