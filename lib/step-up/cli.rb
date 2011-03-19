@@ -310,8 +310,8 @@ module StepUp
       changelog_options = {}
       changelog_options[:mode] = :with_objects unless clean
       changelog_options[:custom_message] = custom_message
-      notes = (options[:since].nil? ? ranged_notes.notes : ranged_notes.all_notes)
-      notes.as_hash.to_changelog(changelog_options)
+      notes_hash = (options[:since].nil? ? driver.cached_detached_notes_as_hash("HEAD") : ranged_notes.all_notes.as_hash)
+      notes_hash.to_changelog(changelog_options)
     end
 
     def choose(list, statement)
