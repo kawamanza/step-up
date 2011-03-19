@@ -245,13 +245,23 @@ module StepUp
     end
 
     def version_create
-      level = options[:level] || version_levels.last
+      level = options[:level] || "auto"
       message = get_notes(true, get_custom_message)
       message = edit_message(driver.class::VERSION_MESSAGE_FILE_PATH, message) unless options[:'no-editor']
 
       if message.strip.empty?
         puts "\ninvalid version message: too short"
         exit(1)
+      end
+
+      if level == "auto" && CONFIG.versioning.auto_increment.is_a?(Hash)
+        detached_notes = driver.cached_detached_notes_as_hash("HEAD")
+        level = version_levels.last
+        version_levels.reverse.each do |name|
+          sections = CONFIG.versioning.auto_increment.sections_level[name]
+          next if sections.nil?
+          level = name if detached_notes.any?{ |section, notes| sections.include?(section) && notes.any? }
+        end
       end
 
       if version_levels.include? level
@@ -338,7 +348,7 @@ module StepUp
     end
 
     def version_levels
-      CONFIG["versioning"]["version_levels"]
+      CONFIG.versioning.version_levels
     end
     
     def print_or_run(steps, print)
