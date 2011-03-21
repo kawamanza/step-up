@@ -115,7 +115,7 @@ describe StepUp::Driver::Git do
         
         Test bugfixes:
         
-          - sorting tags according to the mask parser" v0.1.0
+          - sorting tags according to the mask parser" v0.1.0 f4cfcc2
 
         git push --tags
 
@@ -154,7 +154,7 @@ describe StepUp::Driver::Git do
         
         Test bugfixes:
         
-          - sorting tags according to the mask parser" v0.1.0
+          - sorting tags according to the mask parser" v0.1.0 f4cfcc2
 
         git push --tags
 

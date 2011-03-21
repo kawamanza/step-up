@@ -67,7 +67,7 @@ module StepUp
         notes = cached_detached_notes_as_hash(commit_base)
         commands = []
         commands << "git fetch"
-        commands << "git tag -a -m \"#{ (message || notes.to_changelog).gsub(/([\$\\"])/, '\\\\\1') }\" #{ new_tag }"
+        commands << "git tag -a -m \"#{ (message || notes.to_changelog).gsub(/([\$\\"])/, '\\\\\1') }\" #{ new_tag } #{ commit_base }"
         commands << "git push --tags"
         commands + steps_for_archiving_notes(notes, new_tag)
       end
@@ -75,7 +75,7 @@ module StepUp
       def last_version_tag(commit_base = "HEAD", count_commits = false)
         all_versions = all_version_tags
         unless all_versions.empty?
-          commits = commit_history(commit_base)
+          commits = cached_commit_history(commit_base)
           all_versions.each do |tag|
             commit_under_the_tag = commit_history(tag, 1).first
             index = commits.index(commit_under_the_tag)
