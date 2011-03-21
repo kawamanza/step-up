@@ -38,12 +38,16 @@ module StepUp
         tags = []
         commits = scoped_commits.collect(&:first)
         all_version_tags = driver.all_version_tags
-        all_version_tags.each do |version_tag|
-          object = driver.commit_history(version_tag, 1).first
-          tags << version_tag if commits.include?(object)
+        unless all_version_tags.empty?
+          all_version_tags.each do |version_tag|
+            object = driver.commit_history(version_tag, 1).first
+            tags << version_tag if commits.include?(object)
+          end
+          unless tags.empty?
+            last_tag_version = all_version_tags[(all_version_tags.index(tags.last).next)]
+            tags << last_tag_version if last_tag_version
+          end
         end
-        last_tag_version = all_version_tags[(all_version_tags.index(tags.last).next)]
-        tags << last_tag_version if last_tag_version
         @scoped_tags = tags
       end
       @scoped_tags
