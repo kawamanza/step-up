@@ -3,18 +3,23 @@ require 'step-up'
 
 module StepUp
   class CLI < Thor
+    attr_reader :commit_object
     include Thor::Actions
     map %w(--version -v) => :gem_version  # $ stepup [--version|-v]
     
     default_task :version
 
-    desc "version ACTION [OPTIONS]", "manage versions of your project"
+    desc "version ACTION [base_object] [OPTIONS]", "manage versions of your project"
     method_options %w(levels -L) => :boolean # $ stepup version [--levels|-L]
     method_options %w(level -l) => :string, %w(steps -s) => :boolean, %w(message -m) => :string, :'no-editor' => :boolean  # $ stepup version create [--level|-l <level-name>] [--steps|-s] [--message|-m <comment-string>] [--no-editor]
     method_options %w(mask -M) => :string # stepup version show --mask development_hudson_build_0
     VERSION_ACTIONS = %w[show create help]
-    def version(action = nil)
-      action = "show" unless VERSION_ACTIONS.include?(action)
+    def version(action = nil, commit_base = nil)
+      unless VERSION_ACTIONS.include?(action)
+        commit_base ||= action
+        action = "show"
+      end
+      @commit_object = commit_base
       if self.respond_to?("version_#{action}")
         send("version_#{action}")
       else
@@ -144,15 +149,16 @@ module StepUp
       puts log.join("\n\n")
     end
 
-    desc "notes ACTION [object] [OPTIONS]", "show notes for the next version"
+    desc "notes ACTION [base_object] [OPTIONS]", "show notes for the next version"
     method_options :clean => :boolean, :steps => :boolean, :"-m" => :string, :since => :string
     def notes(action = "show", commit_base = nil)
       unless %w[show add remove help].include?(action)
         commit_base ||= action
         action = "show"
       end
+      @commit_object = commit_base
       if self.respond_to?("notes_#{action}")
-        check_notes_config && send("notes_#{action}", commit_base)
+        check_notes_config && send("notes_#{action}")
       else
         puts "invalid action: #{action}"
       end
@@ -192,7 +198,7 @@ module StepUp
       log.join("\n")
     end
 
-    def notes_show(commit_base = nil)
+    def notes_show
       message = []
       unless options[:since].nil?
         message_header = "Showing notes since #{ options[:since] }"
@@ -204,9 +210,8 @@ module StepUp
       puts message.join("\n")
     end
 
-    def notes_remove(commit_base)
-      commit_base = "HEAD" if commit_base.nil?
-      ranged_notes = StepUp::RangedNotes.new(driver, nil, commit_base)
+    def notes_remove
+      ranged_notes = StepUp::RangedNotes.new(driver, nil, commit_object || "HEAD")
       notes = ranged_notes.notes_of(ranged_notes.last_commit).as_hash
       sections = notes.keys
       if sections.empty?
@@ -244,7 +249,7 @@ module StepUp
       else
         mask = options[:mask]
         mask = nil if mask !~ /0/
-        puts driver(mask).last_version_tag("HEAD", true)
+        puts driver(mask).last_version_tag(commit_object || "HEAD", true)
       end
     end
 
@@ -259,7 +264,7 @@ module StepUp
       end
 
       if level == "auto" && CONFIG.versioning.auto_increment.is_a?(Hash)
-        detached_notes = driver.cached_detached_notes_as_hash("HEAD")
+        detached_notes = driver.cached_detached_notes_as_hash(commit_object || "HEAD")
         level = version_levels.last
         version_levels.reverse.each do |name|
           sections = CONFIG.versioning.auto_increment.sections_level[name]
@@ -269,7 +274,7 @@ module StepUp
       end
 
       if version_levels.include? level
-        steps = driver.steps_to_increase_version(level, "HEAD", message)
+        steps = driver.steps_to_increase_version(level, commit_object || "HEAD", message)
         print_or_run(steps, options[:steps])
       else
         puts "invalid version create option: #{level}"
@@ -299,13 +304,13 @@ module StepUp
 
     def ranged_notes
       unless defined? @ranged_notes
-        initial_tag = options[:since] || driver.last_version_tag
+        initial_tag = options[:since] || driver.cached_last_version_tag(commit_object || "HEAD")
         if initial_tag =~ /[1-9]/
           initial_tag = initial_tag.gsub(/\+\d*$/, '')
         else
           initial_tag = nil
         end
-        @ranged_notes = StepUp::RangedNotes.new(driver, initial_tag, "HEAD")
+        @ranged_notes = StepUp::RangedNotes.new(driver, initial_tag, commit_object || "HEAD")
       end
       @ranged_notes
     end
@@ -314,7 +319,7 @@ module StepUp
       notes_options = {}
       notes_options[:mode] = :with_objects unless clean
       notes_options[:custom_message] = custom_message
-      notes_hash = (options[:since].nil? ? driver.cached_detached_notes_as_hash("HEAD") : ranged_notes.all_notes.as_hash)
+      notes_hash = (options[:since].nil? ? driver.cached_detached_notes_as_hash(commit_object || "HEAD") : ranged_notes.all_notes.as_hash)
       notes_hash.to_changelog(notes_options)
     end
 
