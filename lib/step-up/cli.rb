@@ -151,6 +151,7 @@ module StepUp
 
     desc "notes ACTION [base_object] [OPTIONS]", "show notes for the next version"
     method_options :clean => :boolean, :steps => :boolean, :"-m" => :string, :since => :string
+    method_options :fetch => :boolean
     def notes(action = "show", commit_base = nil)
       unless %w[show add remove help].include?(action)
         commit_base ||= action
@@ -381,8 +382,9 @@ module StepUp
     def check_notes_config
       remotes_with_notes = driver.fetched_remotes('notes')
       unfetched_remotes = driver.fetched_remotes - remotes_with_notes
+      cmds = []
       unless remotes_with_notes.any? || unfetched_remotes.empty?
-        answer = raw_ask("To perform this operation you need some additional fetch instruction on your git-config file.\nMay stepup add the missing instruction for you? [yes/no]:")
+        answer = options[:fetch] ? "yes" : raw_ask("To perform this operation you need some additional fetch instruction on your git-config file.\nMay stepup add the missing instruction for you? [yes/no]:")
         return false unless answer == "yes"
         if unfetched_remotes.size > 1
           remote = choose(unfetched_remotes, "Which remote would you like to fetch notes?")
@@ -390,9 +392,10 @@ module StepUp
         else
           remote = unfetched_remotes.first
         end
-        cmds = ["git config --add remote.#{remote}.fetch +refs/notes/*:refs/notes/*", "git fetch #{remote}"]
-        print_or_run(cmds, false)
+        cmds << "git config --add remote.#{remote}.fetch +refs/notes/*:refs/notes/*" unless remote.nil?
       end
+      cmds << "git fetch #{remote}" if options[:fetch] || cmds.any?
+      print_or_run(cmds, false) unless cmds.empty?
       true
     end
     
