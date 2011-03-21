@@ -229,14 +229,14 @@ module StepUp
       end
     end
 
-    def notes_add(commit_base = nil)
+    def notes_add
       message = options[:m] 
       message = nil if options[:m] =~ /^(|m)$/
       message ||= get_message("Note message:\n>>", " >")
       unless message.empty?
         section = choose(CONFIG.notes_sections.names, "Choose a section to add the note:")
         return if section.nil? || ! CONFIG.notes_sections.names.include?(section)
-        steps = driver.steps_for_add_notes(section, message, commit_base)
+        steps = driver.steps_for_add_notes(section, message, commit_object)
         print_or_run(steps, options[:steps])
       end
     end
