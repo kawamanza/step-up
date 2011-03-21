@@ -1,0 +1,2 @@
+option '--fetch' added to command line 'notes'
+  this option auto adds fetch instruction to .git/config file
