@@ -264,7 +264,7 @@ module StepUp
         exit(1)
       end
 
-      if level == "auto" && CONFIG.versioning.auto_increment.is_a?(Hash)
+      if level == "auto" && CONFIG.versioning["auto_increment"].is_a?(Hash)
         detached_notes = driver.cached_detached_notes_as_hash(commit_object || "HEAD")
         level = version_levels.last
         version_levels.reverse.each do |name|
