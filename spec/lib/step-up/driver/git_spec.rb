@@ -117,7 +117,7 @@ describe StepUp::Driver::Git do
         
           - sorting tags according to the mask parser" v0.1.0 f4cfcc2
 
-        git push --tags
+        git push origin refs/tags/v0.1.0
 
         git notes --ref=test_changes remove 8299243c7dac8f27c3572424a348a7f83ef0ce28
 
@@ -156,7 +156,7 @@ describe StepUp::Driver::Git do
         
           - sorting tags according to the mask parser" v0.1.0 f4cfcc2
 
-        git push --tags
+        git push origin refs/tags/v0.1.0
 
         git notes --ref=test_versioning add -m "available on v0.1.0" 8299243c7dac8f27c3572424a348a7f83ef0ce28
 
