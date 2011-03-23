@@ -48,10 +48,17 @@ where **LEVEL_NAME**
 
 This command will ask user to input a message for the version and will increment the version number accordingly.
 
-Each level corresponds to a position in tha version mask.
+Each level corresponds to a position in the version mask.
 Considering default settings of .stepuprc, this means:
 
     v0.0.0.0 => vMAJOR.MINOR.PATCH.TINY
+
+The versioning increment is based on the last version tag found in the repository, and works as follows:
+
+    v0.5.3.2 => v0.5.3.3 (TINY increment)
+    v0.5.3.2 => v0.5.4   (PATCH increment)
+    v0.5.3.2 => v0.6.0   (MINOR increment)
+    v0.5.3.2 => v1.0.0   (MAJOR increment)
 
 ### Checking out the changelog
 
