@@ -48,7 +48,8 @@ module StepUp
 
       def version_tag_info(tag)
         full_message = `git show #{ tag }`
-        tag_message = full_message[/\A.*?\n\n(.*)\n\ncommit\s\w{40}\n/m, 1] || ""
+        tag_pattern = tag.gsub(/\./, '\\.')
+        tag_message = full_message[/^tag\s#{tag_pattern}.*?\n\n(.*?)\n\n(?:tag\s[^\s]+|commit\s\w{40})\n/m, 1] || ""
         tagger = full_message[/\A.*?\nTagger:\s(.*?)\s</m, 1]
         date = Time.parse(full_message[/\A.*?\nDate:\s+(.*?)\n/m, 1])
         {:message => tag_message, :tagger => tagger, :date => date}
