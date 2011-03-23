@@ -8,4 +8,5 @@ rescue SystemExit => e
   raise e
 rescue Exception => e
   puts "StepUp Exception: #{e.message}"
+  exit 1
 end
