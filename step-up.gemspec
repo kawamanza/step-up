@@ -7,7 +7,6 @@ require 'step-up'
 Gem::Specification.new do |s|
   s.name        = "step-up"
   s.version     = StepUp::VERSION
-  s.platform    = Gem::Platform::RUBY
   s.authors     = ["Marcelo Manzan", "Eric Fer"]
   s.email       = ["manzan@gmail.com", "eric.fer@gmail.com"]
   s.homepage    = "https://github.com/kawamanza/step-up"
@@ -30,6 +29,4 @@ Gem::Specification.new do |s|
   s.files              = `git ls-files`.split("\n") - excepts - tests
   s.test_files         = tests
   s.executables        = %w(stepup)
-  s.default_executable = "stepup"
-  s.require_paths      = ["lib"]
 end
