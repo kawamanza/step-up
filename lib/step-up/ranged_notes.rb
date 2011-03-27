@@ -5,7 +5,8 @@ module StepUp
 
     attr_reader :driver, :first_commit, :last_commit
 
-    def initialize(driver, first_commit = nil, last_commit = "HEAD")
+    def initialize(driver, first_commit = nil, last_commit = "HEAD", options={})
+      @include_initial_tag_notes = !options[:exclude_initial_tag_notes]
       @driver = driver
       @last_commit = driver.commit_history(last_commit, 1).first
       first_commit = driver.commit_history(first_commit, 1).first unless first_commit.nil?
@@ -43,9 +44,10 @@ module StepUp
             object = driver.commit_history(version_tag, 1).first
             tags << version_tag if commits.include?(object)
           end
-          unless tags.empty?
-            last_tag_version = all_version_tags[(all_version_tags.index(tags.last).next)]
-            tags << last_tag_version if last_tag_version
+          if !tags.empty? && include_initial_tag_notes?
+            initial_tag_version_position = all_version_tags.index(tags.last).next
+            initial_tag_version = all_version_tags[initial_tag_version_position]
+            tags << initial_tag_version if initial_tag_version
           end
         end
         @scoped_tags = tags
@@ -122,6 +124,10 @@ module StepUp
         end
       end
       notes
+    end
+
+    def include_initial_tag_notes?
+      @include_initial_tag_notes
     end
 
   end
