@@ -150,7 +150,7 @@ module StepUp
     end
 
     desc "notes ACTION [base_object] [OPTIONS]", "show notes for the next version"
-    method_options :clean => :boolean, :steps => :boolean, :"-m" => :string, :since => :string, :after => :string
+    method_options :clean => :boolean, :steps => :boolean, :"-m" => :string, :since => :string, :after => :string, :upto => :string
     method_options :fetch => :boolean
     def notes(action = "show", commit_base = nil)
       unless %w[show add remove help].include?(action)
@@ -202,17 +202,28 @@ module StepUp
 
     def notes_show
       if options[:since] && options[:after]
-        puts "Error: conflict of options: --since and --after cannot be used together\n"
+        puts "conflict of options: --since and --after cannot be used together\n"
+        exit(1)
+      end
+
+      initial_tag = options[:since] || options[:after]
+      if initial_tag && options[:upto] && initial_tag > options[:upto]
+        puts "conflict of options: --since value #{initial_tag} is greater than --after value #{options[:upto]}\n"
         exit(1)
       end
 
       message = []
-      if tag = options[:since] || options[:after]
-        option = options[:since] ? "since" : "after"
-        message_header = "Showing notes #{option} #{ tag }"
-        message_header << " (including notes of tags: #{ ranged_notes.scoped_tags.join(", ")})" if ranged_notes.scoped_tags.any?
+      if initial_tag || options[:upto]
+        message_header = "Showing notes "
+        if initial_tag
+          option = options[:since] ? "since" : "after"
+          message_header << "#{option} #{ initial_tag } "
+        end
+        message_header <<  "up to #{  options[:upto] } " if  options[:upto]
+        message_header << "(including notes of tags: #{ ranged_notes.scoped_tags.join(", ")})" if ranged_notes.scoped_tags.any?
         message << message_header
       end
+
       message << "---"
       message << get_notes
       puts message.join("\n")
@@ -313,15 +324,21 @@ module StepUp
     def ranged_notes
       unless defined? @ranged_notes
         initial_tag = options[:since] || options[:after] || driver.cached_last_version_tag(commit_object || "HEAD")
-        if initial_tag =~ /[1-9]/
-          initial_tag = initial_tag.gsub(/\+\d*$/, '')
-        else
-          initial_tag = nil
+        final_tag = options[:upto] || commit_object || "HEAD"
+        
+        if options[:upto] && !(options[:since] || options[:after])
+          initial_tag = driver.all_version_tags.last
         end
-        flag = true if options[:after]
-        @ranged_notes = StepUp::RangedNotes.new(driver, initial_tag, commit_object || "HEAD", :exclude_initial_tag_notes => flag)
+        
+        initial_tag = sanitize_tag_version(initial_tag)
+        final_tag = sanitize_tag_version(final_tag)
+        @ranged_notes = StepUp::RangedNotes.new(driver, initial_tag, final_tag, :exclude_initial_tag_notes => options[:after])
       end
       @ranged_notes
+    end
+
+    def sanitize_tag_version(tag)
+      tag =~ /[1-9]/ ? tag.gsub(/\+\d*$/, '') : nil
     end
 
     def get_notes(clean = options[:clean], custom_message = nil)
