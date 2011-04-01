@@ -2,6 +2,7 @@ module StepUp
   module Driver
     class Git < Base
       VERSION_MESSAGE_FILE_PATH = ".git/TAG_EDITMSG"
+      NOTE_MESSAGE_FILE_PATH = ".git/NOTE_EDITMSG"
       
       include GitExtensions::Notes
 
@@ -102,7 +103,7 @@ module StepUp
       end
 
       def editor_name
-        ENV["EDITOR"] || `git config core.editor`.chomp
+        ENV["GIT_EDITOR"] || ENV["EDITOR"] || `git config core.editor`.chomp
       end
 
       def zero_version(commit_base = "HEAD", count_commits = false)

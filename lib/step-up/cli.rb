@@ -250,7 +250,13 @@ module StepUp
     def notes_add
       message = options[:m] 
       message = nil if options[:m] =~ /^(|m)$/
-      message ||= get_message("Note message:\n>>", " >")
+
+      unless message
+        last_commit = driver.commit_history(commit_object, 1, :with_messages => true).first
+        message = last_commit.last if last_commit
+        message = edit_message(driver.class::NOTE_MESSAGE_FILE_PATH, message)
+      end
+      
       unless message.empty?
         section = choose(CONFIG.notes_sections.names, "Choose a section to add the note:")
         return if section.nil? || ! CONFIG.notes_sections.names.include?(section)
@@ -312,7 +318,7 @@ module StepUp
         else
           `#{ editor } #{ temp_file } && wait $!`
         end
-        File.read(temp_file).rstrip
+        File.read(temp_file).gsub(/^\#.*/m, '').rstrip
       end
     end
 
