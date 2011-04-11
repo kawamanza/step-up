@@ -37,7 +37,7 @@ The format of the version is totally customizable through **.stepuprc** which we
 
 ### Creating new version
 
-    stepup version create --level LEVEL_NAME
+    stepup version create [--level LEVEL_NAME]
 
 where **LEVEL_NAME**  
 
@@ -65,6 +65,28 @@ The versioning increment is based on the last version tag found in the repositor
     stepup changelog
 
 ## StepUp beyond basics
+
+### Working with notes
+
+With StepUp we are able to attach additional comments on existing commit objects.
+The great goal of this Gem is giving to developers an easy way to manage these notes.
+The note was created with the following command:
+
+    $ stepup notes add --section bugfixes -m "support for old installations"
+
+Still with this example we can check the created note with the following command:
+
+    $ stepup notes
+    ---
+    Bugfixes:
+
+      - support for old installations
+
+The command above fetches the entire commit history, gets each note and organizes them in sections.
+Found notes are displayed as a big changelog message.
+
+### Creating rich changelogs
+
 ***Comming soon***
 
 ## Project
