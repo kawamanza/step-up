@@ -15,7 +15,7 @@ module StepUp
       def steps_for_add_notes(section, message, commit_base = nil)
         commands = []
         commands << "git fetch"
-        commands << "git notes --ref=#{ section } add -m \"#{ message.gsub(/([\$"])/, '\\\\\1') }\" #{ commit_base }"
+        commands << "git notes --ref=#{ section } add -m \"#{ message.gsub(/([\$\\"`])/, '\\\\\1') }\" #{ commit_base }"
         commands << "git push #{ notes_remote } refs/notes/#{ section }"
         commands
       end

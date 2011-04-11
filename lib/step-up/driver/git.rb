@@ -69,7 +69,7 @@ module StepUp
         notes = cached_detached_notes_as_hash(commit_base)
         commands = []
         commands << "git fetch"
-        commands << "git tag -a -m \"#{ (message || notes.to_changelog).gsub(/([\$\\"])/, '\\\\\1') }\" #{ new_tag } #{ commit_base }"
+        commands << "git tag -a -m \"#{ (message || notes.to_changelog).gsub(/([\$\\"`])/, '\\\\\1') }\" #{ new_tag } #{ commit_base }"
         commands << "git push #{cached_fetched_remotes("notes").first} refs/tags/#{new_tag}"
         commands + steps_for_archiving_notes(notes, new_tag)
       end
