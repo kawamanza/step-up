@@ -152,6 +152,7 @@ module StepUp
     desc "notes ACTION [base_object] [OPTIONS]", "show notes for the next version"
     method_options :clean => :boolean, :steps => :boolean, :"-m" => :string, :since => :string, :after => :string, :upto => :string
     method_options :fetch => :boolean
+    method_options %w[section -s] => :string
     def notes(action = "show", commit_base = nil)
       unless %w[show add remove help].include?(action)
         commit_base ||= action
@@ -235,16 +236,22 @@ module StepUp
       sections = notes.keys
       if sections.empty?
         puts "No notes found"
-      else
+        exit(1)
+      end
+      section = options[:section]
+      if section.nil?
         if sections.size > 1
           section = choose(sections, "Which section you want to remove notes?")
-          return unless sections.include?(section)
         else
           section = sections.first
         end
-        steps = driver.steps_to_remove_notes(section, ranged_notes.last_commit)
-        print_or_run(steps, options[:steps])
       end
+      unless sections.include?(section)
+        puts "Aborting due to invalid section"
+        exit(1)
+      end
+      steps = driver.steps_to_remove_notes(section, ranged_notes.last_commit)
+      print_or_run(steps, options[:steps])
     end
 
     def notes_add
@@ -264,8 +271,11 @@ module StepUp
       end
       
       unless message.empty?
-        section = choose(CONFIG.notes_sections.names, "Choose a section to add the note:")
-        return if section.nil? || ! CONFIG.notes_sections.names.include?(section)
+        section = options[:section] || choose(CONFIG.notes_sections.names, "Choose a section to add the note:")
+        if section.nil? || ! CONFIG.notes_sections.names.include?(section)
+          puts "Aborting due to invalid section"
+          exit(1)
+        end
         steps = driver.steps_for_add_notes(section, message, commit_object)
         print_or_run(steps, options[:steps])
       end
