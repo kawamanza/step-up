@@ -254,6 +254,12 @@ module StepUp
       unless message
         last_commit = driver.commit_history(commit_object, 1, :with_messages => true).first
         message = last_commit.last if last_commit
+        message << <<-TEXT
+
+
+# Please enter the note message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the operation.
+        TEXT
         message = edit_message(driver.class::NOTE_MESSAGE_FILE_PATH, message)
       end
       
@@ -281,12 +287,6 @@ module StepUp
     def version_create
       level = options[:level] || "auto"
       message = get_notes(true, get_custom_message)
-      message = edit_message(driver.class::VERSION_MESSAGE_FILE_PATH, message) unless options[:'no-editor']
-
-      if message.strip.empty?
-        puts "\ninvalid version message: too short"
-        exit(1)
-      end
 
       if level == "auto" && CONFIG.versioning["auto_increment"].is_a?(Hash)
         detached_notes = driver.cached_detached_notes_as_hash(commit_object || "HEAD")
@@ -299,6 +299,21 @@ module StepUp
       end
 
       if version_levels.include? level
+        unless options[:'no-editor']
+          message << <<-TEXT
+
+
+# Please enter the log message for your tag. Lines starting
+# with '#' will be ignored, and an empty message aborts the operation.
+# You are about to increase the '#{level}' version level.
+          TEXT
+          message = edit_message(driver.class::VERSION_MESSAGE_FILE_PATH, message)
+        end
+
+        if message.strip.empty?
+          puts "Aborting due to empty log message"
+          exit(1)
+        end
         steps = driver.steps_to_increase_version(level, commit_object || "HEAD", message)
         print_or_run(steps, options[:steps])
       else
