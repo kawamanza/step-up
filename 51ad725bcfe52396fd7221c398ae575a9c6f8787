@@ -1,0 +1,1 @@
+Now 'init' command line is parameterized. Current syntax: init [--gemfile] [--version_file_support]
