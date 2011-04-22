@@ -27,7 +27,7 @@ module StepUp
       end
     end
 
-    desc "init", "adds .stepuprc to your project and prepare your local repository to use notes"
+    desc "init", "Prepare your project to use stepup"
     method_options :update => :boolean
     def init
       # creates .stepuprc file
