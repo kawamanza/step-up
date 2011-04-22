@@ -29,109 +29,16 @@ module StepUp
 
     desc "init", "Prepare your project to use stepup"
     method_options :update => :boolean
+    method_options :gemfile => :boolean
+    method_options :version_file_support => :boolean
     def init
-      # creates .stepuprc file
-      content = File.read(File.expand_path("../config/step-up.yml", __FILE__))
-      if options[:update] || ! File.exists?(".stepuprc")
-        say_status File.exists?(".stepuprc") ? :update : :create, ".stepuprc", :green
-        File.open(".stepuprc", "w") do |f|
-          f.write content
-        end
-      else
-        say_status :skip, "Creating .stepuprc", :yellow
-      end
-      # Changing Gemfile
-      if File.exists?("Gemfile")
-        gem_file = File.read("Gemfile")
-        if gem_file =~ /\bstep-up\b/
-          regex = /^(\s*gem\s+(?:'step-up'|"step-up")\s*,\s*['"])((?:~>|=>|=)\s*.*?)(['"])/
-          if gem_file =~ regex && ! $2.end_with?(StepUp::VERSION)
-            say_status :update, "Updating dependency to step-up on Gemfile", :green
-            File.open("Gemfile", "w") do |f|
-              f.write gem_file.gsub(regex, '\1~> '+StepUp::VERSION+'\3')
-            end
-          else
-            say_status :skip, "Adding dependency to step-up on Gemfile", :yellow
-          end
-        else
-          say_status :update, "Adding dependency to step-up on Gemfile", :green
-          content = File.read(File.expand_path(File.join(__FILE__, '..', '..', '..', 'templates', 'default', 'Gemfile')))
-          stepup_dependency = template_render(content)
-          File.open("Gemfile", "w") do |f|
-            f.write gem_file
-            f.write "\n" unless gem_file.end_with?("\n")
-            f.write stepup_dependency
-          end
-        end
-      else
-        say_status :skip, "Gemfile not found", :yellow
-      end
-      # Creating lib/version.rb
-      content = File.read(File.expand_path(File.join(__FILE__, '..', '..', '..', 'templates', 'default', 'lib', 'version.rb')))
-      new_version_rb = template_render(content)
-      Dir.mkdir('lib') unless File.exists?('lib')
-      if File.exists?("lib/version.rb")
-        version_rb = File.read("lib/version.rb")
-        if version_rb =~ /\bStepUp\b/
-          say_status :skip, "Creating lib/version.rb", :yellow
-        else
-          say_status :update, "Appending to lib/version.rb", :green
-          File.open("lib/version.rb", "w") do |f|
-            f.write version_rb
-            f.write "\n" unless version_rb.end_with?("\n")
-            f.write new_version_rb
-          end
-        end
-      else
-        say_status :create, "Creating lib/version.rb", :green
-        File.open("lib/version.rb", "w") do |f|
-          f.write new_version_rb
-        end
-      end
-      # Updating Rakefile
-      if File.exists?("Rakefile")
-        content = File.read(File.expand_path(File.join(__FILE__, '..', '..', '..', 'templates', 'default', 'Rakefile')))
-        content = template_render(content)
-        if File.exists?("lib/tasks/versioning.rake") && File.read("lib/tasks/versioning.rake") =~ /\bstep-up\b/
-          content = File.read("lib/tasks/versioning.rake")
-          say_status :remove, "Removing lib/tasks/versioning.rake", :blue
-          `rm lib/tasks/versioning.rake`
-        end
-        rake_file = File.read("Rakefile")
-        if rake_file =~ /\bstep-up\b/
-          say_status :skip, "Appending to Rakefile", :yellow
-        else
-          say_status :update, "Appending to Rakefile", :green
-          File.open("Rakefile", "w") do |f|
-            f.write rake_file
-            f.write "\n" unless rake_file.end_with?("\n")
-            f.write content
-          end
-        end
-      else
-        say_status :ignore, "Ignoring creation of lib/tasks/versioning.rake", :yellow
-      end
-      # Updating Capfile
-      if File.exists?("Capfile") && File.exists?("Rakefile")
-        content = File.read(File.expand_path(File.join(__FILE__, '..', '..', '..', 'templates', 'default', 'Capfile')))
-        content = template_render(content)
-        cap_file = File.read("Capfile")
-        if cap_file =~ /\bstepup\b/
-          say_status :skip, "Appending to Capfile", :yellow
-        else
-          say_status :update, "Appending to Capfile", :green
-          File.open("Capfile", "w") do |f|
-            f.write cap_file
-            f.write "\n" unless cap_file.end_with?("\n")
-            f.write content
-          end
-        end
-      end
-      # Appending .gitignore
-      unless File.exists?(".gitignore") && File.read(".gitignore") =~ /^#{gsub_params['version_file']}$/
-        run "echo #{gsub_params['version_file']} >> .gitignore"
-      else
-        say_status :skip, "Adding #{gsub_params['version_file']} to .gitignore", :yellow
+      init_create_stepuprc
+      init_update_gemfile if options[:gemfile]
+      if options[:version_file_support]
+        init_update_version_helper
+        init_update_rakefile
+        init_update_capfile
+        init_update_gitignore
       end
     end
 
@@ -329,6 +236,122 @@ module StepUp
       else
         puts "invalid version create option: #{level}"
         exit(1)
+      end
+    end
+    
+    
+    def init_create_stepuprc
+      content = File.read(File.expand_path("../config/step-up.yml", __FILE__))
+      if options[:update] || ! File.exists?(".stepuprc")
+        say_status File.exists?(".stepuprc") ? :update : :create, ".stepuprc", :green
+        File.open(".stepuprc", "w") do |f|
+          f.write content
+        end
+      else
+        say_status :skip, "Creating .stepuprc", :yellow
+      end      
+    end
+    
+    def init_update_gemfile
+      if File.exists?("Gemfile")
+        gem_file = File.read("Gemfile")
+        if gem_file =~ /\bstep-up\b/
+          regex = /^(\s*gem\s+(?:'step-up'|"step-up")\s*,\s*['"])((?:~>|=>|=)\s*.*?)(['"])/
+          if gem_file =~ regex && ! $2.end_with?(StepUp::VERSION)
+            say_status :update, "Updating dependency to step-up on Gemfile", :green
+            File.open("Gemfile", "w") do |f|
+              f.write gem_file.gsub(regex, '\1~> '+StepUp::VERSION+'\3')
+            end
+          else
+            say_status :skip, "Adding dependency to step-up on Gemfile", :yellow
+          end
+        else
+          say_status :update, "Adding dependency to step-up on Gemfile", :green
+          content = File.read(File.expand_path(File.join(__FILE__, '..', '..', '..', 'templates', 'default', 'Gemfile')))
+          stepup_dependency = template_render(content)
+          File.open("Gemfile", "w") do |f|
+            f.write gem_file
+            f.write "\n" unless gem_file.end_with?("\n")
+            f.write stepup_dependency
+          end
+        end
+      else
+        say_status :skip, "Gemfile not found", :yellow
+      end      
+    end
+    
+    def init_update_version_helper
+      content = File.read(File.expand_path(File.join(__FILE__, '..', '..', '..', 'templates', 'default', 'lib', 'version.rb')))
+      new_version_rb = template_render(content)
+      Dir.mkdir('lib') unless File.exists?('lib')
+      if File.exists?("lib/version.rb")
+        version_rb = File.read("lib/version.rb")
+        if version_rb =~ /\bStepUp\b/
+          say_status :skip, "Creating lib/version.rb", :yellow
+        else
+          say_status :update, "Appending to lib/version.rb", :green
+          File.open("lib/version.rb", "w") do |f|
+            f.write version_rb
+            f.write "\n" unless version_rb.end_with?("\n")
+            f.write new_version_rb
+          end
+        end
+      else
+        say_status :create, "Creating lib/version.rb", :green
+        File.open("lib/version.rb", "w") do |f|
+          f.write new_version_rb
+        end
+      end
+    end
+
+    def init_update_rakefile
+      if File.exists?("Rakefile")
+        content = File.read(File.expand_path(File.join(__FILE__, '..', '..', '..', 'templates', 'default', 'Rakefile')))
+        content = template_render(content)
+        if File.exists?("lib/tasks/versioning.rake") && File.read("lib/tasks/versioning.rake") =~ /\bstep-up\b/
+          content = File.read("lib/tasks/versioning.rake")
+          say_status :remove, "Removing lib/tasks/versioning.rake", :blue
+          `rm lib/tasks/versioning.rake`
+        end
+        rake_file = File.read("Rakefile")
+        if rake_file =~ /\bstep-up\b/
+          say_status :skip, "Appending to Rakefile", :yellow
+        else
+          say_status :update, "Appending to Rakefile", :green
+          File.open("Rakefile", "w") do |f|
+            f.write rake_file
+            f.write "\n" unless rake_file.end_with?("\n")
+            f.write content
+          end
+        end
+      else
+        say_status :ignore, "Ignoring creation of lib/tasks/versioning.rake", :yellow
+      end
+    end
+
+    def init_update_capfile
+      if File.exists?("Capfile") && File.exists?("Rakefile")
+        content = File.read(File.expand_path(File.join(__FILE__, '..', '..', '..', 'templates', 'default', 'Capfile')))
+        content = template_render(content)
+        cap_file = File.read("Capfile")
+        if cap_file =~ /\bstepup\b/
+          say_status :skip, "Appending to Capfile", :yellow
+        else
+          say_status :update, "Appending to Capfile", :green
+          File.open("Capfile", "w") do |f|
+            f.write cap_file
+            f.write "\n" unless cap_file.end_with?("\n")
+            f.write content
+          end
+        end
+      end
+    end
+
+    def init_update_gitignore
+      unless File.exists?(".gitignore") && File.read(".gitignore") =~ /^#{gsub_params['version_file']}$/
+        run "echo #{gsub_params['version_file']} >> .gitignore"
+      else
+        say_status :skip, "Adding #{gsub_params['version_file']} to .gitignore", :yellow
       end
     end
     
