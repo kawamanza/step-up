@@ -1,5 +1,8 @@
 # StepUp: a project to step up your projects
-StepUp is a tool to manage versioning based on source control management features (i.e. tags and notes of Git).
+StepUp is a tool to manage versioning.
+That means you can bump the version of your project, for example, from v3.0.11 to v4.0.0, check the current version, summarize all the history of versions in a changelog and more.
+
+StepUp is based on source control management features (i.e. tags, branches, commits, notes etc), so it doesn't need to keep files with the current version (but it supports it, if you want), it has visibility of all history of changes and versions (doesn't matter if they are spread in many different branches), which adds a variety of possibilities in terms of management, depending on your project needs.
 
 ## Prerequisite
 Git version 1.7.1 and above.
@@ -14,32 +17,26 @@ With that said, run
 
     stepup init
 
-It will create a file in your project called **.stepuprc** 
+It will create a file in your project called **.stepuprc**.
 We'll cover more about this in the next sections.
 
 ## The Basics
-### Checking out the current version
+### Current project version
 
-    stepup version 
+    stepup [version]
 
-or just
+An example of output would be
 
-    stepup
+    v0.2.0+3
 
-This will tell you the current application version. 
-
-One example of output would be
-
-    v0.2.0+1
-
-The "+1" part means the project has one commit since last version.
+The "+3" part means the project has one commit since last version.
 The format of the version is totally customizable through **.stepuprc** which we will cover in more detail later.
 
-### Creating new version
+### Stepping up a version
 
     stepup version create [--level LEVEL_NAME]
 
-where **LEVEL_NAME**  
+where **LEVEL_NAME**, by default, could be  
 
 * major
 * minor
