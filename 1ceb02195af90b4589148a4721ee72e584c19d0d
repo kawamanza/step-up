@@ -1,0 +1,2 @@
+Command line 'notes show' now works on clean mode by default
+  The option '--with-commit' can be used to display the commit
