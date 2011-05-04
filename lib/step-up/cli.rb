@@ -59,6 +59,7 @@ module StepUp
     desc "notes ACTION [base_object] [OPTIONS]", "show notes for the next version"
     method_options :clean => :boolean, :steps => :boolean, :"-m" => :string, :since => :string, :after => :string, :upto => :string
     method_options :fetch => :boolean
+    method_options :"with-commit" => :boolean
     method_options %w[section -s] => :string
     def notes(action = "show", commit_base = nil)
       unless %w[show add remove help].include?(action)
@@ -397,7 +398,7 @@ module StepUp
 
     def get_notes(clean = options[:clean], custom_message = nil)
       notes_options = {}
-      notes_options[:mode] = :with_objects unless clean
+      notes_options[:mode] = :with_objects unless clean || clean.nil? && ! options[:"with-commit"]
       notes_options[:custom_message] = custom_message
       notes_hash = (options[:since].nil? && options[:after].nil? ? driver.cached_detached_notes_as_hash(commit_object || "HEAD") : ranged_notes.all_notes.as_hash)
       notes_hash.to_changelog(notes_options)
