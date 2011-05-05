@@ -13,6 +13,7 @@ module StepUp
     method_options %w(levels -L) => :boolean # $ stepup version [--levels|-L]
     method_options %w(level -l) => :string, %w(steps -s) => :boolean, %w(message -m) => :string, :'no-editor' => :boolean  # $ stepup version create [--level|-l <level-name>] [--steps|-s] [--message|-m <comment-string>] [--no-editor]
     method_options %w(mask -M) => :string # stepup version show --mask development_hudson_build_0
+    method_options %w(masks) => :string # stepup version show --masks
     VERSION_ACTIONS = %w[show create help]
     def version(action = nil, commit_base = nil)
       unless VERSION_ACTIONS.include?(action)
@@ -194,6 +195,17 @@ module StepUp
         version_levels.each  do |level|
           puts " - #{level}"
         end
+      elsif options[:masks]
+        all_tags = driver.tags.scan(/[^\r\n]+/)
+        all_masks = all_tags.map{ |tag| tag.gsub(/\d+/, '0') }.uniq.sort
+        masks = []
+        prev = nil
+        all_masks.each do |mask|
+          next unless mask =~ /\d$/
+          mask = masks.pop + mask[prev.size..-1].gsub(/0/, '9') if prev && mask.start_with?(prev.gsub(/9/, '0'))
+          masks << (prev = mask)
+        end
+        puts masks.join("\n") if masks.any?
       else
         mask = options[:mask]
         mask = nil if mask !~ /0/
