@@ -45,13 +45,15 @@ module StepUp
     desc "changelog --top=<num> --format={default|wiki|html}", "show changelog from each version tag"
     method_options %w[top -n] => :numeric
     method_options %w[format -f] => :string
+    method_options %w(mask -M) => :string # stepup changelog --mask development_hudson_build_0
     def changelog
       log = []
       method_name = "changelog_format_#{ options[:format] }"
       method_name = "changelog_format_default" unless respond_to?(method_name)
+      driver = driver(options[:mask])
       driver.all_version_tags.each_with_index do |tag, index|
         break if options[:top] && index >= options[:top]
-        log << send(method_name, tag)
+        log << send(method_name, tag, driver.version_tag_info(tag))
       end
       puts log.join("\n\n")
     end
@@ -82,14 +84,12 @@ module StepUp
 
     protected
 
-    def changelog_format_default(tag)
-      tag_info = driver.version_tag_info(tag)
+    def changelog_format_default(tag, tag_info)
       created_at = tag_info[:date].strftime("%b/%d %Y %H:%M %z")
     "\033[0;33m#{tag} (#{created_at} by #{tag_info[:tagger]})\033[0m\n\n#{ tag_info[:message] }"
     end
 
-    def changelog_format_html(tag)
-      tag_info = driver.version_tag_info(tag)
+    def changelog_format_html(tag, tag_info)
       created_at = tag_info[:date].strftime("%b/%d %Y %H:%M %z")
       log = []
       log << "<h3 class=\"changelog_header\">#{tag} (#{created_at} by #{tag_info[:tagger]})</h3>"
@@ -100,8 +100,7 @@ module StepUp
       log.join("\n")
     end
 
-    def changelog_format_wiki(tag)
-      tag_info = driver.version_tag_info(tag)
+    def changelog_format_wiki(tag, tag_info)
       created_at = tag_info[:date].strftime("%b/%d %Y %H:%M %z")
       log = []
       log << "== #{tag} (#{created_at} by #{tag_info[:tagger]}) ==\n"
