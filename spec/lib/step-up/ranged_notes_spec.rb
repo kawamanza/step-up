@@ -17,13 +17,14 @@ describe StepUp::RangedNotes do
 
   context "testing notes" do
     before do
-      notes_sections = %w[test_changes test_bugfixes test_features]
+      notes_sections = [{"name"=>"test_changes"}, {"name"=>"test_bugfixes"}, {"name"=>"test_features"}]
       class << notes_sections
         include StepUp::ConfigSectionsExt
       end
       StepUp::CONFIG.stubs(:notes_sections).returns(notes_sections)
       StepUp::CONFIG.notes.after_versioned.stubs(:section).returns("test_versioning")
     end
+
     context "until object f4cfcc2" do
       before do
         @notes = StepUp::RangedNotes.new(@driver, nil, "f4cfcc2")
@@ -134,6 +135,107 @@ describe StepUp::RangedNotes do
         changelog.gsub!(/^\s{8}/, '')
         changelog = changelog.rstrip
         @notes.notes.as_hash.to_changelog.should be == changelog
+      end
+    end
+
+    context "until object f4cfcc2 with specific notes sections" do
+      before do
+        @notes = StepUp::RangedNotes.new(@driver, nil, "f4cfcc2", {:notes_sections => ["test_changes", "test_features"]})
+      end
+      it "should get all detached notes" do
+        @notes.notes.should be == [
+          [5, "test_changes", 1, "8299243c7dac8f27c3572424a348a7f83ef0ce28",
+           "removing files from gemspec\n  .gitignore\n  lastversion.gemspec\n"],
+          [1, "test_changes", 1, "2fb8a3281fb6777405aadcd699adb852b615a3e4",
+           "loading default configuration yaml\n\nloading external configuration yaml\n"]
+        ]
+      end
+      it "should get a hash of distinct notes" do
+        @notes.notes.should respond_to :as_hash
+        @notes.notes.as_hash.should be == {
+          "test_changes" => [
+            ["8299243c7dac8f27c3572424a348a7f83ef0ce28",
+             "removing files from gemspec\n  .gitignore\n  lastversion.gemspec\n", 1],
+            ["2fb8a3281fb6777405aadcd699adb852b615a3e4",
+             "loading default configuration yaml\n\nloading external configuration yaml\n", 1]
+          ]
+        }
+      end
+      it "should get the changelog message without objects" do
+        @notes.notes.as_hash.should respond_to :to_changelog
+        changelog = <<-EOF
+        Test changes:
+        
+          - removing files from gemspec
+            - .gitignore
+            - lastversion.gemspec
+          - loading default configuration yaml
+          - loading external configuration yaml
+        EOF
+        changelog.gsub!(/^\s{8}/, '')
+        changelog = changelog.rstrip
+        @notes.notes.as_hash.to_changelog.should be == changelog
+      end
+      it "should get the changelog message with objects" do
+        @notes.notes.as_hash.should respond_to :to_changelog
+        changelog = <<-EOF
+        Test changes:
+        
+          - removing files from gemspec (8299243c7dac8f27c3572424a348a7f83ef0ce28)
+            - .gitignore
+            - lastversion.gemspec
+          - loading default configuration yaml (2fb8a3281fb6777405aadcd699adb852b615a3e4)
+          - loading external configuration yaml
+        EOF
+        changelog.gsub!(/^\s{8}/, '')
+        changelog = changelog.rstrip
+        @notes.notes.as_hash.to_changelog(:mode => :with_objects).should be == changelog
+      end
+      it "should get the changelog message with custom message" do
+        @notes.notes.as_hash.should respond_to :to_changelog
+        changelog = <<-EOF
+        Custom message:
+        
+          - New version create feature
+          - Removed old version create feature
+        
+        Test changes:
+        
+          - removing files from gemspec
+            - .gitignore
+            - lastversion.gemspec
+          - loading default configuration yaml
+          - loading external configuration yaml
+        EOF
+        changelog.gsub!(/^\s{8}/, '')
+        changelog = changelog.rstrip
+        message_option = {:custom_message => "New version create feature\n\nRemoved old version create feature"}
+        @notes.notes.as_hash.to_changelog(message_option).should be == changelog
+      end
+      it "should get the changelog message without custom message" do
+        @notes.notes.as_hash.should respond_to :to_changelog
+        changelog = <<-EOF
+        Test changes:
+        
+          - removing files from gemspec
+            - .gitignore
+            - lastversion.gemspec
+          - loading default configuration yaml
+          - loading external configuration yaml
+        EOF
+        changelog.gsub!(/^\s{8}/, '')
+        changelog = changelog.rstrip
+        @notes.notes.as_hash.to_changelog.should be == changelog
+      end
+    end
+    
+    context "with specific notes section that doesn't exists" do
+      it "should raise an exception" do
+        block = lambda do
+          StepUp::RangedNotes.new(@driver, nil, "f4cfcc2", {:notes_sections => ["invalid_note_section"]})
+        end
+        
+        block.should raise_error(ArgumentError)
       end
     end
   end

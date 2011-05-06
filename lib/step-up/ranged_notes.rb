@@ -7,6 +7,7 @@ module StepUp
 
     def initialize(driver, first_commit = nil, last_commit = "HEAD", options={})
       @include_initial_tag_notes = !options[:exclude_initial_tag_notes]
+      @notes_sections = notes_sections(options[:notes_sections])
       @driver = driver
       @last_commit = driver.commit_history(last_commit, 1).first
       first_commit = driver.commit_history(first_commit, 1).first unless first_commit.nil?
@@ -69,7 +70,7 @@ module StepUp
     def all_visible_notes
       unless defined? @all_visible_notes
         notes = []
-        CONFIG.notes_sections.names.each do |section|
+        @notes_sections.names.each do |section|
           all_notes_of_section(section, all_commits).each{ |note| notes << note }
         end
         @all_visible_notes = notes
@@ -94,9 +95,9 @@ module StepUp
     end
 
     def scoped_commit_notes
-      prefixes = CONFIG.notes_sections.prefixes
-      sections = CONFIG.notes_sections.names
-      tags = CONFIG.notes_sections.tags
+      prefixes = @notes_sections.prefixes
+      sections = @notes_sections.names
+      tags = @notes_sections.tags
       notes = []
       scoped_commits.each do |commit|
         message = commit.last
@@ -128,6 +129,30 @@ module StepUp
 
     def include_initial_tag_notes?
       @include_initial_tag_notes
+    end
+    
+    def notes_sections(notes_sections_names)
+      notes_sections = []
+      
+      if notes_sections_names
+        notes_sections_names.each do |note_section_name|
+          sections_found = CONFIG.notes_sections.select { |ns| ns["name"] == note_section_name }
+          
+          if sections_found.empty?
+            raise ArgumentError, "Invalid section: #{note_section_name}"
+          else
+            notes_sections << sections_found.first
+          end
+        end
+        
+        class << notes_sections
+          include StepUp::ConfigSectionsExt
+        end
+      else
+        notes_sections = CONFIG.notes_sections
+      end
+      
+      notes_sections
     end
 
   end

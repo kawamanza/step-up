@@ -56,10 +56,10 @@ module StepUp
         {:message => tag_message, :tagger => tagger, :date => date}
       end
 
-      def detached_notes_as_hash(commit_base = "HEAD")
+      def detached_notes_as_hash(commit_base = "HEAD", notes_sections = nil)
         tag = cached_last_version_tag(commit_base)
         tag = tag.sub(/\+$/, '')
-        RangedNotes.new(self, tag, commit_base).notes.as_hash
+        RangedNotes.new(self, tag, commit_base, :notes_sections => notes_sections).notes.as_hash
       end
 
       def steps_to_increase_version(level, commit_base = "HEAD", message = nil)

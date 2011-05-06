@@ -64,6 +64,7 @@ module StepUp
     method_options :fetch => :boolean
     method_options :"with-commit" => :boolean
     method_options %w[section -s] => :string
+    method_options :sections => :array
     def notes(action = "show", commit_base = nil)
       unless %w[show add remove help].include?(action)
         commit_base ||= action
@@ -398,7 +399,7 @@ module StepUp
         
         initial_tag = sanitize_tag_version(initial_tag)
         final_tag = sanitize_tag_version(final_tag)
-        @ranged_notes = StepUp::RangedNotes.new(driver, initial_tag, final_tag, :exclude_initial_tag_notes => options[:after])
+        @ranged_notes = StepUp::RangedNotes.new(driver, initial_tag, final_tag, :exclude_initial_tag_notes => options[:after], :notes_sections => options[:sections])
       end
       @ranged_notes
     end
@@ -411,7 +412,7 @@ module StepUp
       notes_options = {}
       notes_options[:mode] = :with_objects unless clean || clean.nil? && ! options[:"with-commit"]
       notes_options[:custom_message] = custom_message
-      notes_hash = (options[:since].nil? && options[:after].nil? ? driver.cached_detached_notes_as_hash(commit_object || "HEAD") : ranged_notes.all_notes.as_hash)
+      notes_hash = (options[:since].nil? && options[:after].nil? ? driver.cached_detached_notes_as_hash(commit_object || "HEAD", options["sections"]) : ranged_notes.all_notes.as_hash)
       notes_hash.to_changelog(notes_options)
     end
 
