@@ -472,8 +472,9 @@ module StepUp
     end
 
     def check_notes_config
+      return true if driver.cached_fetched_remotes.empty?
       remotes_with_notes = driver.fetched_remotes('notes')
-      unfetched_remotes = driver.fetched_remotes - remotes_with_notes
+      unfetched_remotes = driver.cached_fetched_remotes - remotes_with_notes
       cmds = []
       unless remotes_with_notes.any? || unfetched_remotes.empty?
         answer = options[:fetch] ? "yes" : raw_ask("To perform this operation you need some additional fetch instruction on your git-config file.\nMay stepup add the missing instruction for you? [yes/no]:")

@@ -14,17 +14,17 @@ module StepUp
 
       def steps_for_add_notes(section, message, commit_base = nil)
         commands = []
-        commands << "git fetch"
+        commands << "git fetch" if cached_fetched_remotes.any?
         commands << "git notes --ref=#{ section } add -m \"#{ message.gsub(/([\$\\"`])/, '\\\\\1') }\" #{ commit_base }"
-        commands << "git push #{ notes_remote } refs/notes/#{ section }"
+        commands << "git push #{ notes_remote } refs/notes/#{ section }" if cached_fetched_remotes.any?
         commands
       end
 
       def steps_to_remove_notes(section, commit_base)
         commands = []
-        commands << "git fetch"
+        commands << "git fetch" if cached_fetched_remotes.any?
         commands << "git notes --ref=#{ section } remove #{ commit_base }"
-        commands << "git push #{ notes_remote } refs/notes/#{ section }"
+        commands << "git push #{ notes_remote } refs/notes/#{ section }" if cached_fetched_remotes.any?
         commands
       end
 
@@ -46,7 +46,7 @@ module StepUp
             end
             unless removed_notes.empty?
               commands += removed_notes
-              commands << "git push #{ driver.notes_remote } refs/notes/#{ section }"
+              commands << "git push #{ driver.notes_remote } refs/notes/#{ section }" if driver.cached_fetched_remotes.any?
             end
           end
           commands
@@ -69,7 +69,7 @@ module StepUp
               end
             end
           end
-          commands << "git push #{ driver.notes_remote } refs/notes/#{ CONFIG.notes.after_versioned.section }" unless objects.empty?
+          commands << "git push #{ driver.notes_remote } refs/notes/#{ CONFIG.notes.after_versioned.section }" unless objects.empty? || driver.cached_fetched_remotes.empty?
           commands
         end
       end
