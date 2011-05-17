@@ -32,7 +32,7 @@ module StepUp
       end
 
       def objects_with_notes_of(ref)
-        `git notes --ref=#{ ref } list`.gsub(/^\w+\s(\w+)$/, '\1').split(/\n/)
+        `git notes --ref=#{ ref } list`.scan(/\w+$/)
       end
 
       def note_message(ref, commit)
