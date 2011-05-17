@@ -39,10 +39,6 @@ module StepUp
         `git notes --ref=#{ ref } show #{ commit }`
       end
 
-      def notes_messages(objects_with_notes)
-        objects_with_notes.messages
-      end
-
       def all_version_tags
         @version_tags ||= tags.scan(mask.regex).map{ |tag| tag.collect(&:to_i) }.sort.map{ |tag| mask.format(tag) }.reverse
       end
