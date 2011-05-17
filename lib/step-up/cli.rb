@@ -337,8 +337,6 @@ module StepUp
             f.write content
           end
         end
-      else
-        say_status :ignore, "Ignoring creation of lib/tasks/versioning.rake", :yellow
       end
     end
 
