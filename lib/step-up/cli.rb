@@ -179,7 +179,7 @@ module StepUp
         message = edit_message(driver.class::NOTE_MESSAGE_FILE_PATH, message)
       end
       
-      unless message.empty?
+      unless message.nil? || message.empty?
         section = options[:section] || choose(CONFIG.notes_sections.names, "Choose a section to add the note:")
         if section.nil? || ! CONFIG.notes_sections.names.include?(section)
           puts "Aborting due to invalid section"
@@ -378,6 +378,19 @@ module StepUp
           `#{ editor } #{ temp_file } && wait $!`
         end
         File.read(temp_file).gsub(/^\#.*/m, '').rstrip
+      else
+        puts <<-TEXT
+No editor found.
+
+  You can specify the editor by the following ways:
+  - By git-config
+    $ git config --global core.editor 'mate -w'
+  - By environment variables
+    $ export $GIT_EDITOR='mate -w'`
+    #or
+    $ export $EDITOR='mate -w'
+TEXT
+        exit 1
       end
     end
 
