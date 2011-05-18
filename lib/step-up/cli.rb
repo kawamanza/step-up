@@ -372,10 +372,17 @@ module StepUp
       File.open(temp_file, "w"){ |f| f.write initial_content }
       editor = driver.editor_name
       if editor =~ /\w/
+        init_time = Time.now
         if editor =~ /^vim?\b/
           system "#{ editor } #{ temp_file }"
         else
           `#{ editor } #{ temp_file } && wait $!`
+        end
+        elapsed_time = Time.now - init_time
+        if elapsed_time < 1.0
+          puts "Premature termination of the text editor."
+          puts "Make sure of having set the editor as appropriate."
+          exit 1
         end
         File.read(temp_file).gsub(/^\#.*/m, '').rstrip
       else
