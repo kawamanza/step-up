@@ -10,7 +10,12 @@ module StepUp
         new.last_version_tag
       end
 
+      def empty_repository?
+        `git branch`.empty?
+      end
+
       def commit_history(commit_base, *args)
+        return [] if empty_repository?
         options = args.last.is_a?(Hash) ? args.pop : {}
         top = args.shift
         top = "-n#{ top }" unless top.nil?
@@ -53,8 +58,8 @@ module StepUp
       end
 
       def detached_notes_as_hash(commit_base = "HEAD", notes_sections = nil)
-        tag = cached_last_version_tag(commit_base)
-        tag = tag.sub(/\+$/, '')
+        tag = all_version_tags.any? ? cached_last_version_tag(commit_base) : nil
+        tag = tag.sub(/\+$/, '') unless tag.nil?
         RangedNotes.new(self, tag, commit_base, :notes_sections => notes_sections).notes.as_hash
       end
 
@@ -103,7 +108,7 @@ module StepUp
       end
 
       def zero_version(commit_base = "HEAD", count_commits = false)
-        "%s+%s" % [mask.blank, "#{ commit_history(commit_base).size if count_commits }"]
+        "%s+%s" % [mask.blank, "#{ tags.empty? ? '0' : commit_history(commit_base).size if count_commits }"]
       end
     end
   end
