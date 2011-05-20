@@ -1,0 +1,5 @@
+Removing warnings when the repository is empty
+  When executing command line 'notes show'
+  When executing command line 'notes add'
+Removing warnings when no version tag found
+  When executing command line 'version show'
