@@ -164,12 +164,16 @@ module StepUp
     end
 
     def notes_add
-      message = options[:m] 
+      message = options[:m]
       message = nil if options[:m] =~ /^(|m)$/
 
+      last_commit = driver.commit_history(commit_object, 1, :with_messages => true).first
+      if last_commit.nil?
+        puts "This repository has no commit history"
+        exit 1
+      end
       unless message
-        last_commit = driver.commit_history(commit_object, 1, :with_messages => true).first
-        message = last_commit.last if last_commit
+        message = last_commit.last
         message << <<-TEXT
 
 
