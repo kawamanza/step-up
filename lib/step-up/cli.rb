@@ -219,6 +219,10 @@ module StepUp
     end
 
     def version_create
+      unless check_notes_config
+        say_status(:fail, "Abort version increment. Could not retrieve the notes", :red)
+        exit 1
+      end
       level = options[:level] || "auto"
       message = get_notes(true, get_custom_message)
 
