@@ -1,27 +1,21 @@
 # StepUp: a project to step up your projects
+
 StepUp is a tool to manage versioning.
 That means you can bump the version of your project, for example, from v3.0.11 to v4.0.0, check the current version, summarize all the history of versions in a changelog and more.
 
 StepUp is based on source control management features (i.e. tags, branches, commits, notes etc), so it doesn't need to keep files with the current version (but it supports it, if you want), it has visibility of all history of changes and versions (doesn't matter if they are spread in many different branches), which adds a variety of possibilities in terms of management, depending on your project needs.
-
-## Prerequisite
-Git version 1.7.1 and above.
 
 ## Installation
 
     gem install step-up
 
 ## First of all
-Have in mind that StepUp has only Git support for now (more to come soon!!), so any StepUp command must be performed inside a git repository path.
-With that said, run
 
-    stepup init
-
-It will create a file in your project called **.stepuprc**.
-We'll cover more about this in the next sections.
+Your installed git-scm version must be v1.7.1 or higher.
 
 ## The Basics
-### Current project version
+
+### Checking current project version
 
     stepup [version]
 
@@ -29,12 +23,13 @@ An example of output would be
 
     v0.2.0+3
 
-The "+3" part means the project has one commit since last version.
-The format of the version is totally customizable through **.stepuprc** which we will cover in more detail later.
+Consider that your project has a tag named "v0.2.0".
+The "+3" part of the output above means the project has three commits since last version tag.
+The format of the version is totally customizable, and we will cover in more detail later.
 
 ### Stepping up a version
 
-    stepup version create [--level LEVEL_NAME]
+    stepup version create [--level LEVEL_NAME] [--no-editor]
 
 where **LEVEL_NAME**, by default, could be  
 
@@ -46,9 +41,9 @@ where **LEVEL_NAME**, by default, could be
 This command will ask user to input a message for the version and will increment the version number accordingly.
 
 Each level corresponds to a position in the version mask.
-Considering default settings of .stepuprc, this means:
+Considering default settings, this means:
 
-    v0.0.0.0 => vMAJOR.MINOR.PATCH.TINY
+    v0.0.0.9 => vMAJOR.MINOR.PATCH.TINY
 
 The versioning increment is based on the last version tag found in the repository, and works as follows:
 
@@ -57,16 +52,20 @@ The versioning increment is based on the last version tag found in the repositor
     v0.5.3.2 => v0.6.0   (MINOR increment)
     v0.5.3.2 => v1.0.0   (MAJOR increment)
 
+As you can see, the TINY level is omitted when its value is zero.
+The mask allows you to configure the less relevant levels this way.
+
 ### Checking out the changelog
 
-    stepup changelog
+    stepup changelog [--top=N]
 
 ## StepUp beyond basics
 
 ### Working with notes
 
 With StepUp we are able to attach additional comments on existing commit objects.
-The great goal of this Gem is giving to developers an easy way to manage these notes.
+*The great goal of this Gem is giving to developers an easy way to manage these notes*.
+
 The note was created with the following command:
 
     $ stepup notes add --section bugfixes -m "support for old installations"
