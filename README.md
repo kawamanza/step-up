@@ -66,10 +66,11 @@ The mask allows you to configure the less relevant levels this way.
 With StepUp we are able to attach additional comments on existing commit objects.
 *The great goal of this Gem is giving to developers an easy way to manage these notes*.
 
-The note was created with the following command:
+The note is created with a command as the example below:
 
     $ stepup notes add --section bugfixes -m "support for old installations"
 
+It's possible to use the same command with no paramenters. This way an wizard will guide through the process.
 Still with this example we can check the created note with the following command:
 
     $ stepup notes
@@ -79,11 +80,33 @@ Still with this example we can check the created note with the following command
       - support for old installations
 
 The command above fetches the entire commit history, gets each note and organizes them in sections.
-Found notes are displayed as a big changelog message.
+Found notes are displayed as a changelog message.
 
 ### Creating rich changelogs
 
-***Comming soon***
+With a culture of notating all the relevant developments, its possible to retrieve a summary of a range of versions besides that specifying what kind of information will be retrieved.
+For example, imagine that you want to see all the features implemented in your application since the version v1.10.1 up to v2.0.0
+
+    stepup notes --since v1.10.1 upto v2.0.0 --sections pre_deploy pos_deploy
+    
+The result would be something like the following:
+
+    Showing notes since v1.10.1 up to v2.0.0 (including notes of tags: v1.10.1, v1.10.2, v1.51.0, v2.0.0)
+    ---
+    Pre-Deploy:
+
+      - dependency of version v10 of project XYZ
+      - it needed to rename the following file
+        - config/environment_variables.yml.sample -> config/environment_variables.yml
+      - rake articles:index
+
+    Pos-Deploy:
+
+      - Reindex articles
+        - rake articles:index
+      - rake db:seed
+      - rake categories:reload
+
 
 ## Project
 * https://github.com/kawamanza/step-up
