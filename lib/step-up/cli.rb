@@ -179,6 +179,19 @@ module StepUp
 
 # Please enter the note message for your changes. Lines starting
 # with '#' will be ignored, and an empty message aborts the operation.
+#
+# We recommend that the note message has a short sentence, or try to
+# transform your message in a topic. Example:
+#
+#   New fields for Account model
+#     Last access date
+#
+# The breakline and indentation will be converted as follows:
+#
+#     - New fields for Account model
+#       - Last access date
+#
+# Thus, the note becomes easier to read, instead of using big sentences.
         TEXT
         message = edit_message(driver.class::NOTE_MESSAGE_FILE_PATH, message)
       end
