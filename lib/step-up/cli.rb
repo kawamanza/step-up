@@ -511,6 +511,10 @@ TEXT
     end
 
     def check_notes_config
+      if fail_banner = driver.cached_unsupported_scm_banner
+        puts fail_banner
+        exit 1
+      end
       return true if driver.cached_fetched_remotes.empty?
       remotes_with_notes = driver.fetched_remotes('notes')
       unfetched_remotes = driver.cached_fetched_remotes - remotes_with_notes

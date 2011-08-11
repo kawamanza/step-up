@@ -6,6 +6,22 @@ module StepUp
       
       include GitExtensions::Notes
 
+      def unsupported_scm_banner
+        if `git --version`.chomp =~ /\d\.[^\s]+/
+          v = $&
+          if Gem::Version.correct?(v)
+            if Gem::Version.new("1.7.1") > Gem::Version.new(v)
+              "Unsupported installed GIT version: #{v}\n" +
+              "Please install version 1.7.1 or newer"
+            end
+          else
+            "Installed GIT version unknown: #{v}"
+          end
+        else
+          super
+        end
+      end
+
       def self.last_version
         new.last_version_tag
       end

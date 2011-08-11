@@ -26,6 +26,10 @@ module StepUp
           super
         end
       end
+
+      def unsupported_scm_banner
+        "Unsupported installed SCM version"
+      end
     end
   end
 end
