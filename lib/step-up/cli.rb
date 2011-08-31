@@ -183,15 +183,30 @@ module StepUp
 # We recommend that the note message has a short sentence, or try to
 # transform your message in a topic. Example:
 #
-#   New fields for Account model
+#   New field for Account model
 #     Last access date
 #
-# The breakline and indentation will be converted as follows:
+# The breakline and two-spaces indentation will be converted as follows:
 #
-#     - New fields for Account model
+#     - New field for Account model
 #       - Last access date
 #
 # Thus, the note becomes easier to read, instead of using big sentences.
+#
+# If you still need to describe the change in one big sentence, you may
+# use one-space indentation to indicates the sentence continues in the
+# next line. Example:
+#
+#   The Account model receives a new field named "last_access_date",
+#    and his value changes every sign-in made by user on website.
+#
+# The one-space indentation will be converted as follows:
+#
+#     - The Account model receives a new field named "last_access_date",
+#       and his value changes every sign-in made by user on website.
+#
+# You can make several combinations of one-space or two-spaces indentation
+# if you need. We hope this helps you to improve your release notes.
         TEXT
         message = edit_message(driver.class::NOTE_MESSAGE_FILE_PATH, message)
       end
