@@ -1,0 +1,4 @@
+Improvements on message parser
+  one-space indentation: the phrase continues on next line
+  two-spaces indentation: a new topic or sub-topic
+  ... and their combinations
