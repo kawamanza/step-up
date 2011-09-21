@@ -1,0 +1,2 @@
+bugfix adding notes to the commit object instead of the tag object
+  converting to commit SHA1 to avoid attaching note to the tag
