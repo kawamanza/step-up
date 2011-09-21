@@ -220,7 +220,7 @@ module StepUp
           puts "The note you was about to add is still available into file #{driver.class::NOTE_MESSAGE_FILE_PATH}"
           exit(1)
         end
-        steps = driver.steps_for_add_notes(section, message, commit_object)
+        steps = driver.steps_for_add_notes(section, message, last_commit.first)
         print_or_run(steps, options[:steps])
       end
     end
