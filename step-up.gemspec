@@ -2,6 +2,9 @@
 lib = File.expand_path('../lib/', __FILE__)
 $:.unshift lib unless $:.include?(lib)
 
+version_file = File.expand_path "../GEM_VERSION", __FILE__
+File.delete version_file if File.exists? version_file
+
 require 'step-up'
 
 Gem::Specification.new do |s|
@@ -26,7 +29,7 @@ Gem::Specification.new do |s|
     step-up.gemspec
   ]
   tests = `git ls-files -- {test,spec,features}/*`.split("\n")
-  s.files              = `git ls-files`.split("\n") - excepts - tests
+  s.files              = `git ls-files`.split("\n") - excepts - tests + %w[GEM_VERSION]
   s.test_files         = tests
   s.executables        = %w(stepup)
 end
