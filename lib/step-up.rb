@@ -4,6 +4,7 @@ module StepUp
   autoload :Driver, 'step-up/driver.rb'
   autoload :GitExtensions, 'step-up/git_extensions.rb'
   autoload :RangedNotes, 'step-up/ranged_notes.rb'
+  autoload :NotesUtil, 'step-up/notes_util.rb'
   module Parser
     autoload :VersionMask, 'step-up/parser/version_mask.rb'
   end

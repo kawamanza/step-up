@@ -1,3 +1,4 @@
 *.gem
 *.swp
 .rvmrc
+GEM_VERSION

@@ -106,7 +106,7 @@ module StepUp
               return tag
             end
           end
-          no_tag_version_in_commit_history = nil
+          count_commits == true ? zero_version(commit_base, true) : nil
         else
           zero_version(commit_base, count_commits)
         end
@@ -124,7 +124,7 @@ module StepUp
       end
 
       def zero_version(commit_base = "HEAD", count_commits = false)
-        "%s+%s" % [mask.blank, "#{ tags.empty? ? '0' : commit_history(commit_base).size if count_commits }"]
+        "%s+%s" % [mask.blank, "#{ commit_history(commit_base).size if count_commits }"]
       end
     end
   end

@@ -212,12 +212,15 @@ module StepUp
       end
       
       unless message.nil? || message.empty?
-        section = options[:section] || choose(CONFIG.notes_sections.names, "Choose a section to add the note:")
+        puts "Your note will be displayed as follows:"
+        puts NotesUtil.parse_message(message)
+        section = options[:section] || choose(CONFIG.notes_sections.names, "---\nChoose a section to add the note:")
         if section.nil? || ! CONFIG.notes_sections.names.include?(section)
           puts "Aborting due to invalid section"
+          puts "The note you was about to add is still available into file #{driver.class::NOTE_MESSAGE_FILE_PATH}"
           exit(1)
         end
-        steps = driver.steps_for_add_notes(section, message, commit_object)
+        steps = driver.steps_for_add_notes(section, message, last_commit.first)
         print_or_run(steps, options[:steps])
       end
     end
