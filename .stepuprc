@@ -30,7 +30,6 @@ versioning:
         - deploy_steps
       patch:
         - bugfixes
-      tiny:
         - changes
   version_levels:
     - major
