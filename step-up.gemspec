@@ -29,7 +29,9 @@ Gem::Specification.new do |s|
     step-up.gemspec
   ]
   tests = `git ls-files -- {test,spec,features}/*`.split("\n")
-  s.files              = `git ls-files`.split("\n") - excepts - tests + %w[GEM_VERSION]
+  others = []
+  others << "GEM_VERSION" if File.exists?(version_file)
+  s.files              = `git ls-files`.split("\n") - excepts - tests + others
   s.test_files         = tests
   s.executables        = %w(stepup)
 end
