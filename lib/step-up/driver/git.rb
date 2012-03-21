@@ -35,11 +35,39 @@ module StepUp
         options = args.last.is_a?(Hash) ? args.pop : {}
         top = args.shift
         top = "-n#{ top }" unless top.nil?
-        commits = `git log --pretty=oneline --no-color #{ top } #{ commit_base }`
-        if options[:with_messages]
-          commits.scan(/^(\w+)\s+(.*)$/)
-        else
-          commits.scan(/^(\w+)\s/).flatten
+        encoding = CONFIG["log_output_encoding"] || "ISO-8859-1"
+        commits = `git log --pretty=oneline --encoding=#{ encoding } --no-color #{ top } #{ commit_base }`
+        commits.force_encoding(encoding) if RUBY_VERSION.to_f >= 1.9
+        begin
+          if options[:with_messages]
+            commits.scan(/^(\w+)\s+(.*)$/)
+          else
+            commits.scan(/^(\w+)\s/).flatten
+          end
+        rescue ArgumentError => e
+          if e.message.start_with?("invalid byte sequence")
+            puts <<-MSG
+Could not read information from git-log because of an #{e.message}.
+
+To fix this you can insert an attribute "log_output_encoding" on
+file .stepuprc into your GIT project. Example:
+
+    \033[30;1m# .stepuprc\033[0m
+    \033[32m+log_output_encoding: "ISO-8859-1"\033[0m
+     notes:
+       after_versioned:
+         strategy: "keep" # Valid options: "keep" or "remove"
+         \033[30;1m# ...\033[0m
+
+To see the current encoding from your GIT repository, you may
+check with the following bash command:
+
+    `git log --pretty=oneline --no-color > test.txt && file test.txt && rm test.txt`
+
+            MSG
+            exit 1
+          end
+          raise
         end
       end
 
