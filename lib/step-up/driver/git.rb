@@ -120,10 +120,18 @@ check with the following bash command:
         level
       end
 
+      def next_version_tag(commit_base, level = nil)
+        level = next_release_level(commit_base) if level.nil?
+        if commit_base && mask.parse(commit_base)
+          mask.increase_version(commit_base, level)
+        else
+          tag = cached_last_version_tag(commit_base)
+          tag =~ /\+/ ? mask.increase_version($`, level) : nil
+        end
+      end
+
       def steps_to_increase_version(level, commit_base = "HEAD", message = nil)
-        tag = cached_last_version_tag(commit_base)
-        tag = tag.sub(/\+$/, '')
-        new_tag = mask.increase_version(tag, level)
+        new_tag = next_version_tag(commit_base, level)
         notes = cached_detached_notes_as_hash(commit_base)
         commands = []
         commands << "git fetch" if cached_fetched_remotes.any?

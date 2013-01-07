@@ -10,6 +10,7 @@ module StepUp
     default_task :version
 
     desc "version ACTION [base_object] [OPTIONS]", "manage versions of your project"
+    method_options %w[next-release -n] => :boolean # stepup version --next-release
     method_options %w(levels -L) => :boolean # $ stepup version [--levels|-L]
     method_options %w(level -l) => :string, %w(steps -s) => :boolean, %w(message -m) => :string, :'no-editor' => :boolean  # $ stepup version create [--level|-l <level-name>] [--steps|-s] [--message|-m <comment-string>] [--no-editor]
     method_options %w(mask -M) => :string # stepup version show --mask development_hudson_build_0
@@ -245,7 +246,12 @@ module StepUp
       else
         mask = options[:mask]
         mask = nil if mask !~ /0/
-        puts driver(mask).last_version_tag(commit_object || "HEAD", true)
+        if options[:"next-release"]
+          tag = driver.next_version_tag(commit_object, options[:level])
+          puts tag if tag
+        else
+          puts driver(mask).last_version_tag(commit_object || "HEAD", true)
+        end
       end
     end
 
