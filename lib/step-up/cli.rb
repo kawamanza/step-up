@@ -257,15 +257,7 @@ module StepUp
       level = options[:level] || "auto"
       message = get_notes(true, get_custom_message)
 
-      if level == "auto" && CONFIG.versioning["auto_increment"].is_a?(Hash)
-        detached_notes = driver.cached_detached_notes_as_hash(commit_object || "HEAD")
-        level = version_levels.last
-        version_levels.reverse.each do |name|
-          sections = CONFIG.versioning.auto_increment.sections_level[name]
-          next if sections.nil?
-          level = name if detached_notes.any?{ |section, notes| sections.include?(section) && notes.any? }
-        end
-      end
+      level = driver.next_release_level(commit_object) if level == "auto"
 
       if version_levels.include? level
         unless options[:'no-editor']

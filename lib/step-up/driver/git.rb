@@ -107,6 +107,19 @@ check with the following bash command:
         RangedNotes.new(self, tag, commit_base, :notes_sections => notes_sections).notes.as_hash
       end
 
+      def next_release_level(commit_base)
+        level = CONFIG.versioning.version_levels.last
+        if CONFIG.versioning["auto_increment"].is_a?(Hash)
+          detached_notes = cached_detached_notes_as_hash(commit_base)
+          CONFIG.versioning.version_levels.reverse.each do |name|
+            sections = CONFIG.versioning.auto_increment.sections_level[name]
+            next if sections.nil?
+            level = name if detached_notes.any?{ |section, notes| sections.include?(section) && notes.any? }
+          end
+        end
+        level
+      end
+
       def steps_to_increase_version(level, commit_base = "HEAD", message = nil)
         tag = cached_last_version_tag(commit_base)
         tag = tag.sub(/\+$/, '')
