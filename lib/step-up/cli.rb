@@ -44,7 +44,7 @@ module StepUp
       end
     end
 
-    desc "changelog --top=<num> --format={default|wiki|html}", "show changelog from each version tag"
+    desc "changelog --top=<num> --format={default|wiki|html|confluence}", "show changelog from each version tag"
     method_options %w[top -n] => :numeric
     method_options %w[format -f] => :string
     method_options %w(mask -M) => :string # stepup changelog --mask development_hudson_build_0
@@ -108,6 +108,20 @@ module StepUp
       log = []
       log << "== #{tag} (#{created_at} by #{tag_info[:tagger]}) ==\n"
       log << tag_info[:message].gsub(/^(?:\t\t|\s\s\s\s)-\s/, "** ").gsub(/^(?:\t|\s\s)-\s/, "* ")
+      log.join("\n")
+    end
+
+    def changelog_format_confluence(tag, tag_info)
+      created_at = tag_info[:date].strftime("%b/%d %Y %H:%M")
+      log = []
+      log << "h2. #{tag} (#{created_at} by #{tag_info[:tagger]})\n"
+      formatted_message = tag_info[:message]
+      formatted_message.gsub!(/^(?:\t\t|\s\s\s\s)-\s/, "** ")
+      formatted_message.gsub!(/^(?:\t|\s\s)-\s/, "* ")
+      formatted_message.gsub!('(*)', '( * )')
+      formatted_message.gsub!('[', "\\[")
+      formatted_message.gsub!(']', "\\]")
+      log << formatted_message
       log.join("\n")
     end
 
