@@ -22,7 +22,7 @@ module StepUp
         action = "show"
       end
       @commit_object = commit_base
-      if self.respond_to?("version_#{action}")
+      if internal_respond_to?("version_#{action}")
         send("version_#{action}")
       else
         puts "invalid action: #{action}"
@@ -51,7 +51,7 @@ module StepUp
     def changelog
       log = []
       method_name = "changelog_format_#{ options[:format] }"
-      method_name = "changelog_format_default" unless respond_to?(method_name)
+      method_name = "changelog_format_default" unless internal_respond_to?(method_name)
       driver = driver(options[:mask])
       driver.all_version_tags.each_with_index do |tag, index|
         break if options[:top] && index >= options[:top]
@@ -72,7 +72,7 @@ module StepUp
         action = "show"
       end
       @commit_object = commit_base
-      if self.respond_to?("notes_#{action}")
+      if internal_respond_to?("notes_#{action}")
         check_notes_config && send("notes_#{action}")
       else
         puts "invalid action: #{action}"
@@ -86,6 +86,10 @@ module StepUp
     end
 
     protected
+
+    def internal_respond_to?(method)
+      respond_to?(method) || respond_to?(:protected_methods) && protected_methods.include?(method.to_sym)
+    end
 
     def changelog_format_default(tag, tag_info)
       created_at = tag_info[:date].strftime("%b/%d %Y %H:%M %z")
