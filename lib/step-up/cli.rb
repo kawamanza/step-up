@@ -15,6 +15,7 @@ module StepUp
     method_options %w(level -l) => :string, %w(steps -s) => :boolean, %w(message -m) => :string, :'no-editor' => :boolean  # $ stepup version create [--level|-l <level-name>] [--steps|-s] [--message|-m <comment-string>] [--no-editor]
     method_options %w(mask -M) => :string # stepup version show --mask development_hudson_build_0
     method_options %w(masks) => :string # stepup version show --masks
+    method_options %w(format -f) => :string
     VERSION_ACTIONS = %w[show create help]
     def version(action = nil, commit_base = nil)
       unless VERSION_ACTIONS.include?(action)
@@ -253,6 +254,7 @@ module StepUp
     end
 
     def version_show
+      formats = %w[default mvn mvn-snapshot]
       if options[:levels]
         puts "Current version levels:"
         version_levels.each  do |level|
@@ -270,14 +272,35 @@ module StepUp
         end
         puts masks.join("\n") if masks.any?
       else
+        format = options[:format] || "default"
+        unless formats.member?(format)
+          puts "Unknown format #{format.inspect}. Must be one of #{formats.inspect}"
+          exit 1
+        end
         mask = options[:mask]
         mask = nil if mask !~ /0/
+        version = nil
         if options[:"next-release"]
-          tag = driver.next_version_tag(commit_object, options[:level])
-          puts tag if tag
+          tag = driver.cached_next_version_tag(commit_object, options[:level])
+          version = tag
         else
-          puts driver(mask).last_version_tag(commit_object || "HEAD", true)
+          version = driver(mask).last_version_tag(commit_object || "HEAD", true)
         end
+        return unless version
+        if format =~ /\Amvn/
+          if version =~ /\+/
+            suf = $'
+            version = driver.cached_next_version_tag(commit_object, options[:level])
+            version = "#{ version }+#{ suf }"
+          end
+          version = version.gsub(/^\D+/, '')
+          if format == "mvn-snapshot"
+            version = version.gsub(/(\d+)\+\d*$/){ |c| "#{$1}-SNAPSHOT" }
+          elsif format == "mvn"
+            version = version.gsub(/(\d+)\+(\d*)$/){ |c| "#{$1}.rc#{$2}" }
+          end
+        end
+        puts version
       end
     end
 
