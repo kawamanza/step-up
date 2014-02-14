@@ -254,7 +254,7 @@ module StepUp
     end
 
     def version_show
-      formats = %w[default mvn mvn-snapshot]
+      formats = %w[default mvn mvn-snapshot rpm]
       if options[:levels]
         puts "Current version levels:"
         version_levels.each  do |level|
@@ -299,6 +299,9 @@ module StepUp
           elsif format == "mvn"
             version = version.gsub(/(\d+)\+(\d*)$/){ |c| "#{$1}.rc#{$2}" }
           end
+        elsif format == "rpm"
+          version = version.gsub(/^\D+/, '')
+          version = version.gsub(/(\d+)(?:\+(\d*))?$/){ |c| "#{$1}-#{$2.to_i}" }
         end
         puts version
       end
