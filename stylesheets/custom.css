@@ -1,0 +1,70 @@
+code {
+    font-size: 16px;
+    background-color: rgba(0, 0, 0, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 3px;
+}
+.markdown-format pre {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background-clip: padding-box;
+    border-color: #DDDDDD;
+    border-image: none;
+    border-radius: 3px;
+    border-style: solid;
+    border-width: 1px 1px 2px;
+    color: #666666;
+    font-family: Monaco,"DejaVu Sans Mono","Courier New",monospace;
+    font-size: 13px;
+    margin: 10px 0;
+    overflow: auto;
+    padding: 8px 10px;
+}
+.markdown-format pre code {
+    border: medium none;
+    padding: 0;
+}
+.markdown-format pre span {
+    white-space: pre-wrap;
+}
+.markdown-format pre span.tooltip {
+    display: inline-block;
+    position: relative;
+    width: 100%;
+}
+.markdown-format pre span.tooltip span {
+    color: #999999;
+    display: block;
+}
+.markdown-format pre span.tooltip:hover {
+    background: none repeat scroll 0 0 padding-box #EEEEEE;
+    border-radius: 3px;
+    margin-left: -2px;
+    padding: 0 2px;
+}
+.markdown-format pre.command-line {
+    background-color: rgba(0, 0, 0, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #FFFFFF;
+    padding: 10px;
+}
+.markdown-format pre.command-line em {
+    color: #F9FE64;
+    font-style: italic;
+}
+.markdown-format pre.command-line .command:before {
+    content: "$ ";
+}
+.markdown-format pre.command-line .comment {
+    color: #CCCCCC;
+}
+.markdown-format pre.command-line .output {
+    color: #63E463;
+}
+.markdown-format pre.command-line .output span {
+    left: -1000px;
+    position: fixed;
+    top: -1000px;
+}

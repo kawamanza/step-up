@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset='utf-8'>
+    <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
 
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/custom.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
 
     <title>Step-up by kawamanza</title>
@@ -19,8 +20,7 @@
         <h2>StepUp is an utility that helps other projects to manage your versioning increase.</h2>
 
         <section id="downloads">
-          <a href="https://github.com/kawamanza/step-up/zipball/master" class="btn">Download as .zip</a>
-          <a href="https://github.com/kawamanza/step-up/tarball/master" class="btn">Download as .tar.gz</a>
+          <a href="http://rubygems.org/gems/step-up" class="btn">Check the RubyGems Page</a>
           <a href="https://github.com/kawamanza/step-up" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
         </section>
       </div>
@@ -29,36 +29,68 @@
     <div class="container">
       <section id="main_content">
         <h3>
-<a name="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages"><span class="octicon octicon-link"></span></a>Welcome to GitHub Pages.</h3>
+<a name="introduction" class="anchor" href="#introduction"><span class="octicon octicon-link"></span></a>Introduction</h3>
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
+<p>StepUp is a tool to manage semantic versioning.
+That means you can bump the version of your project, for example, from v3.0.11 to v4.0.0, check the current version, summarize all the history of versions in a changelog and more.</p>
 
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
-</code></pre>
-
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
+<p>StepUp is based on source control management features (i.e. tags, branches, commits, notes etc), so it doesn&rsquo;t need to keep files with the current version (but it supports it, if you want), it has visibility of all history of changes and versions (doesn&rsquo;t matter if they are spread in many different branches), which adds a variety of possibilities in terms of management, depending on your project needs.</p>
 
 <h3>
-<a name="designer-templates" class="anchor" href="#designer-templates"><span class="octicon octicon-link"></span></a>Designer Templates</h3>
+<a name="instalation-and-usage" class="anchor" href="#instalation-and-usage"><span class="octicon octicon-link"></span></a>Instalation and Usage</h3>
 
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
+<p>First of all, your installed git-scm version must be v1.7.1 or higher. This minimal version is required because of <code>git notes</code> command-line support.</p>
+
+<div class="markdown-format">
+<pre class="command-line">
+<span class="command">cd <em>your_repo_root</em>/<em>repo_name</em></span>
+<span class="command">git --version</span>
+<span class="output">git version 1.7.9.5</span>
+<span class="command">git notes list; echo $?</span>
+<span class="output">0</span>
+</pre>
+</div>
+
+<p>Basic usage:</p>
+
+<div class="markdown-format">
+<pre class="command-line">
+<span class="command">gem install step-up</span>
+<span class="output">Successfully installed step-up-0.9.5</span>
+<span class="output">1 gem installed</span>
+<span class="command">cd <em>your_repo_root</em>/<em>repo_name</em></span>
+<span class="command">stepup</span>
+<span class="output">v0.2.0+3</span>
+</pre>
+</div>
+
+<p>Consider that your project has a tag named "v0.2.0".
+The "+3" part of the output above means the project has three commits since last version tag.
+The format of the version is totally customizable, and we will cover in more detail later.</p>
 
 <h3>
-<a name="rather-drive-stick" class="anchor" href="#rather-drive-stick"><span class="octicon octicon-link"></span></a>Rather Drive Stick?</h3>
+<a name="advanced-usage" class="anchor" href="#advanced-usage"><span class="octicon octicon-link"></span></a>Advanced usage</h3>
 
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
+<p>For more information about advanced features, see the pages listed below:</p>
+
+<ul>
+  <li><a href="#" onclick="alert('Soom...'); return false">Automating semantic version increment of you project</a></li>
+  <li><a href="#" onclick="alert('Soom...'); return false">Creating enriched release notes effortlessly</a></li>
+  <li><a href="#" onclick="alert('Soom...'); return false">Integrating with Continuous Delivery</a></li>
+  <li><a href="#" onclick="alert('Soom...'); return false">Command-line reference</a></li>
+</ul>
 
 <h3>
 <a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
 
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
+<p>In 2010, Marcelo Manzan (<a href="https://github.com/kawamanza" class="user-mention">@kawamanza</a>) had the idea along with Eric Fer (<a href="https://github.com/ericfer" class="user-mention">@ericfer</a>) to improve the way they generate documentation on projects. They were based on the reference documentation that was being created on the site <a target="_blank" href="http://semver.org/">SemVer.org</a>, and designed a way to automate incrementing versions of projects based on scope of changes made. So the StepUp Project emerged. A consolidated utility that helps programmers, deployers and other stakeholders in the project&rsquo;s life cycle.</p>
+
+<p>Special thanks to Lucas Fais (<a href="https://github.com/lucasfais" class="user-mention">@lucasfais</a>) for his participation in drafting some ideas and the implementation of some features.</p>
 
 <h3>
 <a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Support or Contact</h3>
 
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
+<p>Having trouble with some command result? Please, report it through the issue tracker at <a href="https://github.com/kawamanza/step-up/issues">https://github.com/kawamanza/step-up/issues</a> and we&rsquo;ll help you sort it out.</p>
       </section>
     </div>
 
