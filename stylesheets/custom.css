@@ -54,6 +54,10 @@ code {
     color: #F9FE64;
     font-style: italic;
 }
+.markdown-format pre.command-line .output strong {
+    color: #FFFF00;
+    font-weight: normal;
+}
 .markdown-format pre.command-line .command:before {
     content: "$ ";
 }

@@ -28,10 +28,136 @@
 
     <div class="container">
       <section id="main_content">
-        <h3>
-<a name="introduction" class="anchor" href="#introduction"><span class="octicon octicon-link"></span></a>Automating semantic version increment</h3>
+        <h2>Automating semantic version increment</h2>
 
-<p>Under construction...</p>
+        <h3><a name="introduction" class="anchor" href="#introduction"><span class="octicon octicon-link"></span></a>Introduction</h3>
+<p>Basic usage:</p>
+
+<div class="markdown-format">
+<pre class="command-line">
+<span class="command">gem install step-up</span>
+<span class="output">Successfully installed step-up-0.9.5</span>
+<span class="output">1 gem installed</span>
+<span class="command">cd <em>your_repo_root</em>/<em>repo_name</em></span>
+<span class="command">stepup</span>
+<span class="output">v0.2.0+3</span>
+</pre>
+</div>
+
+<p>Consider that your project has a tag named "v0.2.0".
+The "+3" part of the output above means the project has three commits since last version tag.</p>
+
+<p>According to <a target="_blank" href="http://semver.org/">SemVer.org</a>, we create this utility to manage the version increment based on the rules of semantic versioning (with some customized rules). Considering the default settings of StepUp, we have the following version mask:</p>
+
+<blockquote>
+  v0.5.3.2 => v<code>MAJOR</code>.<code>MINOR</code>.<code>PATCH</code>.<code>TINY</code>
+</blockquote>
+
+<p>Each level of a semantic version corresponds to the scope of magnitude of changes that your project suffered. The increment of each level is based on the following:</p>
+
+<ul>
+  <li>MAJOR version when you make incompatible API changes (Example: architecture changes, inauguration version, and so on...),</li>
+  <li>MINOR version when you add functionality in a backwards-compatible manner (new features,  changes in external dependencies, or something like),</li>
+  <li>PATCH version when you make backwards-compatible bug fixes or small adjustments, and</li>
+  <li>TINY version when you make minor changes (like documentation changes, for example).</li>
+</ul>
+
+        <h3><a name="version-increment" class="anchor" href="#version-increment"><span class="octicon octicon-link"></span></a>Version increment</h3>
+
+<p>If you want to make available a new release of your project, then this utility will assist you in the step of increasing its version. The versioning increment is based on the last version tag found in the repository, and works as follows:</p>
+
+<blockquote>
+  v0.5.3.2 => v0.5.3.3 (TINY increment)<br/>
+  v0.5.3.2 => v0.5.4   (PATCH increment)<br/>
+  v0.5.3.2 => v0.6.0   (MINOR increment)<br/>
+  v0.5.3.2 => v1.0.0   (MAJOR increment)
+</blockquote>
+
+<p>As you can see, the TINY level is omitted when its value is zero. The mask allows you to configure the less relevant levels this way.</p>
+
+<p>The command-line example of a version increment:</p>
+
+<div class="markdown-format">
+<pre class="command-line">
+<span class="command">cd <em>your_repo_root</em>/<em>repo_name</em></span>
+<span class="command">stepup</span>
+<span class="output">v0.5.3.2+3</span>
+<!--
+<span class="command">stepup notes add -m 'Fix some encodding problems'</span>
+<span class="output">Your note will be displayed as follows:</span>
+<span class="output">  - Fix some encodding problems</span>
+<span class="output">---</span>
+<span class="output">Choose a section to add the note:</span>
+<span class="output">  1. changes</span>
+<span class="output">  2. bugfixes</span>
+<span class="output">  3. features</span>
+<span class="output">  4. deploy_steps</span>
+<span class="output">>> </span>2
+<span class="output">         <strong>run</strong>  git fetch from "."</span>
+<span class="output">         <strong>run</strong>  git notes --ref=bugfixes add -m "Fix some encodding problems" 87ae4fbccfc934fdb01e9d5d23b8f177203beeed from "."</span>
+<span class="output">         <strong>run</strong>  git push origin refs/notes/bugfixes from "."</span>
+<span class="output">Counting objects: 3, done.</span>
+<span class="output">Delta compression using up to 4 threads.</span>
+<span class="output">Compressing objects: 100% (2/2), done.</span>
+<span class="output">Writing objects: 100% (3/3), 283 bytes, done.</span>
+<span class="output">Total 3 (delta 0), reused 0 (delta 0)</span>
+<span class="output">Unpacking objects: 100% (3/3), done.</span>
+<span class="output">To /your_repo_root/repo/repo_name.git/</span>
+<span class="output"> * [new branch]      refs/notes/bugfixes -> refs/notes/bugfixes</span>
+ --><span class="command">stepup notes</span>
+<span class="output">---</span>
+<span class="output">Bugfixes:</span>
+<span class="output"></span>
+<span class="output">  - Fix some encodding problems</span>
+<span class="command">stepup version create --no-editor</span>
+<span class="output">         <strong>run</strong>  git fetch from "."</span>
+<span class="output">         <strong>run</strong>  git tag -a -m "Bugfixes:</span>
+<span class="output"></span>
+<span class="output">  - Fix some encodding problems" v0.5.4 HEAD from "."</span>
+<span class="output">         <strong>run</strong>  git push origin refs/tags/v0.5.4 from "."</span>
+<span class="output">Counting objects: 1, done.</span>
+<span class="output">Writing objects: 100% (1/1), 182 bytes, done.</span>
+<span class="output">Total 1 (delta 0), reused 0 (delta 0)</span>
+<span class="output">Unpacking objects: 100% (1/1), done.</span>
+<span class="output">To /your_repo_root/repo/repo_name.git/</span>
+<span class="output"> * [new tag]         v0.5.4 -> v0.5.4</span>
+<span class="output">         <strong>run</strong>  git notes --ref=versioning add -m "available on v0.5.4" 87ae4fbccfc934fdb01e9d5d23b8f177203beeed from "."</span>
+<span class="output">         <strong>run</strong>  git push origin refs/notes/versioning from "."</span>
+<span class="output">Counting objects: 3, done.</span>
+<span class="output">Delta compression using up to 4 threads.</span>
+<span class="output">Compressing objects: 100% (2/2), done.</span>
+<span class="output">Writing objects: 100% (3/3), 276 bytes, done.</span>
+<span class="output">Total 3 (delta 0), reused 0 (delta 0)</span>
+<span class="output">Unpacking objects: 100% (3/3), done.</span>
+<span class="output">To /your_repo_root/repo/repo_name.git/</span>
+<span class="output"> * [new branch]      refs/notes/versioning -> refs/notes/versioning</span>
+<span class="command">stepup</span>
+<span class="output">v0.5.4</span>
+</pre>
+</div>
+
+<p>The command of the example above forces the auto-increment of the version level according to the notes found in the GIT repository. To understand how it work, see the <a href="#" onclick="alert('Soon...'); return false">Creating enriched release notes effortlessly</a> page.</p>
+
+<p>This utility wraps some git-commands to automate the usage of the SCM objects (like tags, branches and notes). The git-notes are archived into the version tag, and you can make rich changelogs with them, and present them with the format you will.</p>
+
+<div class="markdown-format">
+<pre class="command-line">
+<span class="command">stepup changelog -n1 --format=wiki</span>
+<span class="output">== v0.5.4 (Aug/02 2014 13:36 -0300 by kawamanza) ==</span>
+<span class="output"></span>
+<span class="output">Bugfixes:</span>
+<span class="output"></span>
+<span class="output">* Fix some encodding problems</span>
+<span class="command">stepup changelog -n1 --format=rpmspec</span>
+<span class="output">* Sat Aug 02 2014 by kawamanza - v0.5.4</span>
+<span class="output"></span>
+<span class="output">  Bugfixes:</span>
+<span class="output"></span>
+<span class="output">    - Fix some encodding problems</span>
+</pre>
+</div>
+
+<p>StepUp has a set of commands to assist the organization and control in the project development.</p>
       </section>
     </div>
   </body>
