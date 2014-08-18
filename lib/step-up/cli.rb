@@ -462,7 +462,7 @@ module StepUp
       editor = driver.editor_name
       if editor =~ /\w/
         init_time = Time.now
-        if editor =~ /^(\/.*\/)?vim?\b/
+        if editor =~ /^(\/\S*\/)?vim?\b/
           system "#{ editor } #{ temp_file }"
         else
           `#{ editor } #{ temp_file } && wait $!`
