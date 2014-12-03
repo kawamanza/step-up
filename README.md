@@ -1,5 +1,6 @@
 # StepUp: a project to step up your projects
-[![GitHub Latest Release](https://badge.fury.io/gh/kawamanza%2Fstep-up.png)](https://github.com/kawamanza/step-up) [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/kawamanza/step-up?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![GitHub version](https://badge.fury.io/gh/kawamanza%2Fstep-up.svg)](http://badge.fury.io/gh/kawamanza%2Fstep-up)
+[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/kawamanza/step-up?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 StepUp is a tool to manage versioning.
 That means you can bump the version of your project, for example, from v3.0.11 to v4.0.0, check the current version, summarize all the history of versions in a changelog and more.
