@@ -1,4 +1,5 @@
 *.gem
 *.swp
 .rvmrc
+Gemfile.lock
 GEM_VERSION
