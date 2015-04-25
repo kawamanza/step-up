@@ -93,7 +93,7 @@ check with the following bash command:
       end
 
       def version_tag_info(tag)
-        full_message = `git show #{ tag } --no-decorate --quiet --date=default`
+        full_message = `git show #{ tag } --pretty=medium --no-decorate --quiet --date=default`
         tag_pattern = tag.gsub(/\./, '\\.')
         tag_message = full_message[/^tag\s#{tag_pattern}.*?\n\n(.*?)\n\n(?:tag\s[^\s]+|commit\s\w{40})\n/m, 1] || ""
         tagger = full_message[/\A.*?\nTagger:\s(.*?)\s</m, 1]
