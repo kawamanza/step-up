@@ -1,0 +1,2 @@
+Add --pretty=medium as default option to avoid a customized git-config
+ in order to get the changelog
