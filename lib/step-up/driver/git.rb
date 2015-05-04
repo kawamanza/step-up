@@ -132,6 +132,10 @@ check with the following bash command:
 
       def steps_to_increase_version(level, commit_base = "HEAD", message = nil)
         new_tag = next_version_tag(commit_base, level)
+        if new_tag.nil? or new_tag.empty?
+          STDERR.puts "Current release #{cached_last_version_tag(commit_base)}"
+          exit 0
+        end
         notes = cached_detached_notes_as_hash(commit_base)
         commands = []
         commands << "git fetch" if cached_fetched_remotes.any?
