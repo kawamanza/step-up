@@ -1,6 +1,7 @@
 # StepUp: a project to step up your projects
 [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/kawamanza/step-up?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
+[![Gem Version](https://badge.fury.io/rb/step-up.svg)](http://badge.fury.io/rb/step-up)
 [![GitHub version](https://badge.fury.io/gh/kawamanza%2Fstep-up.svg)](http://badge.fury.io/gh/kawamanza%2Fstep-up)
 [![views](https://sourcegraph.com/api/repos/github.com/kawamanza/step-up/.counters/views.svg)](https://sourcegraph.com/github.com/kawamanza/step-up)
 
