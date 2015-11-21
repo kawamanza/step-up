@@ -4,7 +4,6 @@
 Project badges:
 [![Gem Version](https://badge.fury.io/rb/step-up.svg)](http://badge.fury.io/rb/step-up)
 [![GitHub version](https://badge.fury.io/gh/kawamanza%2Fstep-up.svg)](http://badge.fury.io/gh/kawamanza%2Fstep-up)
-[![views](https://sourcegraph.com/api/repos/github.com/kawamanza/step-up/.counters/views.svg)](https://sourcegraph.com/github.com/kawamanza/step-up)
 
 Code badges:
 [![Dependency Status](https://gemnasium.com/kawamanza/step-up.svg)](https://gemnasium.com/kawamanza/step-up)
