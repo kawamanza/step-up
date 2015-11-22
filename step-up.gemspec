@@ -21,8 +21,9 @@ Gem::Specification.new do |s|
 
   s.add_dependency "thor", ">= 0.14.6"
 
-  s.add_development_dependency "rspec"
-  s.add_development_dependency "mocha" 
+  s.add_development_dependency "rspec", "~> 2.11.0"
+  s.add_development_dependency "mocha", "~> 0.12.0"
+  s.add_development_dependency "rake", "~> 10.4.2"
 
   excepts = %w[
     .gitignore
