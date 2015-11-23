@@ -12,7 +12,7 @@ module StepUp
     desc "version ACTION [base_object] [OPTIONS]", "manage versions of your project"
     method_options %w[next-release -n] => :boolean # stepup version --next-release
     method_options %w(levels -L) => :boolean # $ stepup version [--levels|-L]
-    method_options %w(level -l) => :string, %w(steps -s) => :boolean, %w(message -m) => :string, :'no-editor' => :boolean  # $ stepup version create [--level|-l <level-name>] [--steps|-s] [--message|-m <comment-string>] [--no-editor]
+    method_options %w(level -l) => :string, %w(steps -s) => :boolean, %w(message -m) => :string, :editor => :boolean  # $ stepup version create [--level|-l <level-name>] [--steps|-s] [--message|-m <comment-string>]
     method_options %w(mask -M) => :string # stepup version show --mask development_hudson_build_0
     method_options %w(masks) => :string # stepup version show --masks
     method_options %w(format -f) => :string
@@ -318,7 +318,7 @@ module StepUp
       level = driver.next_release_level(commit_object) if level == "auto"
 
       if version_levels.include? level
-        unless options[:'no-editor']
+        if options[:editor]
           message << <<-TEXT
 
 
