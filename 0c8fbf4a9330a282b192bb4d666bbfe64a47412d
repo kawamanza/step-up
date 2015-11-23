@@ -1,0 +1,2 @@
+The command version-create now has the default
+ option "--no-editor".
