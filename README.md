@@ -95,7 +95,7 @@ Found notes are displayed as a changelog message.
 With a culture of notating all the relevant developments, its possible to retrieve a summary of a range of versions besides that specifying what kind of information will be retrieved.
 For example, imagine that you want to see all the features implemented in your application since the version v1.10.1 up to v2.0.0
 
-    stepup notes --since v1.10.1 upto v2.0.0 --sections pre_deploy pos_deploy
+    stepup notes --since v1.10.1 --upto v2.0.0 --sections pre_deploy pos_deploy
     
 The result would be something like the following:
 
