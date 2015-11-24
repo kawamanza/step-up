@@ -37,7 +37,7 @@ The format of the version is totally customizable, and we will cover in more det
 
 ### Stepping up a version
 
-    stepup version create [--level LEVEL_NAME] [--no-editor]
+    stepup version create [--level LEVEL_NAME]
 
 where **LEVEL_NAME**, by default, could be  
 
