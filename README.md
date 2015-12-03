@@ -63,6 +63,9 @@ The versioning increment is based on the last version tag found in the repositor
 As you can see, the TINY level is omitted when its value is zero.
 The mask allows you to configure the less relevant levels this way.
 
+> **Note:**  
+> In order to maintain the convention indicated by the [semver.org](http://semver.org/), the TINY level will be deprecated in future releases.
+
 ### Checking out the changelog
 
     stepup changelog [--top=N]
