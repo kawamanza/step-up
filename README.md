@@ -1,6 +1,6 @@
+[<img src="https://pledgie.com/campaigns/30770.png?skin_name=chrome" border="0" align="right" alt="Click here to lend your support to: StepUp Utility and make a donation at pledgie.com !"/>](https://pledgie.com/campaigns/30770)
 # StepUp: a project to step up your projects
 [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/kawamanza/step-up?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Click here to lend your support to: StepUp Utility and make a donation at pledgie.com !](https://pledgie.com/campaigns/30770.png?skin_name=chrome)](https://pledgie.com/campaigns/30770)
 
 Project badges:
 [![Gem Version](https://badge.fury.io/rb/step-up.svg)](http://badge.fury.io/rb/step-up)
