@@ -52,7 +52,7 @@ where **LEVEL_NAME**, by default, could be
 * patch
 * tiny
 
-This command will ask user to input a message for the version and will increment the version number accordingly.
+This command will increment the version number according with the specified level.
 
 Each level corresponds to a position in the version mask.
 Considering default settings, this means:
