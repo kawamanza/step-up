@@ -2,10 +2,10 @@
 [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/kawamanza/step-up?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [<img src="https://pledgie.com/campaigns/30770.png?skin_name=chrome" border="0" align="right" alt="Click here to lend your support to: StepUp Utility and make a donation at pledgie.com !"/>](https://pledgie.com/campaigns/30770)
 
-Project badges:
+Project badges:  
 [![Gem Version](https://badge.fury.io/rb/step-up.svg)](http://badge.fury.io/rb/step-up)
 [![GitHub version](https://badge.fury.io/gh/kawamanza%2Fstep-up.svg)](http://badge.fury.io/gh/kawamanza%2Fstep-up)  
-Code badges:
+Code badges:  
 [![Dependency Status](https://gemnasium.com/kawamanza/step-up.svg)](https://gemnasium.com/kawamanza/step-up)
 
 StepUp is a tool to manage versioning.
