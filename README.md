@@ -13,6 +13,12 @@ That means you can bump the version of your project, for example, from v3.0.11 t
 
 StepUp is based on source control management features (i.e. tags, branches, commits, notes etc), so it doesn't need to keep files with the current version (but it supports it, if you want), it has visibility of all history of changes and versions (doesn't matter if they are spread in many different branches), which adds a variety of possibilities in terms of management, depending on your project needs.
 
+## Features
+
+* Allow you to attach notes to existing commits to mark fixes or new features that are being delivered.
+* View release notes for the next version of the project that will be boosted.
+* Auto-increment the version of the project based in the release notes.
+
 ## Installation
 
 ```sh
