@@ -19,10 +19,6 @@ StepUp is based on source control management features (i.e. tags, branches, comm
 $ gem install step-up
 ```
 
-## First of all
-
-Your installed git-scm version must be v1.7.1 or higher.
-
 ## The Basics
 
 ### Checking current project version
