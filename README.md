@@ -8,6 +8,8 @@ Project badges:
 Code badges:  
 [![Dependency Status](https://gemnasium.com/kawamanza/step-up.svg)](https://gemnasium.com/kawamanza/step-up)
 
+## Introduction
+
 StepUp is a tool to manage versioning.
 That means you can bump the version of your project, for example, from v3.0.11 to v4.0.0, check the current version, summarize all the history of versions in a changelog and more.
 
