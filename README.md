@@ -20,7 +20,7 @@ StepUp is based on source control management features (i.e. tags, branches, comm
 * Allow you to attach notes to existing commits to mark fixes or new features that are being delivered.
 * Organize notes into sections of bugfixes, features, minor changes and so on.
 * View release notes for the next version of the project that will be boosted.
-* Auto-increment the version of the project based in the release notes.
+* Auto-increment the version of the project based in the release notes (according to [semver.org](http://semver.org/) guidelines).
 
 ## Installation
 
