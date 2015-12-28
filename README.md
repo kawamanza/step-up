@@ -130,8 +130,13 @@ The result would be something like the following:
       - rake categories:reload
 
 
-## Project
-* https://github.com/kawamanza/step-up
+## Contributing
+
+1. Fork it
+2. Create your feature branch (`git checkout -b my-new-feature`)
+3. Commit your changes (`git commit -am 'Added some feature'`)
+4. Push to the branch (`git push origin my-new-feature`)
+5. Create new Pull Request
 
 ## Report bugs and suggestions
 * [Issue Tracker](https://github.com/kawamanza/step-up/issues)
