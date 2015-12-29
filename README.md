@@ -129,6 +129,11 @@ The result would be something like the following:
       - rake db:seed
       - rake categories:reload
 
+## Continuous Integration
+
+You can use the `stepup` commands to extract information of your project and display them on Continuous Integration tools.
+
+![Jenkins Example](https://raw.githubusercontent.com/kawamanza/step-up/master/docs/images/stepup_ci.png)
 
 ## Contributing
 
