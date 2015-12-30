@@ -37,18 +37,7 @@ module StepUp
       class RemoveNotes
         def steps_for_archiving_notes(objects_with_notes, tag, driver)
           commands = []
-          CONFIG.notes_sections.names.each do |section|
-            next unless objects_with_notes.has_key?(section)
-            removed_notes = []
-            objects_with_notes[section].each do |object|
-              next if object[2] == RangedNotes::COMMIT_NOTE
-              removed_notes << "git notes --ref=#{ section } remove #{ object[0] }"
-            end
-            unless removed_notes.empty?
-              commands += removed_notes
-              commands << "git push #{ driver.notes_remote } refs/notes/#{ section }" if driver.cached_fetched_remotes.any?
-            end
-          end
+          STDERR.puts "WARN: the 'remove' strategy is no longer supported"
           commands
         end
       end
