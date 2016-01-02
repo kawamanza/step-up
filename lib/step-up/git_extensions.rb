@@ -7,7 +7,7 @@ module StepUp
 
     module Notes
       def steps_for_archiving_notes(objects_with_notes, tag)
-        strategy = CONFIG.notes.after_versioned.strategy || "keep"
+        strategy = CONFIG.notes.after_versioned["strategy"] || "keep"
         raise ArgumentError, "unknown strategy: #{ strategy }" unless NOTES_STRATEGIES.include?(strategy)
         NOTES_STRATEGIES[strategy].steps_for_archiving_notes(objects_with_notes, tag, self)
       end
