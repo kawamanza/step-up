@@ -34,14 +34,6 @@ module StepUp
     end
 
     module Strategy
-      class RemoveNotes
-        def steps_for_archiving_notes(objects_with_notes, tag, driver)
-          commands = []
-          STDERR.puts "WARN: the 'remove' strategy is no longer supported"
-          commands
-        end
-      end
-
       class KeepNotes
         def steps_for_archiving_notes(objects_with_notes, tag, driver)
           commands = []
@@ -63,7 +55,6 @@ module StepUp
         end
       end
     end
-    register_notes_strategy "remove", Strategy::RemoveNotes.new
     register_notes_strategy "keep", Strategy::KeepNotes.new
   end
 end

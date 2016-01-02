@@ -99,45 +99,6 @@ describe StepUp::Driver::Git do
     end
 
 
-    context "using 'remove' as after_versioned:strategy" do
-      before do
-        StepUp::CONFIG.notes.after_versioned.stubs(:strategy).returns("remove")
-        @steps = <<-STEPS
-        git fetch
-
-        git tag -a -m "Test changes:
-        
-          - removing files from gemspec
-            - .gitignore
-            - lastversion.gemspec
-          - loading default configuration yaml
-          - loading external configuration yaml
-        
-        Test bugfixes:
-        
-          - sorting tags according to the mask parser" v0.1.0 f4cfcc2
-
-        git push origin refs/tags/v0.1.0
-
-        git notes --ref=test_changes remove 8299243c7dac8f27c3572424a348a7f83ef0ce28
-
-        git notes --ref=test_changes remove 2fb8a3281fb6777405aadcd699adb852b615a3e4
-
-        git push origin refs/notes/test_changes
-
-        git notes --ref=test_bugfixes remove d7b0fa26ca547b963569d7a82afd7d7ca11b71ae
-
-        git push origin refs/notes/test_bugfixes
-        STEPS
-        @steps = @steps.rstrip.split(/\n\n/).collect{ |step| step.gsub(/^\s{8}/, '') }
-      end
-      xit "should return steps" do
-        @driver.should respond_to :steps_to_increase_version
-        @driver.steps_to_increase_version("minor", "f4cfcc2").should be == @steps
-      end
-    end
-
-
     context "using 'keep' as after_versioned:strategy" do
       before do
         StepUp::CONFIG.notes.after_versioned.stubs(:strategy).returns("keep")
