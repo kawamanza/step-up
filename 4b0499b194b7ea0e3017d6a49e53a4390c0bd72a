@@ -1,0 +1,2 @@
+Removed the TINY level from the default mask to keep
+ compliance with semver.org
