@@ -1,5 +1,6 @@
 notes:
   after_versioned:
+    strategy: "keep"
     section: "versioning"
     changelog_message: "available on {version}"
   sections:
