@@ -1,0 +1,2 @@
+Recommendation to add notes to non merge-commit only and
+ expect the --force option to do it anyway.
