@@ -1,2 +1,2 @@
-Recommendation to add notes to non merge-commit only and
- expect the --force option to do it anyway.
+Recommendation to add notes only to non-merge commits, and
+ using the --force option if necessary.
