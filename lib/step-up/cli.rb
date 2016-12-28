@@ -67,6 +67,7 @@ module StepUp
     method_options :"with-commit" => :boolean
     method_options %w[section -s] => :string
     method_options :sections => :array
+    method_options :force => :boolean
     def notes(action = "show", commit_base = nil)
       unless %w[show add remove help].include?(action)
         commit_base ||= action
@@ -198,6 +199,13 @@ module StepUp
       last_commit = driver.commit_history(commit_object, 1, :with_messages => true).first
       if last_commit.nil?
         puts "This repository has no commit history"
+        exit 1
+      end
+      parents = `git rev-list --parents -n 1 #{last_commit.first}`.split(' ')
+      # Check if it is a merge-commit
+      if parents.size > 2 && ! options[:force]
+        puts "It's recommended not to add notes to merge-commit, but if you need to"
+        puts "do this anyway, please use the --force option."
         exit 1
       end
       unless message
