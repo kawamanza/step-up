@@ -9,6 +9,11 @@ module StepUp
     
     default_task :version
 
+    desc "commands", "list avaliable commands"
+    def commands
+      puts self.class.all_commands.keys.join " "
+    end
+
     desc "version ACTION [base_object] [OPTIONS]", "manage versions of your project"
     method_options %w[next-release -n] => :boolean # stepup version --next-release
     method_options %w(levels -L) => :boolean # $ stepup version [--levels|-L]
