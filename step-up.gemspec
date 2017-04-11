@@ -19,11 +19,11 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = ">= 1.3.6"
   s.rubyforge_project         = "step-up"
 
-  s.add_dependency "thor", ">= 0.14.6"
+  s.add_runtime_dependency "thor", "~> 0.14", ">= 0.14.6"
 
-  s.add_development_dependency "rspec", "~> 2.11.0"
+  s.add_development_dependency "rspec", "~> 2.11", ">= 2.11.0"
   s.add_development_dependency "mocha", "~> 0.12.0"
-  s.add_development_dependency "rake", "~> 10.4.2"
+  s.add_development_dependency "rake", "~> 10.4", ">= 10.4.2"
 
   excepts = %w[
     .gitignore
