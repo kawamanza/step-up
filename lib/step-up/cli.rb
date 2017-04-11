@@ -294,7 +294,13 @@ module StepUp
         mask = nil if mask !~ /0/
         version = nil
         if options[:"next-release"]
-          tag = driver.cached_next_version_tag(commit_object, options[:level])
+          level = options[:level] || driver.next_release_level(commit_object)
+          unless STDIN.tty?
+            tag = STDIN.first.chomp
+            all_tags = driver.tags.scan(/[^\r\n]+/)
+            tag = all_tags.include?(tag) ? driver.mask.increase_version(tag, level) : nil
+          end
+          tag = tag || driver.cached_next_version_tag(commit_object, level)
           version = tag
         else
           version = driver(mask).last_version_tag(commit_object || "HEAD", true)
