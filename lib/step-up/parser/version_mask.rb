@@ -22,7 +22,7 @@ module StepUp
         v = []
         mask.each_with_index do |part, index|
           level = version[index] || 0
-          raise ArgumentError unless level.is_a?(Fixnum)
+          raise ArgumentError unless level.is_a?(Integer)
           unless level.zero? && part.last == '9'
             v << "#{part.first}#{level}"
           end
