@@ -1,0 +1,9 @@
+Using bash pipe inputs to check the next release. Example:
+  $ stepup version show origin/master
+   v1.28.1
+   $ stepup version show origin/staging
+   v1.27.0+44
+   $ stepup version show origin/staging --next-release
+   v1.28.0
+   $ stepup version show origin/master | stepup version show origin/staging --next-release
+   v1.29.0
