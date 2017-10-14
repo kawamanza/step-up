@@ -1,3 +1,5 @@
+require 'time'
+
 module StepUp
   module Driver
     class Git < Base
