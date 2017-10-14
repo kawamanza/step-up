@@ -1,0 +1,1 @@
+Fix of Time.parse calling from Ruby 2.3.x or above
