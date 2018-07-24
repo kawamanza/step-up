@@ -492,7 +492,8 @@ module StepUp
           puts "Make sure of having set the editor as appropriate."
           exit 1
         end
-        File.read(temp_file).gsub(/^\#.*/m, '').rstrip
+        f = File.read(temp_file)
+        NotesUtil.safe_gsub(f){ |m| m.gsub(/^\#.*/m, '').rstrip }
       else
         puts <<-TEXT
 No editor found.
