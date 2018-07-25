@@ -296,7 +296,8 @@ module StepUp
         if options[:"next-release"]
           level = options[:level] || driver.next_release_level(commit_object)
           unless STDIN.tty?
-            tag = STDIN.first.chomp
+            tag = STDIN.first
+            tag = tag.chomp unless tag.nil?
             all_tags = driver.tags.scan(/[^\r\n]+/)
             tag = all_tags.include?(tag) ? driver.mask.increase_version(tag, level) : nil
           end
